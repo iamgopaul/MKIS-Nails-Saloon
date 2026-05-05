@@ -107,25 +107,25 @@ export default function Navbar() {
           </a>
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          type="button"
-          className="md:hidden p-2 rounded-lg text-[#F5EDE6] hover:bg-[#1C1614] transition"
-          onClick={() => setOpen(!open)}
-          aria-label="Toggle menu"
-        >
-          <span className="block w-5 h-0.5 bg-current mb-1" />
-          <span className="block w-5 h-0.5 bg-current mb-1" />
-          <span className="block w-5 h-0.5 bg-current" />
-        </button>
+        {/* Mobile: status badge + hamburger */}
+        <div className="md:hidden flex items-center gap-3">
+          <BusinessStatusBadge />
+          <button
+            type="button"
+            className="p-2 rounded-lg text-[#F5EDE6] hover:bg-[#1C1614] transition"
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle menu"
+          >
+            <span className="block w-5 h-0.5 bg-current mb-1" />
+            <span className="block w-5 h-0.5 bg-current mb-1" />
+            <span className="block w-5 h-0.5 bg-current" />
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}
       {open && (
         <div className="md:hidden bg-[#0A0A0A] border-t border-[#E07898]/20 px-4 py-4 flex flex-col gap-4">
-          <div className="flex justify-start">
-            <BusinessStatusBadge />
-          </div>
           {links.map((link) => (
             <a
               key={link.href}

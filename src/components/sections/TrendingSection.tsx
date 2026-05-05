@@ -61,7 +61,7 @@ export default function TrendingSection({ id }: { id: string }) {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E07898] opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E07898]" />
               </span>
-              Live data · Updated {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+              Live
             </div>
           </div>
         )}
