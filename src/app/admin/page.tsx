@@ -179,13 +179,14 @@ export default function AdminPage() {
       {toast && <Toast msg={toast.msg} ok={toast.ok} />}
       <Header session={session} onLogout={logout} />
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
-        {session.role === "admin"
-          ? <AdminDashboard session={session} myTeam={myTeam} showToast={showToast} reload={() => {
-              fetch("/api/me").then(r => r.json()).then(d => { setSession(d.session); setMyTeam(d.team); });
-            }} />
-          : <TeamDashboard myTeam={myTeam} session={session} showToast={showToast} reload={() => {
-              fetch("/api/me").then(r => r.json()).then(d => { setMyTeam(d.team); });
-            }} />}
+        <AdminDashboard
+          session={session}
+          myTeam={myTeam}
+          showToast={showToast}
+          reload={() => {
+            fetch("/api/me").then(r => r.json()).then(d => { setSession(d.session); setMyTeam(d.team); });
+          }}
+        />
       </div>
     </div>
   );
@@ -229,68 +230,6 @@ function Header({ session, onLogout }: { session: Session; onLogout: () => void 
   );
 }
 
-// ─── TEAM MEMBER DASHBOARD ───────────────────────────────────────────────────
-
-function TeamDashboard({ myTeam, session, showToast, reload }: {
-  myTeam: TeamMember | null;
-  session: Session;
-  showToast: (m: string, ok?: boolean) => void;
-  reload: () => void;
-}) {
-  const [appointments, setAppointments] = useState<BookingRow[]>([]);
-
-  useEffect(() => {
-    if (!myTeam) return;
-    const supabase = createClient();
-    supabase
-      .from("bookings")
-      .select("*")
-      .eq("technician_id", myTeam.id)
-      .gte("preferred_date", new Date().toISOString().split("T")[0])
-      .order("preferred_date", { ascending: true })
-      .order("start_time", { ascending: true })
-      .then(({ data }) => setAppointments(data ?? []));
-  }, [myTeam]);
-
-  const firstName = (session.fullName || (session.email ?? "").split("@")[0] || "there").split(" ")[0];
-  const todayLong = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
-
-  return (
-    <div className="space-y-8">
-      {/* Welcome */}
-      <div className="bg-gradient-to-br from-[#1C1614] to-[#0E0B09] rounded-3xl p-6 sm:p-8 border border-[#E07898]/30 relative overflow-hidden">
-        <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-[#E07898]/10 blur-3xl" />
-        <div className="relative">
-          <p className="text-[#9A7060] text-sm uppercase tracking-wider mb-2">{todayLong}</p>
-          <h2 className="font-[family-name:var(--font-playfair)] text-2xl sm:text-3xl font-bold text-[#F5EDE6]">
-            Hey welcome, {firstName}! <span className="text-[#E07898]">👋</span>
-          </h2>
-          <p className="text-[#9A7060] mt-2">
-            {myTeam ? "Manage your profile and check your upcoming appointments below." : "Your account is set up. Ask the admin to link your team listing to start receiving appointments."}
-          </p>
-        </div>
-      </div>
-
-      {/* Profile sections (each saves on its own) */}
-      <ProfileTab session={session} myTeam={myTeam} showToast={showToast} reload={reload} />
-
-      {/* Appointments */}
-      {myTeam && (
-        <div>
-          <h3 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold mb-1">My Upcoming Appointments</h3>
-          <p className="text-[#9A7060] text-sm mb-4">{appointments.length} upcoming appointment{appointments.length === 1 ? "" : "s"}.</p>
-          {appointments.length === 0 ? (
-            <div className="bg-[#1C1614] rounded-3xl p-10 border border-[#E07898]/15 text-center text-[#9A7060]">
-              No upcoming appointments.
-            </div>
-          ) : (
-            <BookingsTable rows={appointments} />
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ─── ADMIN DASHBOARD ─────────────────────────────────────────────────────────
 
