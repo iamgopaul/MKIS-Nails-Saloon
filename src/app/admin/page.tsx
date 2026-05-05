@@ -37,11 +37,13 @@ const DEFAULT_CONTENT = Object.fromEntries(
 // ─── small shared components ─────────────────────────────────────────────────
 
 function Field({ label, value, onChange, multiline }: { label: string; value: string; onChange: (v: string) => void; multiline?: boolean }) {
+  const id = `field-${label.toLowerCase().replace(/\s+/g, "-")}`;
   return (
     <div>
-      <label className="block text-xs font-semibold text-[#9A7060] uppercase tracking-wider mb-1.5">{label}</label>
+      <label htmlFor={id} className="block text-xs font-semibold text-[#9A7060] uppercase tracking-wider mb-1.5">{label}</label>
       {multiline ? (
         <textarea
+          id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={3}
@@ -50,6 +52,7 @@ function Field({ label, value, onChange, multiline }: { label: string; value: st
         />
       ) : (
         <input
+          id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="w-full px-3 py-2 rounded-xl bg-[#0A0A0A] border border-[#E07898]/20 text-[#F5EDE6] text-sm
@@ -122,7 +125,7 @@ function ImageUpload({ currentUrl, onUrl }: { currentUrl: string; onUrl: (url: s
           </button>
         </div>
       </div>
-      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+      <input ref={fileRef} type="file" accept="image/*" aria-label="Upload image file" className="hidden" onChange={handleFile} />
       {error && <p className="text-red-400 text-xs">{error}</p>}
     </div>
   );

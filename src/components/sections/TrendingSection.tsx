@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SectionHeading from "@/components/ui/SectionHeading";
 
 interface TrendingService {
@@ -18,6 +18,18 @@ const BADGE_COLORS = [
 ];
 
 const RANK_LABELS = ["01", "02", "03", "04", "05"];
+
+function ProgressBar({ percentage, colorClass }: { percentage: number; colorClass: string }) {
+  const barRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (barRef.current) barRef.current.style.width = `${percentage}%`;
+  }, [percentage]);
+  return (
+    <div className="h-1.5 bg-[#E07898]/10 rounded-full overflow-hidden">
+      <div ref={barRef} className={`h-full bg-gradient-to-r ${colorClass} rounded-full transition-all duration-700`} />
+    </div>
+  );
+}
 
 export default function TrendingSection({ id }: { id: string }) {
   const [trending, setTrending] = useState<TrendingService[]>([]);
@@ -117,15 +129,7 @@ export default function TrendingSection({ id }: { id: string }) {
                   {svc.count} booking{svc.count !== 1 ? "s" : ""} this week
                 </p>
 
-                {/* Progress bar */}
-                <div className="h-1.5 bg-[#E07898]/10 rounded-full overflow-hidden">
-                  {/* percentage is dynamic — cannot be expressed as a static Tailwind class */}
-                  {/* eslint-disable-next-line react/forbid-component-props */}
-                  <div
-                    className={`h-full bg-gradient-to-r ${BADGE_COLORS[i]} rounded-full transition-all duration-700`}
-                    style={{ width: `${svc.percentage}%` }}
-                  />
-                </div>
+                <ProgressBar percentage={svc.percentage} colorClass={BADGE_COLORS[i]} />
                 <p className="text-xs text-[#9A7060] mt-1.5 text-right">{svc.percentage}% of bookings</p>
               </div>
             ))}
