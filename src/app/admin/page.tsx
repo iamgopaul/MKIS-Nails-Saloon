@@ -776,6 +776,7 @@ function BookingsTab() {
   const [filter, setFilter] = useState("");
   const [techFilter, setTechFilter] = useState<string>("all"); // "all" | "mine" | <team.id>
   const [myTeamId, setMyTeamId] = useState<string | null>(null);
+  const [showPast, setShowPast] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -837,9 +838,19 @@ function BookingsTab() {
       </div>
 
       {past.length > 0 && (
-        <div>
-          <h3 className="text-sm font-semibold text-[#9A7060] uppercase tracking-wider mb-3 mt-8">Past ({past.length})</h3>
-          <BookingsTable rows={past} />
+        <div className="mt-8">
+          <button
+            type="button"
+            onClick={() => setShowPast((v) => !v)}
+            className="text-sm font-semibold text-[#9A7060] uppercase tracking-wider hover:text-[#E07898] transition-colors"
+          >
+            {showPast ? "▾" : "▸"} Past ({past.length})
+          </button>
+          {showPast && (
+            <div className="mt-3">
+              <BookingsTable rows={past} />
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -850,6 +861,7 @@ function statusBadge(status: string) {
   const cls = status === "Confirmed" ? "bg-emerald-900/40 text-emerald-400"
             : status === "Cancelled" ? "bg-red-900/40 text-red-400"
             : status === "Completed" ? "bg-[#E07898]/15 text-[#E07898]"
+            : status === "No Show"   ? "bg-zinc-800/60 text-zinc-400"
             : "bg-amber-900/40 text-amber-400";
   return <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${cls}`}>{status}</span>;
 }
