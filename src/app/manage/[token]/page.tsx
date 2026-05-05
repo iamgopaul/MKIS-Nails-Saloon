@@ -33,7 +33,7 @@ export default async function ManagePage({ params }: Props) {
           <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Link expired or invalid</h1>
           <p style={{ color: "#9A7060", marginBottom: 24, lineHeight: 1.6 }}>
             This management link is no longer valid. If you need to change a booking, please call us at{" "}
-            <a href="tel:+17542302480" style={{ color: "#E07898" }}>+1 (754) 230-2480</a>.
+            <a href="tel:+17542365112" style={{ color: "#E07898" }}>+1 (754) 236-5112</a>.
           </p>
           <Link href="/" style={{ color: "#E07898", textDecoration: "none", fontWeight: 600 }}>
             ← Back to MKIS Nail Saloon

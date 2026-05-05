@@ -80,7 +80,7 @@ export async function buildEmail({ headline, preheader, bodyHtml }: LayoutOption
           PREMIUM NAIL ART &amp; CARE
         </p>
         <p style="margin:0 0 6px;font-size:11px;color:#9A7060;line-height:1.7;">
-          <a href="tel:+17542302480" style="color:#E07898;text-decoration:none;">+1 (754) 230-2480</a>
+          <a href="tel:+17542365112" style="color:#E07898;text-decoration:none;">+1 (754) 236-5112</a>
           <span style="color:#9A7060;">&nbsp;·&nbsp;</span>
           <a href="mailto:mkisservicesllc@gmail.com" style="color:#E07898;text-decoration:none;">mkisservicesllc@gmail.com</a>
         </p>

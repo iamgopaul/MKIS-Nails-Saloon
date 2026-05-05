@@ -83,7 +83,7 @@ export async function sendConfirmationEmail(data: NotificationData): Promise<voi
 
     <p style="font-size:13px;color:#9A7060;margin:0 0 6px;">Questions?</p>
     <p style="font-size:13px;margin:0;line-height:1.7;color:#F5EDE6;">
-      Call us at <a href="tel:+17542302480" style="color:#E07898;text-decoration:none;font-weight:600;">+1 (754) 230-2480</a><br>
+      Call us at <a href="tel:+17542365112" style="color:#E07898;text-decoration:none;font-weight:600;">+1 (754) 236-5112</a><br>
       Email <a href="mailto:mkisservicesllc@gmail.com" style="color:#E07898;text-decoration:none;font-weight:600;">mkisservicesllc@gmail.com</a>
     </p>
   `;
@@ -117,7 +117,7 @@ export async function sendCancellationEmail(data: NotificationData): Promise<voi
       We hope to see you again soon.
     </p>
     <p style="font-size:13px;color:#9A7060;margin:0;line-height:1.7;">
-      To rebook, visit our site or call <a href="tel:+17542302480" style="color:#E07898;font-weight:600;text-decoration:none;">+1 (754) 230-2480</a>.
+      To rebook, visit our site or call <a href="tel:+17542365112" style="color:#E07898;font-weight:600;text-decoration:none;">+1 (754) 236-5112</a>.
     </p>
   `;
 
@@ -164,7 +164,7 @@ export async function sendReminderEmail(data: NotificationData): Promise<void> {
     </div>` : ""}
 
     <p style="font-size:13px;color:#9A7060;margin:0;line-height:1.7;">
-      Questions? Call <a href="tel:+17542302480" style="color:#E07898;font-weight:600;text-decoration:none;">+1 (754) 230-2480</a>.
+      Questions? Call <a href="tel:+17542365112" style="color:#E07898;font-weight:600;text-decoration:none;">+1 (754) 236-5112</a>.
     </p>
   `;
 

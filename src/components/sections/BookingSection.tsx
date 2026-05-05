@@ -175,7 +175,7 @@ export default function BookingSection({ id }: BookingSectionProps) {
                 <p className="text-white/80 text-sm mb-4">
                   Call or WhatsApp us directly and we&apos;ll set up your appointment.
                 </p>
-                <a href="tel:+17542302480"
+                <a href="tel:+17542365112"
                    className="inline-block px-5 py-2 rounded-full bg-[#0A0A0A] text-[#E07898] font-semibold text-sm hover:bg-[#1C1614] transition-colors">
                   Call Us Now
                 </a>

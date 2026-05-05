@@ -32,8 +32,8 @@ export default function ContactSection({ id }: ContactSectionProps) {
                 icon: "📞",
                 label: "Phone",
                 content: (
-                  <a href="tel:+17542302480" className="text-[#E07898] hover:text-[#E07898] font-medium transition-colors">
-                    +1 (754) 230-2480
+                  <a href="tel:+17542365112" className="text-[#E07898] hover:text-[#E07898] font-medium transition-colors">
+                    +1 (754) 236-5112
                   </a>
                 ),
               },
