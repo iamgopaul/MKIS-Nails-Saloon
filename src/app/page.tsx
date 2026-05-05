@@ -9,7 +9,6 @@ import AboutSection from "@/components/sections/AboutSection";
 import TrendingSection from "@/components/sections/TrendingSection";
 import ReviewsSection from "@/components/sections/ReviewsSection";
 import LiveBackground from "@/components/ui/LiveBackground";
-import NotificationToast from "@/components/ui/NotificationToast";
 import ChatWidget from "@/components/ui/ChatWidget";
 
 export default function Home() {
@@ -28,7 +27,6 @@ export default function Home() {
         <ContactSection id="contact" />
       </main>
       <Footer />
-      <NotificationToast />
       <ChatWidget />
     </>
   );

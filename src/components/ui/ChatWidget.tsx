@@ -13,19 +13,18 @@ const WELCOME: Message = {
   content: "Hi, I'm Bella 💅 Your assistant for MKIS Nail Saloon. Ask me anything about our services, team, hours, or how to book an appointment.",
 };
 
-// Bubble teasers shown next to the launcher while the chat is closed.
-// { delay: ms after page load, text: shown for ~6s }
-const TEASERS: { delay: number; text: string }[] = [
-  { delay:  10_000, text: "Hi 👋 Welcome to MKIS Nails!" },
-  { delay:  45_000, text: "Need help? Tap me anytime." },
-  { delay:  90_000, text: "Hope you're having a wonderful day :)" },
-  { delay: 150_000, text: "Have a question? I'm here 💅" },
-];
-const TEASER_VISIBLE_MS = 6500;
+// Bella plays a small, calm queue of teasers while the chat is closed.
+const FALLBACK_WELCOME = "Hi 👋 Welcome to MKIS Nails!";
+const TEASER_VISIBLE_MS = 6500;     // how long each bubble stays
+const TEASER_GAP_MS     = 45_000;   // gap before the next bubble
+const FIRST_TEASER_MS   = 6_000;    // delay before the first bubble after page load
+const MAX_TEASERS       = 3;        // total bubbles per page session — keep it calm
 
-// Default position: 20px from left, 20px from bottom
-const DEFAULT_POS = { left: 20, bottom: 20 };
+// Initial position is computed on mount (defaults to bottom-right).
+const DEFAULT_POS = { left: 0, bottom: 20 };
 const POS_STORAGE_KEY = "mkis-bella-pos";
+const LAUNCHER_SIZE   = 56;
+const BUBBLE_GAP      = 12;
 
 export default function ChatWidget() {
   const [open, setOpen]         = useState(false);
@@ -38,6 +37,7 @@ export default function ChatWidget() {
   const teaserDismissed         = useRef(false);
   const scrollRef               = useRef<HTMLDivElement>(null);
   const launcherRef             = useRef<HTMLButtonElement>(null);
+  const bubbleRef               = useRef<HTMLDivElement>(null);
   const dragRef                 = useRef({
     startX:        0,
     startY:        0,
@@ -47,15 +47,29 @@ export default function ChatWidget() {
     pointerId:     0,
   });
 
-  // Apply position imperatively (avoids inline style on JSX)
+  // Apply launcher + bubble positions imperatively (avoids inline style on JSX)
   useEffect(() => {
     if (launcherRef.current) {
       launcherRef.current.style.left   = `${pos.left}px`;
       launcherRef.current.style.bottom = `${pos.bottom}px`;
     }
-  }, [pos]);
+    if (bubbleRef.current && typeof window !== "undefined") {
+      const onLeftHalf = pos.left + LAUNCHER_SIZE / 2 < window.innerWidth / 2;
+      bubbleRef.current.style.bottom = `${pos.bottom + 8}px`;
+      if (onLeftHalf) {
+        // Bella on left → bubble to her right
+        bubbleRef.current.style.left  = `${pos.left + LAUNCHER_SIZE + BUBBLE_GAP}px`;
+        bubbleRef.current.style.right = "auto";
+      } else {
+        // Bella on right → bubble to her left
+        const fromRight = window.innerWidth - pos.left + BUBBLE_GAP;
+        bubbleRef.current.style.right = `${fromRight}px`;
+        bubbleRef.current.style.left  = "auto";
+      }
+    }
+  }, [pos, teaser]);
 
-  // Restore launcher position from localStorage
+  // Restore launcher position from localStorage (defaults to bottom-right)
   useEffect(() => {
     try {
       const raw = localStorage.getItem(POS_STORAGE_KEY);
@@ -63,22 +77,33 @@ export default function ChatWidget() {
         const saved = JSON.parse(raw);
         if (typeof saved.left === "number" && typeof saved.bottom === "number") {
           setPos(clampPos(saved));
+          return;
         }
       }
     } catch { /* ignore */ }
-    // Re-clamp on resize so it never lands off-screen
+    // No saved position — pin to bottom-right of the viewport
+    setPos(clampPos({
+      left:   window.innerWidth - LAUNCHER_SIZE - 20,
+      bottom: 20,
+    }));
+  }, []);
+
+  // Re-clamp on resize so the launcher never lands off-screen
+  useEffect(() => {
     function onResize() { setPos((p) => clampPos(p)); }
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // Decide which side to render the teaser bubble on, based on launcher x-position
+  const teaserOnLeft = typeof window !== "undefined" && pos.left > window.innerWidth / 2;
+
   function clampPos(p: { left: number; bottom: number }) {
     if (typeof window === "undefined") return p;
-    const size = 56; // launcher diameter
     const margin = 8;
     return {
-      left:   Math.max(margin, Math.min(p.left,   window.innerWidth  - size - margin)),
-      bottom: Math.max(margin, Math.min(p.bottom, window.innerHeight - size - margin)),
+      left:   Math.max(margin, Math.min(p.left,   window.innerWidth  - LAUNCHER_SIZE - margin)),
+      bottom: Math.max(margin, Math.min(p.bottom, window.innerHeight - LAUNCHER_SIZE - margin)),
     };
   }
 
@@ -126,22 +151,65 @@ export default function ChatWidget() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
 
-  // Schedule teaser messages — once the chat is opened, stop showing them
+  // Show a small queue of teasers (status + live notifications) while the chat is closed.
+  // Plays through once per session — capped at MAX_TEASERS to avoid spam.
   useEffect(() => {
-    if (open) {
-      teaserDismissed.current = true;
-      setTeaser(null);
-      return;
+    // Hide any visible bubble while chat is open, but don't permanently silence
+    if (open) { setTeaser(null); return; }
+    // If user explicitly dismissed via the ✕, stay silent
+    if (teaserDismissed.current) return;
+
+    let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    async function start() {
+      const queue: string[] = [];
+
+      // 1) Status-aware welcome
+      try {
+        const res  = await fetch("/api/status");
+        const data = await res.json();
+        queue.push(data.status === "open"
+          ? "Hey, we're open now! Book an appointment or drop by ;)"
+          : "We're closed right now — you can still book an appointment for our opening hours.");
+      } catch {
+        queue.push(FALLBACK_WELCOME);
+      }
+
+      // 2) One live notification (if any)
+      try {
+        const res  = await fetch("/api/notifications");
+        const data: { message: string }[] = await res.json();
+        if (data?.[0]?.message) queue.push(data[0].message);
+      } catch { /* ignore */ }
+
+      // 3) One friendly tap-prompt to wrap up
+      queue.push("Need help? Tap me anytime 💅");
+
+      const sliced = queue.slice(0, MAX_TEASERS);
+      if (cancelled) return;
+
+      let i = 0;
+      function next() {
+        if (cancelled || teaserDismissed.current) return;
+        if (i >= sliced.length) return;
+        setTeaser(sliced[i++]);
+        timeoutId = setTimeout(() => {
+          if (cancelled) return;
+          setTeaser(null);
+          if (i < sliced.length) {
+            timeoutId = setTimeout(next, TEASER_GAP_MS);
+          }
+        }, TEASER_VISIBLE_MS);
+      }
+      timeoutId = setTimeout(next, FIRST_TEASER_MS);
     }
-    const timeouts: ReturnType<typeof setTimeout>[] = [];
-    TEASERS.forEach(({ delay, text }) => {
-      timeouts.push(setTimeout(() => {
-        if (teaserDismissed.current) return;
-        setTeaser(text);
-        timeouts.push(setTimeout(() => setTeaser(null), TEASER_VISIBLE_MS));
-      }, delay));
-    });
-    return () => timeouts.forEach(clearTimeout);
+    start();
+
+    return () => {
+      cancelled = true;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [open]);
 
   // When the booking form completes, pop a sequence of thank-you bubbles
@@ -203,14 +271,16 @@ export default function ChatWidget() {
 
   return (
     <>
-      {/* Teaser speech bubble — only when closed */}
+      {/* Teaser speech bubble — only when closed; positioned next to Bella imperatively */}
       {!open && teaser && (
         <div
+          ref={bubbleRef}
           role="status"
           aria-live="polite"
-          className="fixed bottom-6 left-24 z-50 max-w-[220px] sm:max-w-xs
-                     bg-[#1C1614] border border-[#E07898]/30 rounded-2xl rounded-bl-sm
-                     px-4 py-2.5 shadow-xl shadow-black/40 chat-teaser-in cursor-pointer"
+          className={`fixed z-50 max-w-[220px] sm:max-w-xs
+                     bg-[#1C1614] border border-[#E07898]/30 rounded-2xl
+                     ${teaserOnLeft ? "rounded-br-sm" : "rounded-bl-sm"}
+                     px-4 py-2.5 shadow-xl shadow-black/40 chat-teaser-in cursor-pointer`}
           onClick={() => setOpen(true)}
         >
           <p className="text-sm text-[#F5EDE6] leading-snug">{teaser}</p>
