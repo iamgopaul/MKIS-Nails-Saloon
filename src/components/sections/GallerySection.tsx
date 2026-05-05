@@ -1,10 +1,8 @@
 import Image from "next/image";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { getGallery } from "@/lib/airtableAdmin";
+import { getGallery } from "@/lib/db";
 
-interface GallerySectionProps {
-  id: string;
-}
+interface GallerySectionProps { id: string; }
 
 export default async function GallerySection({ id }: GallerySectionProps) {
   const items = await getGallery().catch(() => []);
@@ -29,21 +27,20 @@ export default async function GallerySection({ id }: GallerySectionProps) {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-            {items.map((item, i) => (
+            {items.map((item) => (
               <div
-                key={item.id ?? i}
+                key={item.id}
                 className="group relative aspect-square rounded-2xl overflow-hidden bg-[#1C1614] border border-[#E07898]/15
                            shadow-sm hover:shadow-xl hover:shadow-[#E07898]/10 hover:border-[#E07898]/40 transition-all duration-300"
               >
                 <Image
-                  src={item.imageUrl}
+                  src={item.image_url}
                   alt={item.name}
                   fill
                   unoptimized
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                 />
-                {/* Hover overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-transparent to-transparent
                                 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                   <p className="text-[#F5EDE6] font-semibold text-sm leading-tight">{item.name}</p>

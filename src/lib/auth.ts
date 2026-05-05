@@ -1,45 +1,47 @@
-import { SignJWT, jwtVerify } from "jose";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 
-const secret = new TextEncoder().encode(
-  process.env.JWT_SECRET ?? "mkis-nails-dev-secret-change-in-production"
-);
-
-const COOKIE = "mkis_admin_session";
-
-export async function signAdminToken(email: string): Promise<string> {
-  return new SignJWT({ email, role: "admin" })
-    .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime("7d")
-    .setIssuedAt()
-    .sign(secret);
+export interface AuthSession {
+  userId: string;
+  email: string | null;
+  role: "admin" | "team";
+  fullName: string;
 }
 
-export async function verifyAdminToken(token: string) {
-  try {
-    const { payload } = await jwtVerify(token, secret);
-    return payload as { email: string; role: string };
-  } catch {
-    return null;
+export class AuthError extends Error {
+  constructor(message: string, public status: number) {
+    super(message);
   }
 }
 
-export async function getAdminSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE)?.value;
-  if (!token) return null;
-  return verifyAdminToken(token);
+/** Returns the current session + role, or null if not signed in. */
+export async function getSession(): Promise<AuthSession | null> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, full_name")
+    .eq("id", user.id)
+    .single();
+
+  return {
+    userId:   user.id,
+    email:    user.email ?? null,
+    role:     (profile?.role as "admin" | "team") ?? "team",
+    fullName: profile?.full_name ?? "",
+  };
 }
 
-export function checkCredentials(email: string, password: string): boolean {
-  const adminEmail = process.env.ADMIN_EMAIL ?? "";
-  const adminPass  = process.env.ADMIN_PASSWORD ?? "";
-  return (
-    adminEmail.length > 0 &&
-    adminPass.length > 0 &&
-    email === adminEmail &&
-    password === adminPass
-  );
+export async function requireAdmin(): Promise<AuthSession> {
+  const session = await getSession();
+  if (!session)                   throw new AuthError("Not authenticated", 401);
+  if (session.role !== "admin")   throw new AuthError("Admin access required", 403);
+  return session;
 }
 
-export { COOKIE };
+export async function requireUser(): Promise<AuthSession> {
+  const session = await getSession();
+  if (!session) throw new AuthError("Not authenticated", 401);
+  return session;
+}

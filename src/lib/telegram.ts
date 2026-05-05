@@ -1,9 +1,11 @@
-import type { BookingInput } from "@/lib/validators";
+import type { NotificationData } from "@/lib/resend";
 
-export async function sendTelegramNotification(data: BookingInput): Promise<void> {
-  const token = process.env.TELEGRAM_BOT_TOKEN!;
-  const chatId = process.env.TELEGRAM_CHAT_ID!;
-  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+export async function sendTelegramNotification(data: NotificationData): Promise<void> {
+  if (!process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) {
+    console.warn("[Telegram] not configured — skipping notification");
+    return;
+  }
+  const url = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
 
   const message = [
     "🌸 *New Booking — MKIS Nails Saloon* 🌸",
@@ -14,8 +16,8 @@ export async function sendTelegramNotification(data: BookingInput): Promise<void
     "",
     `💅 *Service:* ${data.service}`,
     `📅 *Date:* ${data.date}`,
-    `⏰ *Time Slot:* ${data.timeSlot}`,
-    `💁 *Technician:* ${data.technician || "Any Available"}`,
+    `⏰ *Time:* ${data.startTime} – ${data.endTime}`,
+    `💁 *Technician:* ${data.technician}`,
     "",
     `📝 *Notes:* ${data.notes || "None"}`,
     "",
@@ -26,14 +28,13 @@ export async function sendTelegramNotification(data: BookingInput): Promise<void
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      chat_id: chatId,
-      text: message,
+      chat_id:    process.env.TELEGRAM_CHAT_ID,
+      text:       message,
       parse_mode: "Markdown",
     }),
   });
-
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(`Telegram API error: ${JSON.stringify(error)}`);
+    const err = await response.json();
+    throw new Error(`Telegram API error: ${JSON.stringify(err)}`);
   }
 }

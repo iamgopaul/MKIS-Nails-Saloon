@@ -1,23 +1,18 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-const FALLBACK = [
-  { id: "", name: "Kristin Harricharan", role: "Owner — Head Nail Technician" },
-];
-
 export const revalidate = 60;
 
 export async function GET() {
   try {
     const supabase = createAdminClient();
     const { data } = await supabase
-      .from("team")
-      .select("id, name, role")
+      .from("services")
+      .select("id, name, duration_minutes, price")
       .eq("active", true)
       .order("display_order", { ascending: true });
-    if (!data || data.length === 0) return NextResponse.json(FALLBACK);
-    return NextResponse.json(data);
+    return NextResponse.json(data ?? []);
   } catch {
-    return NextResponse.json(FALLBACK);
+    return NextResponse.json([]);
   }
 }

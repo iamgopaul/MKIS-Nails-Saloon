@@ -9,14 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@vercel/blob": "^2.3.3",
-    "airtable": "^0.12.2",
-    "jose": "^6.2.3",
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.105.3",
     "next": "16.2.4",
     "nodemailer": "^8.0.7",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "resend": "^6.12.2",
+    "react-easy-crop": "^5.5.7",
     "zod": "^4.4.3"
   },
   "devDependencies": {
