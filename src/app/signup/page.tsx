@@ -46,15 +46,22 @@ function SignupForm() {
     if (password !== confirm)  { setStatus("error"); setErrorMsg("Passwords don't match."); return; }
 
     setStatus("saving");
-    const res = await fetch("/api/signup", {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ token, name, password }),
-    });
-    const data = await res.json();
+    let res: Response;
+    try {
+      res = await fetch("/api/signup", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ token, name, password }),
+      });
+    } catch (e) {
+      setStatus("error");
+      setErrorMsg(e instanceof Error ? `Network error: ${e.message}` : "Network error.");
+      return;
+    }
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
       setStatus("error");
-      setErrorMsg(data.error ?? "Could not create account.");
+      setErrorMsg(`${data.error ?? "Could not create account."} (status ${res.status})`);
       return;
     }
 

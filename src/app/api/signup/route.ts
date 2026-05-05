@@ -10,8 +10,16 @@ import { validatePassword } from "@/lib/password";
  * Atomically claims a pending invite token, creates the auth user + team listing.
  */
 export async function POST(req: NextRequest) {
+  // Capture request fingerprint up front so failure paths can blame the
+  // right check from logs.
+  const ua      = req.headers.get("user-agent") ?? "";
+  const origin  = req.headers.get("origin");
+  const referer = req.headers.get("referer");
+  const host    = req.headers.get("host");
+
   if (!isAllowedOrigin(req)) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    console.warn("[signup] origin rejected", { origin, referer, host, ua });
+    return NextResponse.json({ error: "Forbidden (origin)" }, { status: 403 });
   }
 
   // Defensive rate limit — 10 signup attempts per IP per 10 min
@@ -20,12 +28,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Too many attempts. Please try again later." }, { status: 429 });
   }
 
-  const { token, name, password } = await req.json();
+  let body: { token?: unknown; name?: unknown; password?: unknown };
+  try { body = await req.json(); } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+  const token    = typeof body.token === "string"    ? body.token.trim()    : "";
+  const name     = typeof body.name === "string"     ? body.name.trim()     : "";
+  const password = typeof body.password === "string" ? body.password        : "";
 
-  if (!token || typeof token !== "string")     return NextResponse.json({ error: "Invalid invite link" }, { status: 400 });
-  if (!name?.trim())                           return NextResponse.json({ error: "Please enter your name" }, { status: 400 });
-  const pwdErr = validatePassword(password ?? "");
-  if (pwdErr)                                  return NextResponse.json({ error: pwdErr }, { status: 400 });
+  if (!token)                              return NextResponse.json({ error: "Invalid invite link (token missing)" }, { status: 400 });
+  if (!name)                               return NextResponse.json({ error: "Please enter your name" }, { status: 400 });
+  const pwdErr = validatePassword(password);
+  if (pwdErr)                              return NextResponse.json({ error: pwdErr }, { status: 400 });
 
   const supabase = createAdminClient();
 
@@ -42,6 +56,11 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (claimErr || !claimed) {
+    console.warn("[signup] invite claim failed", {
+      token_prefix: token.slice(0, 8),
+      claimErr,
+      ua,
+    });
     return NextResponse.json({ error: "This invite link is invalid or has expired." }, { status: 400 });
   }
 
@@ -50,9 +69,10 @@ export async function POST(req: NextRequest) {
     email:          claimed.email,
     password,
     email_confirm:  true,
-    user_metadata:  { full_name: name.trim() },
+    user_metadata:  { full_name: name },
   });
   if (createErr || !created?.user) {
+    console.error("[signup] supabase createUser failed", { email: claimed.email, createErr, ua });
     // Roll back the claim so the user can retry with a different password
     await supabase.from("pending_invites").update({ used_at: null }).eq("id", claimed.id);
     return NextResponse.json({ error: createErr?.message ?? "Failed to create account" }, { status: 500 });
@@ -61,14 +81,14 @@ export async function POST(req: NextRequest) {
   // 3) Sync profile name (trigger may have already created the row)
   await supabase
     .from("profiles")
-    .upsert({ id: created.user.id, role: "team", full_name: name.trim() }, { onConflict: "id" });
+    .upsert({ id: created.user.id, role: "team", full_name: name }, { onConflict: "id" });
 
   // 4) Create the team listing — unique constraint on user_id prevents dupes
   await supabase
     .from("team")
     .insert({
       user_id:        created.user.id,
-      name:           name.trim(),
+      name,
       role:           "Nail Technician",
       bio:            "",
       photo_url:      "",
