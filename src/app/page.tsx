@@ -7,6 +7,7 @@ import BookingSection from "@/components/sections/BookingSection";
 import ContactSection from "@/components/sections/ContactSection";
 import AboutSection from "@/components/sections/AboutSection";
 import TrendingSection from "@/components/sections/TrendingSection";
+import ReviewsSection from "@/components/sections/ReviewsSection";
 import LiveBackground from "@/components/ui/LiveBackground";
 import NotificationToast from "@/components/ui/NotificationToast";
 import ChatWidget from "@/components/ui/ChatWidget";
@@ -22,6 +23,7 @@ export default function Home() {
         <GallerySection id="gallery" />
         <ServicesSection id="services" />
         <AboutSection id="about" />
+        <ReviewsSection id="reviews" />
         <BookingSection id="booking" />
         <ContactSection id="contact" />
       </main>

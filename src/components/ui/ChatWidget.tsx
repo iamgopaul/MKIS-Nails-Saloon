@@ -23,14 +23,103 @@ const TEASERS: { delay: number; text: string }[] = [
 ];
 const TEASER_VISIBLE_MS = 6500;
 
+// Default position: 20px from left, 20px from bottom
+const DEFAULT_POS = { left: 20, bottom: 20 };
+const POS_STORAGE_KEY = "mkis-bella-pos";
+
 export default function ChatWidget() {
   const [open, setOpen]         = useState(false);
   const [messages, setMessages] = useState<Message[]>([WELCOME]);
   const [input, setInput]       = useState("");
   const [loading, setLoading]   = useState(false);
   const [teaser, setTeaser]     = useState<string | null>(null);
+  const [pos, setPos]           = useState(DEFAULT_POS);
+  const [dragging, setDragging] = useState(false);
   const teaserDismissed         = useRef(false);
   const scrollRef               = useRef<HTMLDivElement>(null);
+  const launcherRef             = useRef<HTMLButtonElement>(null);
+  const dragRef                 = useRef({
+    startX:        0,
+    startY:        0,
+    startLeft:     0,
+    startBottom:   0,
+    moved:         false,
+    pointerId:     0,
+  });
+
+  // Apply position imperatively (avoids inline style on JSX)
+  useEffect(() => {
+    if (launcherRef.current) {
+      launcherRef.current.style.left   = `${pos.left}px`;
+      launcherRef.current.style.bottom = `${pos.bottom}px`;
+    }
+  }, [pos]);
+
+  // Restore launcher position from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(POS_STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (typeof saved.left === "number" && typeof saved.bottom === "number") {
+          setPos(clampPos(saved));
+        }
+      }
+    } catch { /* ignore */ }
+    // Re-clamp on resize so it never lands off-screen
+    function onResize() { setPos((p) => clampPos(p)); }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  function clampPos(p: { left: number; bottom: number }) {
+    if (typeof window === "undefined") return p;
+    const size = 56; // launcher diameter
+    const margin = 8;
+    return {
+      left:   Math.max(margin, Math.min(p.left,   window.innerWidth  - size - margin)),
+      bottom: Math.max(margin, Math.min(p.bottom, window.innerHeight - size - margin)),
+    };
+  }
+
+  function onPointerDown(e: React.PointerEvent<HTMLButtonElement>) {
+    dragRef.current = {
+      startX:      e.clientX,
+      startY:      e.clientY,
+      startLeft:   pos.left,
+      startBottom: pos.bottom,
+      moved:       false,
+      pointerId:   e.pointerId,
+    };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+
+  function onPointerMove(e: React.PointerEvent<HTMLButtonElement>) {
+    if (e.pointerId !== dragRef.current.pointerId) return;
+    const dx = e.clientX - dragRef.current.startX;
+    const dy = e.clientY - dragRef.current.startY;
+    if (!dragRef.current.moved && Math.hypot(dx, dy) < 6) return; // small tap, not a drag
+    dragRef.current.moved = true;
+    if (!dragging) setDragging(true);
+    setPos(clampPos({
+      left:   dragRef.current.startLeft   + dx,
+      bottom: dragRef.current.startBottom - dy,    // pixels from bottom: dragging up = +bottom
+    }));
+  }
+
+  function onPointerUp(e: React.PointerEvent<HTMLButtonElement>) {
+    const wasDrag = dragRef.current.moved;
+    dragRef.current.moved = false;
+    setDragging(false);
+    if (wasDrag) {
+      try { localStorage.setItem(POS_STORAGE_KEY, JSON.stringify(pos)); } catch { /* ignore */ }
+      e.preventDefault();
+      e.stopPropagation();
+    } else {
+      // Treat as click — toggle the chat
+      setOpen((v) => !v);
+    }
+  }
 
   // Auto-scroll to bottom on new message
   useEffect(() => {
@@ -136,13 +225,18 @@ export default function ChatWidget() {
         </div>
       )}
 
-      {/* Floating launcher */}
+      {/* Floating launcher (draggable) */}
       <button
+        ref={launcherRef}
         type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-label={open ? "Close chat with Bella" : "Open chat with Bella"}
-        title="Chat with Bella"
-        className={`fixed bottom-5 left-5 z-50 w-14 h-14 rounded-full shadow-2xl shadow-[#E07898]/40 transition-all overflow-hidden
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        aria-label={open ? "Close chat with Bella" : "Open chat with Bella (long-press to drag)"}
+        title="Chat with Bella · drag to move"
+        className={`fixed z-50 w-14 h-14 rounded-full shadow-2xl shadow-[#E07898]/40 overflow-hidden touch-none select-none
+          ${dragging ? "cursor-grabbing" : "cursor-grab"}
+          ${dragging ? "" : "transition-shadow"}
           ${open
             ? "bg-[#1C1614] border-2 border-[#E07898]/60 hover:bg-[#0E0B09] flex items-center justify-center"
             : "bg-gradient-to-br from-[#E07898] to-[#C9956B] hover:scale-105 p-[2px]"
@@ -158,7 +252,7 @@ export default function ChatWidget() {
             alt="Bella"
             width={56}
             height={56}
-            className="w-full h-full rounded-full object-cover scale-[1.6] object-[50%_30%]"
+            className="w-full h-full rounded-full object-cover scale-[1.15] object-[50%_42%]"
           />
         )}
       </button>
@@ -176,7 +270,7 @@ export default function ChatWidget() {
                 alt="Bella"
                 width={44}
                 height={44}
-                className="w-full h-full object-cover scale-[1.6] object-[50%_30%]"
+                className="w-full h-full object-cover scale-[1.15] object-[50%_42%]"
               />
             </div>
             <div>

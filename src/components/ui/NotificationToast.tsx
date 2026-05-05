@@ -65,7 +65,9 @@ export default function NotificationToast() {
 
   return (
     <div
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-3 max-w-xs w-full
+      className="fixed z-40 flex items-center gap-3 max-w-xs w-[calc(100%-2rem)]
+                 left-1/2 -translate-x-1/2 top-20
+                 sm:left-auto sm:translate-x-0 sm:top-auto sm:bottom-6 sm:right-6 sm:w-full
                  bg-[#1C1614] border border-[#E07898]/30 rounded-2xl px-4 py-3
                  shadow-2xl shadow-[#E07898]/15 animate-in fade-in slide-in-from-bottom-4 duration-500"
     >

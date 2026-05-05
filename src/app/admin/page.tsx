@@ -15,7 +15,17 @@ interface BookingRow  { id: string; client_name: string; client_phone: string | 
 
 interface Session { userId: string; email: string | null; role: "admin" | "team"; fullName: string; }
 
-type AdminTab = "home" | "bookings" | "team" | "services" | "gallery" | "content" | "profile";
+interface ReviewRow {
+  id:           string;
+  client_name:  string;
+  review:       string;
+  rating:       number;
+  status:       "pending" | "approved" | "rejected";
+  submitted_at: string;
+  approved_at:  string | null;
+}
+
+type AdminTab = "home" | "bookings" | "reviews" | "team" | "services" | "gallery" | "content" | "profile";
 
 const CONTENT_LABELS: Record<string, string> = {
   hero_title:           "Hero Title",
@@ -294,6 +304,7 @@ function AdminDashboard({ session, myTeam, showToast, reload }: {
   const tabs: { key: AdminTab; label: string; icon: string }[] = [
     { key: "home",     label: "Home",     icon: "🏠" },
     { key: "bookings", label: "Bookings", icon: "📅" },
+    { key: "reviews",  label: "Reviews",  icon: "⭐" },
     { key: "team",     label: "Team",     icon: "👥" },
     { key: "services", label: "Services", icon: "💅" },
     { key: "gallery",  label: "Gallery",  icon: "🖼️" },
@@ -318,6 +329,7 @@ function AdminDashboard({ session, myTeam, showToast, reload }: {
 
       {tab === "home"     && <HomeTab     session={session} myTeam={myTeam} />}
       {tab === "bookings" && <BookingsTab />}
+      {tab === "reviews"  && <ReviewsTab  showToast={showToast} />}
       {tab === "team"     && <TeamTab     showToast={showToast} />}
       {tab === "services" && <ServicesTab showToast={showToast} />}
       {tab === "gallery"  && <GalleryTab  showToast={showToast} />}
@@ -908,6 +920,128 @@ function BookingsTable({ rows }: { rows: BookingRow[] }) {
         </div>
       </div>
     </>
+  );
+}
+
+// ─── REVIEWS TAB ──────────────────────────────────────────────────────────────
+
+function ReviewsTab({ showToast }: { showToast: (m: string, ok?: boolean) => void }) {
+  const [rows, setRows] = useState<ReviewRow[]>([]);
+  const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
+
+  const reload = useCallback(() => {
+    fetch("/api/admin/reviews").then((r) => r.json()).then((d) => setRows(Array.isArray(d) ? d : []));
+  }, []);
+  useEffect(() => { reload(); }, [reload]);
+
+  async function setStatus(id: string, status: "approved" | "rejected" | "pending") {
+    const res = await fetch(`/api/admin/reviews/${id}`, {
+      method:  "PUT",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ status }),
+    });
+    if (res.ok) {
+      const verb = status === "approved" ? "Approved" : status === "rejected" ? "Rejected" : "Reset to pending";
+      showToast(verb);
+      reload();
+    } else showToast("Failed to update review", false);
+  }
+
+  async function remove(id: string) {
+    if (!confirm("Delete this review permanently?")) return;
+    const res = await fetch(`/api/admin/reviews/${id}`, { method: "DELETE" });
+    if (res.ok) { showToast("Deleted"); reload(); }
+    else showToast("Failed to delete", false);
+  }
+
+  const visible = filter === "all" ? rows : rows.filter((r) => r.status === filter);
+  const pendingCount = rows.filter((r) => r.status === "pending").length;
+
+  const filters: { key: typeof filter; label: string }[] = [
+    { key: "pending",  label: `Pending${pendingCount > 0 ? ` (${pendingCount})` : ""}` },
+    { key: "approved", label: "Approved" },
+    { key: "rejected", label: "Rejected" },
+    { key: "all",      label: "All" },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold">Client Reviews</h2>
+          <p className="text-[#9A7060] text-sm mt-1">Approve reviews to show them on the website.</p>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          {filters.map((f) => (
+            <button key={f.key} type="button" onClick={() => setFilter(f.key)}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap
+                ${filter === f.key
+                  ? "bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white"
+                  : "bg-[#1C1614] border border-[#E07898]/15 text-[#9A7060] hover:text-[#F5EDE6] hover:border-[#E07898]/40"
+                }`}>
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {visible.length === 0 ? (
+        <div className="bg-[#1C1614] rounded-3xl p-10 border border-[#E07898]/15 text-center text-[#9A7060]">
+          No {filter} reviews.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {visible.map((r) => (
+            <div key={r.id} className="bg-[#1C1614] rounded-2xl p-5 border border-[#E07898]/15">
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <div>
+                  <p className="font-semibold text-[#F5EDE6]">{r.client_name}</p>
+                  <div className="flex items-center gap-1 mt-1 text-sm" aria-label={`${r.rating} stars`}>
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <span key={n} className={n <= r.rating ? "text-[#E07898]" : "text-[#9A7060]/30"}>★</span>
+                    ))}
+                  </div>
+                </div>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-semibold
+                  ${r.status === "approved" ? "bg-emerald-900/40 text-emerald-400"
+                  : r.status === "rejected" ? "bg-red-900/40 text-red-400"
+                  : "bg-amber-900/40 text-amber-400"}`}>
+                  {r.status}
+                </span>
+              </div>
+              <p className="text-[#F5EDE6] text-sm leading-relaxed italic mb-3">&ldquo;{r.review}&rdquo;</p>
+              <p className="text-xs text-[#9A7060]/60 mb-3">
+                Submitted {new Date(r.submitted_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              </p>
+              <div className="flex gap-2 flex-wrap">
+                {r.status !== "approved" && (
+                  <button type="button" onClick={() => setStatus(r.id, "approved")}
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white">
+                    ✓ Approve
+                  </button>
+                )}
+                {r.status !== "rejected" && (
+                  <button type="button" onClick={() => setStatus(r.id, "rejected")}
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold border border-red-500/40 text-red-400 hover:bg-red-500/10">
+                    ✕ Reject
+                  </button>
+                )}
+                {r.status !== "pending" && (
+                  <button type="button" onClick={() => setStatus(r.id, "pending")}
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold border border-[#E07898]/25 text-[#9A7060] hover:text-[#F5EDE6] hover:border-[#E07898]/50">
+                    Reset
+                  </button>
+                )}
+                <button type="button" onClick={() => remove(r.id)}
+                  className="ml-auto p-1.5 rounded-xl text-[#9A7060]/50 hover:text-red-400 transition-colors text-xs">
+                  🗑
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

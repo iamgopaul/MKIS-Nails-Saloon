@@ -37,6 +37,7 @@ export default function Footer() {
                 { href: "#gallery",  label: "Gallery" },
                 { href: "#services", label: "Services" },
                 { href: "#about",    label: "Team" },
+                { href: "#reviews",  label: "Reviews" },
                 { href: "#booking",  label: "Booking" },
                 { href: "#contact",  label: "Contact" },
               ].map(({ href, label }) => (
