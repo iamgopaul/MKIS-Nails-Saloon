@@ -263,7 +263,7 @@ function TeamDashboard({ myTeam, session, showToast, reload }: {
         <div className="relative">
           <p className="text-[#9A7060] text-sm uppercase tracking-wider mb-2">{todayLong}</p>
           <h2 className="font-[family-name:var(--font-playfair)] text-2xl sm:text-3xl font-bold text-[#F5EDE6]">
-            Hey, welcome back {firstName} <span className="text-[#E07898]">👋</span>
+            Hey welcome, {firstName}! <span className="text-[#E07898]">👋</span>
           </h2>
           <p className="text-[#9A7060] mt-2">
             {myTeam ? "Manage your profile and check your upcoming appointments below." : "Your account is set up. Ask the admin to link your team listing to start receiving appointments."}
@@ -302,16 +302,18 @@ function AdminDashboard({ session, myTeam, showToast, reload }: {
 }) {
   const [tab, setTab] = useState<AdminTab>("home");
 
-  const tabs: { key: AdminTab; label: string; icon: string }[] = [
-    { key: "home",     label: "Home",     icon: "🏠" },
-    { key: "bookings", label: "Bookings", icon: "📅" },
-    { key: "reviews",  label: "Reviews",  icon: "⭐" },
-    { key: "team",     label: "Team",     icon: "👥" },
-    { key: "services", label: "Services", icon: "💅" },
-    { key: "gallery",  label: "Gallery",  icon: "🖼️" },
-    { key: "content",  label: "Content",  icon: "✏️" },
-    { key: "profile",  label: "Profile",  icon: "👤" },
+  const isAdmin = session.role === "admin";
+  const allTabs: { key: AdminTab; label: string; icon: string; adminOnly?: boolean }[] = [
+    { key: "home",     label: "Home",       icon: "🏠" },
+    { key: "bookings", label: "Bookings",   icon: "📅" },
+    { key: "gallery",  label: isAdmin ? "Gallery" : "My Styles", icon: "🖼️" },
+    { key: "reviews",  label: "Reviews",    icon: "⭐", adminOnly: true },
+    { key: "team",     label: "Team",       icon: "👥", adminOnly: true },
+    { key: "services", label: "Services",   icon: "💅", adminOnly: true },
+    { key: "content",  label: "Content",    icon: "✏️", adminOnly: true },
+    { key: "profile",  label: "Profile",    icon: "👤" },
   ];
+  const tabs = allTabs.filter((t) => isAdmin || !t.adminOnly);
 
   return (
     <>
@@ -333,7 +335,7 @@ function AdminDashboard({ session, myTeam, showToast, reload }: {
       {tab === "reviews"  && <ReviewsTab  showToast={showToast} />}
       {tab === "team"     && <TeamTab     showToast={showToast} />}
       {tab === "services" && <ServicesTab showToast={showToast} />}
-      {tab === "gallery"  && <GalleryTab  showToast={showToast} />}
+      {tab === "gallery"  && <GalleryTab  showToast={showToast} session={session} />}
       {tab === "content"  && <ContentTab  showToast={showToast} />}
       {tab === "profile"  && <ProfileTab  session={session} myTeam={myTeam} showToast={showToast} reload={reload} />}
     </>
@@ -383,7 +385,7 @@ function HomeTab({ session, myTeam }: { session: Session; myTeam: TeamMember | n
         <div className="relative">
           <p className="text-[#9A7060] text-sm uppercase tracking-wider mb-2">{todayLong}</p>
           <h2 className="font-[family-name:var(--font-playfair)] text-2xl sm:text-3xl font-bold text-[#F5EDE6]">
-            Hey, welcome back {firstName} <span className="text-[#E07898]">👋</span>
+            Hey welcome, {firstName}! <span className="text-[#E07898]">👋</span>
           </h2>
           <p className="text-[#9A7060] mt-2">
             {todayList.length === 0
@@ -1379,7 +1381,8 @@ function ServicesTab({ showToast }: { showToast: (m: string, ok?: boolean) => vo
 
 // ─── GALLERY TAB ──────────────────────────────────────────────────────────────
 
-function GalleryTab({ showToast }: { showToast: (m: string, ok?: boolean) => void }) {
+function GalleryTab({ showToast, session }: { showToast: (m: string, ok?: boolean) => void; session: Session }) {
+  const isAdmin = session.role === "admin";
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
@@ -1468,10 +1471,16 @@ function GalleryTab({ showToast }: { showToast: (m: string, ok?: boolean) => voi
                   <div className="flex items-center gap-1 mt-2">
                     <button type="button" onClick={() => { setEditingId(g.id); setAdding(false); setDraft({}); }}
                       className="flex-1 py-1 rounded-lg border border-[#E07898]/25 text-[#9A7060] text-xs hover:border-[#E07898]/50 hover:text-[#F5EDE6] transition-all">Edit</button>
-                    <button type="button" onClick={() => toggle(g)}
-                      className={`px-2 py-1 rounded-lg text-xs ${g.active ? "bg-[#E07898]/15 text-[#E07898]" : "bg-[#0A0A0A] text-[#9A7060]"}`}>
-                      {g.active ? "✓" : "–"}
-                    </button>
+                    {isAdmin ? (
+                      <button type="button" onClick={() => toggle(g)}
+                        className={`px-2 py-1 rounded-lg text-xs ${g.active ? "bg-[#E07898]/15 text-[#E07898]" : "bg-[#0A0A0A] text-[#9A7060]"}`}>
+                        {g.active ? "✓" : "–"}
+                      </button>
+                    ) : (
+                      <span className={`px-2 py-1 rounded-lg text-xs ${g.active ? "bg-emerald-900/30 text-emerald-400" : "bg-amber-900/30 text-amber-400"}`} title={g.active ? "Live on the site" : "Awaiting admin approval"}>
+                        {g.active ? "Live" : "Pending"}
+                      </span>
+                    )}
                     <button type="button" onClick={() => remove(g.id)} className="py-1 px-2 rounded-lg text-[#9A7060]/50 hover:text-red-400 transition-colors text-xs">🗑</button>
                   </div>
                 </div>
