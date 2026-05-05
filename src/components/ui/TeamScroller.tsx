@@ -11,73 +11,128 @@ interface TeamMember {
   photoUrl: string;
 }
 
-const CARD_W    = 256; // w-64 in px
-const CARD_GAP  = 24;  // gap-6 in px
+const CARD_W    = 256;
+const CARD_GAP  = 24;
 const STEP      = CARD_W + CARD_GAP;
-const DURATION  = 700; // ms
+const DURATION  = 700;
 
 export default function TeamScroller({ members }: { members: TeamMember[] }) {
   const n        = members.length;
-  // Triple the array so both directions have room to animate before a silent reset
   const extended = [...members, ...members, ...members];
 
   const trackRef    = useRef<HTMLDivElement>(null);
-  const idxRef      = useRef(n);          // start in the middle copy
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const offsetRef   = useRef(0);   // centering offset in px
+  const idxRef      = useRef(n);
   const pausedRef   = useRef(false);
-  const busyRef     = useRef(false);      // block new moves during reset
+  const busyRef     = useRef(false);
   const activeDotFn = useRef<(i: number) => void>(() => {});
 
-  // Move track imperatively; animate=false for instant silent reset
+  // Drag state
+  const drag = useRef({ active: false, startX: 0, startTx: 0, moved: false });
+
+  function computeOffset() {
+    if (!viewportRef.current) return;
+    offsetRef.current = Math.max(0, (viewportRef.current.offsetWidth - CARD_W) / 2);
+  }
+
   const moveTo = useCallback((newIdx: number, animate: boolean) => {
     const el = trackRef.current;
     if (!el) return;
     el.style.transition = animate ? `transform ${DURATION}ms ease-in-out` : "none";
-    el.style.transform  = `translateX(${-newIdx * STEP}px)`;
+    el.style.transform  = `translateX(${offsetRef.current - newIdx * STEP}px)`;
     idxRef.current = newIdx;
     activeDotFn.current(((newIdx % n) + n) % n);
   }, [n]);
 
-  // Set initial position on mount without transition
-  useEffect(() => {
-    moveTo(n, false);
+  // After a move, silently wrap if we've left the middle copy
+  const afterMove = useCallback((newIdx: number) => {
+    if (newIdx >= n * 2) {
+      busyRef.current = true;
+      setTimeout(() => { moveTo(newIdx - n, false); busyRef.current = false; }, DURATION + 20);
+    } else if (newIdx < n) {
+      busyRef.current = true;
+      setTimeout(() => { moveTo(newIdx + n, false); busyRef.current = false; }, DURATION + 20);
+    }
   }, [moveTo, n]);
 
   const next = useCallback(() => {
     if (busyRef.current) return;
     const newIdx = idxRef.current + 1;
     moveTo(newIdx, true);
-    // If we've left the middle copy, silently reset after animation ends
-    if (newIdx >= n * 2) {
-      busyRef.current = true;
-      setTimeout(() => {
-        moveTo(newIdx - n, false);
-        busyRef.current = false;
-      }, DURATION + 20);
-    }
-  }, [moveTo, n]);
+    afterMove(newIdx);
+  }, [moveTo, afterMove]);
 
   const prev = useCallback(() => {
     if (busyRef.current) return;
     const newIdx = idxRef.current - 1;
     moveTo(newIdx, true);
-    if (newIdx < n) {
-      busyRef.current = true;
-      setTimeout(() => {
-        moveTo(newIdx + n, false);
-        busyRef.current = false;
-      }, DURATION + 20);
-    }
+    afterMove(newIdx);
+  }, [moveTo, afterMove]);
+
+  // Initial position + resize handler
+  useEffect(() => {
+    computeOffset();
+    moveTo(n, false);
+
+    const onResize = () => {
+      computeOffset();
+      moveTo(idxRef.current, false);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, [moveTo, n]);
 
   // Auto-advance
   useEffect(() => {
-    const id = setInterval(() => {
-      if (!pausedRef.current) next();
-    }, 3500);
+    const id = setInterval(() => { if (!pausedRef.current) next(); }, 3500);
     return () => clearInterval(id);
   }, [next]);
 
-  // Dot state — managed via ref callback to avoid re-renders inside the interval
+  // ── Drag / swipe ──────────────────────────────────────────────────────────
+
+  function onPointerDown(e: React.PointerEvent) {
+    if (busyRef.current) return;
+    drag.current = {
+      active:  true,
+      startX:  e.clientX,
+      startTx: offsetRef.current - idxRef.current * STEP,
+      moved:   false,
+    };
+    pausedRef.current = true;
+    // Capture so we keep receiving events even if the pointer leaves the element
+    trackRef.current?.setPointerCapture(e.pointerId);
+    if (trackRef.current) trackRef.current.style.transition = "none";
+  }
+
+  function onPointerMove(e: React.PointerEvent) {
+    if (!drag.current.active) return;
+    const delta = e.clientX - drag.current.startX;
+    if (Math.abs(delta) > 4) drag.current.moved = true;
+    if (trackRef.current) {
+      trackRef.current.style.transform =
+        `translateX(${drag.current.startTx + delta}px)`;
+    }
+  }
+
+  function onPointerUp(e: React.PointerEvent) {
+    if (!drag.current.active) return;
+    drag.current.active = false;
+    pausedRef.current = false;
+
+    const delta = e.clientX - drag.current.startX;
+    // Snap forward/back if dragged more than 25 % of a step
+    if (drag.current.moved && Math.abs(delta) > STEP * 0.25) {
+      if (delta < 0) next();
+      else prev();
+    } else {
+      // Rubber-band back to current card
+      moveTo(idxRef.current, true);
+    }
+  }
+
+  // ── Dot state (imperative, no re-renders) ─────────────────────────────────
+
   const dotsRef = useRef<HTMLButtonElement[]>([]);
   activeDotFn.current = (active: number) => {
     dotsRef.current.forEach((btn, i) => {
@@ -96,12 +151,20 @@ export default function TeamScroller({ members }: { members: TeamMember[] }) {
     <div
       onMouseEnter={() => { pausedRef.current = true; }}
       onMouseLeave={() => { pausedRef.current = false; }}
-      onTouchStart={() => { pausedRef.current = true; }}
-      onTouchEnd={() => { pausedRef.current = false; }}
     >
-      {/* Viewport — clips overflow */}
-      <div className="relative overflow-hidden">
-        <div ref={trackRef} className="flex gap-6">
+      {/* Viewport — clips overflow; pan-y lets vertical scroll pass through */}
+      <div
+        ref={viewportRef}
+        className="relative overflow-hidden touch-pan-y"
+      >
+        <div
+          ref={trackRef}
+          className="flex gap-6 select-none cursor-grab active:cursor-grabbing"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+        >
           {extended.map((member, i) => (
             <div
               key={`${member.id}-${i}`}
@@ -120,6 +183,7 @@ export default function TeamScroller({ members }: { members: TeamMember[] }) {
                         alt={member.name}
                         width={96}
                         height={96}
+                        draggable={false}
                         className="w-full h-full object-cover rounded-full"
                       />
                     ) : (
@@ -169,7 +233,7 @@ export default function TeamScroller({ members }: { members: TeamMember[] }) {
               type="button"
               aria-label={`Go to team member ${i + 1}`}
               ref={(el) => { if (el) dotsRef.current[i] = el; }}
-              onClick={() => moveTo(n + i, true)}
+              onClick={() => { if (!drag.current.moved) moveTo(n + i, true); }}
               className={`h-2 rounded-full transition-all duration-300 ${
                 i === 0
                   ? "w-6 bg-gradient-to-r from-[#E07898] to-[#C9956B]"
