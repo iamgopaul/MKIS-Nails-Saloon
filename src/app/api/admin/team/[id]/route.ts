@@ -30,26 +30,26 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     const supabase = await createClient();
     const adminDb  = createAdminClient();
 
-    // 1) Look up the linked auth user before deleting
+    // 1) Look up the linked auth user
     const { data: row } = await supabase
       .from("team")
       .select("user_id")
       .eq("id", id)
       .maybeSingle();
 
-    // 2) Delete the team row
-    const { error: teamErr } = await supabase.from("team").delete().eq("id", id);
-    if (teamErr) return NextResponse.json({ error: teamErr.message }, { status: 500 });
-
-    // 3) If linked to an auth user, delete the user (and their profile via cascade)
-    //    — but never delete the currently signed-in admin
+    // 2) Delete auth user FIRST (if linked) — never delete the signed-in admin
     if (row?.user_id && row.user_id !== adminSession.userId) {
       const { error: userErr } = await adminDb.auth.admin.deleteUser(row.user_id);
       if (userErr) {
         console.error("[delete-team] auth.deleteUser failed:", userErr);
-        // Team row already deleted — still return success so UI updates
+        return NextResponse.json({ error: "Could not delete linked user account. Try again." }, { status: 500 });
       }
+      // Profile cascades from auth.users; team.user_id is set NULL via FK ON DELETE SET NULL
     }
+
+    // 3) Delete the team row
+    const { error: teamErr } = await supabase.from("team").delete().eq("id", id);
+    if (teamErr) return NextResponse.json({ error: teamErr.message }, { status: 500 });
 
     return NextResponse.json({ success: true });
   } catch (err) {

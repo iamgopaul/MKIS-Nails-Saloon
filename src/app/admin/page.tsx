@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import ImageCropModal from "@/components/ui/ImageCropModal";
+import { PASSWORD_HINT, validatePassword } from "@/lib/password";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -727,8 +728,9 @@ function PasswordSection({ showToast }: { showToast: (m: string, ok?: boolean) =
   const [saving, setSaving]   = useState(false);
 
   async function save() {
-    if (next.length < 8)    { showToast("Password must be at least 8 characters", false); return; }
-    if (next !== confirm)   { showToast("Passwords don't match", false); return; }
+    const pwdErr = validatePassword(next);
+    if (pwdErr)            { showToast(pwdErr, false); return; }
+    if (next !== confirm)  { showToast("Passwords don't match", false); return; }
     setSaving(true);
     const supabase = createClient();
     const { error } = await supabase.auth.updateUser({ password: next });
@@ -740,6 +742,7 @@ function PasswordSection({ showToast }: { showToast: (m: string, ok?: boolean) =
   return (
     <div className="bg-[#1C1614] rounded-2xl p-5 border border-[#E07898]/15 space-y-3">
       <h3 className="text-sm font-semibold text-[#F5EDE6]">Change Password</h3>
+      <p className="text-xs text-[#9A7060]/70">{PASSWORD_HINT}</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="New Password"     value={next}    onChange={setNext}    type="password" />
         <Field label="Confirm Password" value={confirm} onChange={setConfirm} type="password" />

@@ -22,6 +22,7 @@ export default function ReviewsSection({ id }: ReviewsSectionProps) {
   const [text, setText]         = useState("");
   const [rating, setRating]     = useState(0);
   const [hover, setHover]       = useState(0);
+  const [website, setWebsite]   = useState("");   // honeypot — humans leave it empty
   const [status, setStatus]     = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -39,7 +40,7 @@ export default function ReviewsSection({ id }: ReviewsSectionProps) {
     const res = await fetch("/api/reviews", {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ client_name: name, review: text, rating }),
+      body:    JSON.stringify({ client_name: name, review: text, rating, website }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -115,6 +116,18 @@ export default function ReviewsSection({ id }: ReviewsSectionProps) {
               </div>
             ) : (
               <form onSubmit={submit} className="space-y-4">
+                {/* Honeypot — hidden from real users, filled by bots */}
+                <div aria-hidden="true" className="hidden">
+                  <label htmlFor="rev-website">Website (leave blank)</label>
+                  <input
+                    id="rev-website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                  />
+                </div>
                 <div>
                   <label htmlFor="rev-name" className="block text-sm font-medium text-[#F5EDE6] mb-2">Your Name <span className="text-[#E07898]">*</span></label>
                   <input

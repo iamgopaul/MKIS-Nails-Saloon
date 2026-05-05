@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { PASSWORD_HINT, validatePassword } from "@/lib/password";
 
 export default function SignupPage() {
   return (
@@ -39,9 +40,10 @@ function SignupForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMsg("");
-    if (!name.trim())             { setStatus("error"); setErrorMsg("Please enter your name."); return; }
-    if (password.length < 8)      { setStatus("error"); setErrorMsg("Password must be at least 8 characters."); return; }
-    if (password !== confirm)     { setStatus("error"); setErrorMsg("Passwords don't match."); return; }
+    if (!name.trim())          { setStatus("error"); setErrorMsg("Please enter your name."); return; }
+    const pwdErr = validatePassword(password);
+    if (pwdErr)                { setStatus("error"); setErrorMsg(pwdErr); return; }
+    if (password !== confirm)  { setStatus("error"); setErrorMsg("Passwords don't match."); return; }
 
     setStatus("saving");
     const res = await fetch("/api/signup", {
@@ -100,9 +102,10 @@ function SignupForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            placeholder="At least 8 characters"
+            placeholder="Choose a strong password"
             className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-[#E07898]/20 text-[#F5EDE6] placeholder-[#9A7060]/50 focus:outline-none focus:border-[#E07898]/60 transition-colors"
           />
+          <p className="text-xs text-[#9A7060]/70 mt-1.5">{PASSWORD_HINT}</p>
         </div>
 
         <div>

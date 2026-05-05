@@ -10,6 +10,11 @@ import {
 } from "@/lib/booking";
 import { sendConfirmationEmail } from "@/lib/resend";
 import { sendTelegramNotification } from "@/lib/telegram";
+import { rateLimit, getClientIp } from "@/lib/rateLimit";
+
+const EMAIL_RX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_RX = /^\+?[\d\s\-()\\.]{7,20}$/;
+const UUID_RX  = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const runtime  = "nodejs";
 export const maxDuration = 30;
@@ -149,15 +154,23 @@ async function tool_create_booking(args: {
   service_id: string; date: string; start_time: string;
   technician_id?: string; notes?: string;
 }) {
-  // Basic validation
-  if (!args.email.includes("@"))             return { error: "Invalid email." };
-  if (args.name.trim().length < 2)           return { error: "Name is too short." };
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(args.date))return { error: "Invalid date format." };
-  if (!/^\d{2}:\d{2}$/.test(args.start_time))return { error: "Invalid time format." };
-  if (!isWorkingDay(args.date))              return { error: "Salon is closed on this day." };
+  // Strict validation — never trust the LLM
+  if (!args.name?.trim() || args.name.trim().length < 2)             return { error: "Name is required." };
+  if (args.name.length > 100)                                         return { error: "Name is too long." };
+  if (!EMAIL_RX.test(args.email ?? ""))                               return { error: "Invalid email." };
+  if (!PHONE_RX.test(args.phone ?? ""))                               return { error: "Invalid phone number." };
+  if (!UUID_RX.test(args.service_id ?? ""))                           return { error: "Invalid service." };
+  if (args.technician_id && !UUID_RX.test(args.technician_id))        return { error: "Invalid technician." };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(args.date ?? ""))                   return { error: "Invalid date format." };
+  if (!/^\d{2}:\d{2}$/.test(args.start_time ?? ""))                   return { error: "Invalid time format." };
+  if (!isWorkingDay(args.date))                                       return { error: "Salon is closed on this day." };
+  if ((args.notes ?? "").length > 500)                                return { error: "Notes too long." };
 
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  if (new Date(args.date + "T00:00:00") < today) return { error: "Date is in the past." };
+  if (new Date(args.date + "T00:00:00") < today)                      return { error: "Date is in the past." };
+
+  // Slot must be a real working slot (not 02:13 etc.) AND fit inside business hours
+  if (!dailySlots(args.date).includes(args.start_time))               return { error: "Selected time is outside business hours." };
 
   const supabase = createAdminClient();
 
@@ -239,12 +252,21 @@ async function tool_create_booking(args: {
   };
 }
 
-const TOOL_HANDLERS: Record<string, (args: Record<string, unknown>) => Promise<unknown>> = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  check_availability: (args: any) => tool_check_availability(args),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  create_booking:     (args: any) => tool_create_booking(args),
-};
+function makeToolHandlers(ip: string): Record<string, (args: Record<string, unknown>) => Promise<unknown>> {
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    check_availability: (args: any) => tool_check_availability(args),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    create_booking:     (args: any) => {
+      // Cap real bookings via chat at 3 per IP per hour to prevent abuse
+      const rl = rateLimit(`chat-book:${ip}`, { max: 3, windowMs: 60 * 60_000 });
+      if (!rl.allowed) {
+        return Promise.resolve({ error: "Too many bookings from this device. Please use the booking form on the page." });
+      }
+      return tool_create_booking(args);
+    },
+  };
+}
 
 // ─── System prompt ───────────────────────────────────────────────────────────
 
@@ -282,6 +304,14 @@ export async function POST(req: NextRequest) {
   if (!process.env.GROQ_API_KEY) {
     return NextResponse.json({ error: "Chatbot not configured" }, { status: 503 });
   }
+
+  // Rate limit chat traffic — 30 messages per IP per 5 minutes
+  const ip = getClientIp(req);
+  const rl = rateLimit(`chat:${ip}`, { max: 30, windowMs: 5 * 60_000 });
+  if (!rl.allowed) {
+    return NextResponse.json({ error: "Too many messages, please slow down." }, { status: 429 });
+  }
+
   let body: { messages: ChatMessage[] };
   try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid request" }, { status: 400 }); }
 
@@ -293,6 +323,7 @@ export async function POST(req: NextRequest) {
 
   const context = await buildContext();
   const client  = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  const toolHandlers = makeToolHandlers(ip);
 
   const conversation: GroqMsg[] = [
     { role: "system", content: SYSTEM_PROMPT(context) },
@@ -329,7 +360,7 @@ export async function POST(req: NextRequest) {
     // Execute each tool call and append the result
     for (const call of toolCalls) {
       const fnName = call.function?.name ?? "";
-      const handler = TOOL_HANDLERS[fnName];
+      const handler = toolHandlers[fnName];
       let result: unknown;
       try {
         const parsed = JSON.parse(call.function?.arguments ?? "{}");

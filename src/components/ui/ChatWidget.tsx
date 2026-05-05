@@ -58,45 +58,45 @@ export default function ChatWidget() {
     pointerId:     -1,
   });
 
-  // Apply launcher + bubble + panel positions imperatively (avoids inline style on JSX)
+  // Position launcher (only re-runs on pos change)
   useEffect(() => {
     if (launcherRef.current) {
       launcherRef.current.style.left   = `${pos.left}px`;
       launcherRef.current.style.bottom = `${pos.bottom}px`;
     }
+  }, [pos]);
 
-    if (typeof window === "undefined") return;
+  // Position chat panel (only when chat opens or pos changes)
+  useEffect(() => {
+    if (!open || !panelRef.current || typeof window === "undefined") return;
     const onLeftHalf = pos.left + LAUNCHER_SIZE / 2 < window.innerWidth / 2;
-
-    // Teaser bubble next to Bella
-    if (bubbleRef.current) {
-      bubbleRef.current.style.bottom = `${pos.bottom + 8}px`;
-      if (onLeftHalf) {
-        bubbleRef.current.style.left  = `${pos.left + LAUNCHER_SIZE + BUBBLE_GAP}px`;
-        bubbleRef.current.style.right = "auto";
-      } else {
-        bubbleRef.current.style.right = `${window.innerWidth - pos.left + BUBBLE_GAP}px`;
-        bubbleRef.current.style.left  = "auto";
-      }
+    panelRef.current.style.bottom = `${pos.bottom + LAUNCHER_SIZE + 12}px`;
+    const isMobile = window.innerWidth < 640;
+    if (isMobile) {
+      panelRef.current.style.left  = "12px";
+      panelRef.current.style.right = "12px";
+    } else if (onLeftHalf) {
+      panelRef.current.style.left  = `${pos.left}px`;
+      panelRef.current.style.right = "auto";
+    } else {
+      panelRef.current.style.right = `${window.innerWidth - pos.left - LAUNCHER_SIZE}px`;
+      panelRef.current.style.left  = "auto";
     }
+  }, [pos, open]);
 
-    // Chat panel sits ABOVE the launcher; anchored to whichever side Bella is on
-    if (panelRef.current) {
-      panelRef.current.style.bottom = `${pos.bottom + LAUNCHER_SIZE + 12}px`;
-      const isMobile = window.innerWidth < 640;
-      if (isMobile) {
-        // On mobile: full width with side margins regardless of position
-        panelRef.current.style.left  = "12px";
-        panelRef.current.style.right = "12px";
-      } else if (onLeftHalf) {
-        panelRef.current.style.left  = `${pos.left}px`;
-        panelRef.current.style.right = "auto";
-      } else {
-        panelRef.current.style.right = `${window.innerWidth - pos.left - LAUNCHER_SIZE}px`;
-        panelRef.current.style.left  = "auto";
-      }
+  // Position teaser bubble (only re-runs when teaser appears/disappears or pos changes)
+  useEffect(() => {
+    if (!bubbleRef.current || !teaser || typeof window === "undefined") return;
+    const onLeftHalf = pos.left + LAUNCHER_SIZE / 2 < window.innerWidth / 2;
+    bubbleRef.current.style.bottom = `${pos.bottom + 8}px`;
+    if (onLeftHalf) {
+      bubbleRef.current.style.left  = `${pos.left + LAUNCHER_SIZE + BUBBLE_GAP}px`;
+      bubbleRef.current.style.right = "auto";
+    } else {
+      bubbleRef.current.style.right = `${window.innerWidth - pos.left + BUBBLE_GAP}px`;
+      bubbleRef.current.style.left  = "auto";
     }
-  }, [pos, teaser, open]);
+  }, [pos, teaser]);
 
   // Restore launcher position from localStorage (defaults to bottom-right)
   useEffect(() => {
@@ -136,7 +136,11 @@ export default function ChatWidget() {
     };
   }
 
+  // Drag uses document-level pointer listeners — much more reliable across browsers
+  // than React's onPointerMove (which can drop events when the pointer leaves the
+  // launcher's bounding box).
   function onPointerDown(e: React.PointerEvent<HTMLButtonElement>) {
+    if (e.button !== 0 && e.pointerType === "mouse") return; // only left mouse button
     dragRef.current = {
       active:      true,
       startX:      e.clientX,
@@ -146,44 +150,58 @@ export default function ChatWidget() {
       moved:       false,
       pointerId:   e.pointerId,
     };
-    e.currentTarget.setPointerCapture(e.pointerId);
+    e.preventDefault();    // suppress focus / drag-image
   }
 
-  function onPointerMove(e: React.PointerEvent<HTMLButtonElement>) {
-    if (!dragRef.current.active) return;                     // ignore mouse hover
-    if (e.pointerId !== dragRef.current.pointerId) return;
-    const dx = e.clientX - dragRef.current.startX;
-    const dy = e.clientY - dragRef.current.startY;
-    if (!dragRef.current.moved && Math.hypot(dx, dy) < 6) return; // small tap, not a drag
-    dragRef.current.moved = true;
-    if (!dragging) setDragging(true);
-    setPos(clampPos({
-      left:   dragRef.current.startLeft   + dx,
-      bottom: dragRef.current.startBottom - dy,
-    }));
-  }
-
-  function onPointerUp(e: React.PointerEvent<HTMLButtonElement>) {
-    if (!dragRef.current.active) return;
-    if (e.pointerId !== dragRef.current.pointerId) return;
-    const wasDrag = dragRef.current.moved;
-    dragRef.current.active = false;
-    dragRef.current.moved  = false;
-    setDragging(false);
-    if (wasDrag) {
-      try { localStorage.setItem(POS_STORAGE_KEY, JSON.stringify(pos)); } catch { /* ignore */ }
-      e.preventDefault();
-      e.stopPropagation();
-    } else {
-      setOpen((v) => !v);
+  // Attach document listeners while a drag is potentially in flight.
+  // We use useEffect so cleanup is automatic on unmount.
+  useEffect(() => {
+    function handleMove(e: PointerEvent) {
+      if (!dragRef.current.active) return;
+      if (e.pointerId !== dragRef.current.pointerId) return;
+      const dx = e.clientX - dragRef.current.startX;
+      const dy = e.clientY - dragRef.current.startY;
+      if (!dragRef.current.moved && Math.hypot(dx, dy) < 5) return;
+      dragRef.current.moved = true;
+      if (!dragging) setDragging(true);
+      setPos(clampPos({
+        left:   dragRef.current.startLeft   + dx,
+        bottom: dragRef.current.startBottom - dy,
+      }));
     }
-  }
-
-  function onPointerCancel() {
-    dragRef.current.active = false;
-    dragRef.current.moved  = false;
-    setDragging(false);
-  }
+    function handleUp(e: PointerEvent) {
+      if (!dragRef.current.active) return;
+      if (e.pointerId !== dragRef.current.pointerId) return;
+      const wasDrag = dragRef.current.moved;
+      dragRef.current.active = false;
+      dragRef.current.moved  = false;
+      setDragging(false);
+      if (wasDrag) {
+        try {
+          // Read the latest pos from the launcher's actual style values
+          const left   = parseInt(launcherRef.current?.style.left   || `${pos.left}`,   10);
+          const bottom = parseInt(launcherRef.current?.style.bottom || `${pos.bottom}`, 10);
+          localStorage.setItem(POS_STORAGE_KEY, JSON.stringify({ left, bottom }));
+        } catch { /* ignore */ }
+      } else {
+        setOpen((v) => !v);
+      }
+    }
+    function handleCancel() {
+      dragRef.current.active = false;
+      dragRef.current.moved  = false;
+      setDragging(false);
+    }
+    document.addEventListener("pointermove",   handleMove);
+    document.addEventListener("pointerup",     handleUp);
+    document.addEventListener("pointercancel", handleCancel);
+    return () => {
+      document.removeEventListener("pointermove",   handleMove);
+      document.removeEventListener("pointerup",     handleUp);
+      document.removeEventListener("pointercancel", handleCancel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dragging]);
 
   // Auto-scroll to bottom on new message
   useEffect(() => {
@@ -347,10 +365,7 @@ export default function ChatWidget() {
         ref={launcherRef}
         type="button"
         onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerCancel}
-        aria-label={open ? "Close chat with Bella" : "Open chat with Bella (long-press to drag)"}
+        aria-label={open ? "Close chat with Bella" : "Open chat with Bella (drag to move)"}
         title="Chat with Bella · drag to move"
         className={`fixed z-50 w-14 h-14 rounded-full shadow-2xl shadow-[#E07898]/40 overflow-hidden touch-none select-none
           ${dragging ? "cursor-grabbing" : "cursor-grab"}

@@ -15,15 +15,15 @@ export async function POST(req: NextRequest) {
   try {
     const session = await requireAdmin();
     const { email } = await req.json();
-    if (!email || typeof email !== "string" || !email.includes("@")) {
+    if (!email || typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: "Valid email is required" }, { status: 400 });
     }
     const cleanEmail = email.trim().toLowerCase();
 
     const supabase = createAdminClient();
 
-    // Reject if email already belongs to a registered user
-    const { data: existingUser } = await supabase.auth.admin.listUsers();
+    // Reject if email already belongs to a registered user (paginated up to 1000)
+    const { data: existingUser } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
     if (existingUser?.users.some((u) => (u.email ?? "").toLowerCase() === cleanEmail)) {
       return NextResponse.json({ error: "A user with that email already exists" }, { status: 409 });
     }
