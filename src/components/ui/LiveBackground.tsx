@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 
 const COLORS = ["#E07898", "#C9956B", "#E07898", "#D4849A", "#E07898", "#C9956B", "#E896B0"];
-const PARTICLE_COUNT = 110;
+const PARTICLE_COUNT_DESKTOP = 110;
+const PARTICLE_COUNT_MOBILE  = 55;
 
 type ShapeType = "heart" | "kiss" | "xoxo" | "mkis";
 
@@ -275,7 +276,8 @@ export default function LiveBackground() {
     }
 
     function init() {
-      particlesRef.current = Array.from({ length: PARTICLE_COUNT }, () => {
+      const count = canvas.width < 768 ? PARTICLE_COUNT_MOBILE : PARTICLE_COUNT_DESKTOP;
+      particlesRef.current = Array.from({ length: count }, () => {
         const baseVx = rand(-0.3, 0.3);
         const baseVy = rand(-0.6, -0.15);
         return {
@@ -360,9 +362,35 @@ export default function LiveBackground() {
       cooldownRef.current  = Math.round(rand(420, 600));
     }
 
+    // clientWidth/clientHeight are stable on iOS (don't shift with browser chrome)
+    function getSize() {
+      return {
+        w: document.documentElement.clientWidth,
+        h: document.documentElement.clientHeight,
+      };
+    }
+
     function resize() {
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const { w, h } = getSize();
+      canvas.width  = w;
+      canvas.height = h;
+      // On subsequent resizes just clamp particles — don't re-init (avoids iOS chrome glitch)
+      if (particlesRef.current.length === 0) {
+        init();
+      } else {
+        particlesRef.current.forEach((p) => {
+          p.x = Math.min(p.x, w);
+          p.y = Math.min(p.y, h);
+        });
+        if (formationRef.current) releaseFormation();
+        cooldownRef.current = 180;
+      }
+    }
+
+    function hardResize() {
+      const { w, h } = getSize();
+      canvas.width  = w;
+      canvas.height = h;
       init();
     }
 
@@ -532,11 +560,17 @@ export default function LiveBackground() {
       animId = requestAnimationFrame(draw);
     }
 
-    resize();
+    hardResize();
     draw();
 
-    const onResize    = () => resize();
-    const onMouseMove = (e: MouseEvent) => { mouseRef.current = { x: e.clientX, y: e.clientY }; };
+    // Debounced resize — prevents iOS pull-to-refresh and chrome-height changes
+    // from re-initialising particles on every intermediate frame
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(resize, 250);
+    };
+    const onMouseMove  = (e: MouseEvent) => { mouseRef.current = { x: e.clientX, y: e.clientY }; };
     const onMouseLeave = () => { mouseRef.current = { x: -9999, y: -9999 }; };
     window.addEventListener("resize", onResize);
     window.addEventListener("mousemove", onMouseMove);
@@ -544,6 +578,7 @@ export default function LiveBackground() {
 
     return () => {
       cancelAnimationFrame(animId);
+      clearTimeout(resizeTimer);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseleave", onMouseLeave);
