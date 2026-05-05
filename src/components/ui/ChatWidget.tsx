@@ -55,6 +55,30 @@ export default function ChatWidget() {
     return () => timeouts.forEach(clearTimeout);
   }, [open]);
 
+  // When the booking form completes, pop a sequence of thank-you bubbles
+  useEffect(() => {
+    function onBooked(e: Event) {
+      const detail = (e as CustomEvent<{ firstName?: string }>).detail ?? {};
+      const name   = detail.firstName || "there";
+      teaserDismissed.current = false;     // re-allow teasers for this celebratory sequence
+
+      const sequence: string[] = [
+        `Thank you for choosing us, ${name}! 💖`,
+        "Hope you enjoy your visit — your booking is on its way to confirmation.",
+        "Feel free to leave us a review afterwards :)",
+      ];
+      const timeouts: ReturnType<typeof setTimeout>[] = [];
+      sequence.forEach((text, i) => {
+        timeouts.push(setTimeout(() => {
+          setTeaser(text);
+          timeouts.push(setTimeout(() => setTeaser(null), TEASER_VISIBLE_MS));
+        }, i * (TEASER_VISIBLE_MS + 500)));
+      });
+    }
+    window.addEventListener("mkis:booking-complete", onBooked);
+    return () => window.removeEventListener("mkis:booking-complete", onBooked);
+  }, []);
+
   async function send() {
     const trimmed = input.trim();
     if (!trimmed || loading) return;

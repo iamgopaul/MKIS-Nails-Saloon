@@ -83,6 +83,9 @@ export default function BookingSection({ id }: BookingSectionProps) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
       setStatus("success");
+      // Notify Bella so she can pop a thank-you bubble
+      const firstName = (form.name || "").trim().split(" ")[0] || "there";
+      window.dispatchEvent(new CustomEvent("mkis:booking-complete", { detail: { firstName } }));
     } catch (err) {
       setStatus("error");
       setErrMsg(err instanceof Error ? err.message : "An unexpected error occurred.");
