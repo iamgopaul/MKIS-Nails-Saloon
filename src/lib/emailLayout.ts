@@ -4,7 +4,7 @@ import { join } from "path";
 let cachedLogo: Buffer | null = null;
 async function getLogoAttachment() {
   if (!cachedLogo) {
-    cachedLogo = await readFile(join(process.cwd(), "public/logo.png"));
+    cachedLogo = await readFile(join(process.cwd(), "public/tab-logo.png"));
   }
   return {
     filename: "logo.png",
@@ -52,7 +52,7 @@ export async function buildEmail({ headline, preheader, bodyHtml }: LayoutOption
         <p style="margin:14px 0 0;color:#ffffff;font-size:11px;letter-spacing:5px;text-transform:uppercase;font-weight:700;">
           MKIS Nail Saloon
         </p>
-        <h1 style="margin:8px 0 0;color:#ffffff;font-size:24px;font-weight:700;letter-spacing:-0.3px;">
+        <h1 style="margin:8px 0 0;color:#ffffff;font-size:26px;font-weight:700;letter-spacing:-0.3px;font-family:Georgia,'Playfair Display',serif;">
           ${headline}
         </h1>
       </div>
@@ -63,7 +63,7 @@ export async function buildEmail({ headline, preheader, bodyHtml }: LayoutOption
       </div>
 
       <!-- Security notice strip -->
-      <div style="background:#0E0B09;padding:16px 40px;border-top:1px solid rgba(224,120,152,0.12);">
+      <div style="background:#111111;padding:16px 40px;border-top:1px solid rgba(224,120,152,0.12);">
         <p style="margin:0;font-size:11px;color:#9A7060;line-height:1.6;text-align:center;">
           <strong style="color:#E07898;">Security note:</strong> Our only official email is
           <a href="mailto:mkisservicesllc@gmail.com" style="color:#E07898;text-decoration:none;font-weight:600;">mkisservicesllc@gmail.com</a>.
@@ -71,9 +71,9 @@ export async function buildEmail({ headline, preheader, bodyHtml }: LayoutOption
         </p>
       </div>
 
-      <!-- Footer (deeper black) -->
-      <div style="background:#050505;padding:28px 40px 24px;text-align:center;border-top:1px solid rgba(224,120,152,0.12);">
-        <p style="margin:0 0 6px;font-family:Georgia,serif;font-size:14px;color:#F5EDE6;font-weight:700;letter-spacing:1.5px;">
+      <!-- Footer -->
+      <div style="background:#0A0A0A;padding:28px 40px 24px;text-align:center;border-top:1px solid rgba(224,120,152,0.12);">
+        <p style="margin:0 0 6px;font-family:Georgia,'Playfair Display',serif;font-size:15px;color:#F5EDE6;font-weight:700;letter-spacing:1.5px;">
           MKIS Nail Saloon
         </p>
         <p style="margin:0 0 14px;font-size:11px;color:#9A7060;letter-spacing:1px;">

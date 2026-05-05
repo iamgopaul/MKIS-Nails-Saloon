@@ -39,7 +39,7 @@ export async function sendConfirmationEmail(data: NotificationData): Promise<voi
       Thank you for booking with MKIS Nail Saloon. We have received your request and will confirm your appointment shortly.
     </p>
 
-    <div style="background:#0E0B09;border:1px solid rgba(224,120,152,0.15);border-radius:14px;padding:20px 24px;margin-bottom:24px;">
+    <div style="background:#111111;border:1px solid rgba(224,120,152,0.15);border-radius:14px;padding:20px 24px;margin-bottom:24px;">
       <h2 style="margin:0 0 14px;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#E07898;font-weight:700;">
         Booking Summary
       </h2>
