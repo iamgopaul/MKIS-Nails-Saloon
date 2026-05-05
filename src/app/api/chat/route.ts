@@ -13,6 +13,7 @@ import { sendConfirmationEmail } from "@/lib/resend";
 import { sendTelegramNotification } from "@/lib/telegram";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
 import { isAllowedOrigin } from "@/lib/origin";
+import { generateManageToken, manageTokenExpiry, manageUrl } from "@/lib/manageToken";
 
 const EMAIL_RX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RX = /^\+?[\d\s\-()\\.]{7,20}$/;
@@ -247,6 +248,7 @@ async function tool_create_booking(args: {
   }
 
   const endTime = endTimeFor(args.start_time, svc.duration_minutes);
+  const token   = generateManageToken();
   const { data: booking, error } = await supabase
     .from("bookings")
     .insert({
@@ -262,6 +264,8 @@ async function tool_create_booking(args: {
       end_time:        endTime,
       notes:           args.notes ?? "",
       status:          "Pending",
+      manage_token:    token,
+      manage_token_expires_at: manageTokenExpiry(args.date).toISOString(),
     })
     .select()
     .single();
@@ -274,6 +278,7 @@ async function tool_create_booking(args: {
     service: svc.name, date: args.date,
     startTime: args.start_time, endTime,
     technician: techName, notes: args.notes ?? "",
+    manageUrl: manageUrl(token),
   };
   Promise.allSettled([sendConfirmationEmail(notify), sendTelegramNotification(notify)]).catch(() => {});
 

@@ -6,6 +6,7 @@ import { sendTelegramNotification } from "@/lib/telegram";
 import { endTimeFor, slotsForBooking, timeToMinutes, isWorkingDay, todayInSalonTZ } from "@/lib/booking";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
 import { isAllowedOrigin } from "@/lib/origin";
+import { generateManageToken, manageTokenExpiry, manageUrl } from "@/lib/manageToken";
 
 export async function POST(req: NextRequest) {
   if (!isAllowedOrigin(req)) {
@@ -94,8 +95,9 @@ export async function POST(req: NextRequest) {
     technicianName = assigned.name;
   }
 
-  // 3) Insert the booking
+  // 3) Insert the booking (with self-service token for cancel/reschedule)
   const endTime = endTimeFor(data.startTime, svc.duration_minutes);
+  const token   = generateManageToken();
   const { data: booking, error: insErr } = await supabase
     .from("bookings")
     .insert({
@@ -111,6 +113,8 @@ export async function POST(req: NextRequest) {
       end_time:        endTime,
       notes:           data.notes,
       status:          "Pending",
+      manage_token:    token,
+      manage_token_expires_at: manageTokenExpiry(data.date).toISOString(),
     })
     .select()
     .single();
@@ -133,6 +137,7 @@ export async function POST(req: NextRequest) {
     endTime,
     technician: technicianName,
     notes: data.notes,
+    manageUrl: manageUrl(token),
   };
   const [emailRes, tgRes] = await Promise.allSettled([
     sendConfirmationEmail(notifyData),

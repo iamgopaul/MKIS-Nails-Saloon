@@ -11,6 +11,7 @@ export interface NotificationData {
   endTime:    string;
   technician: string;
   notes:      string;
+  manageUrl?: string;
 }
 
 function createTransport() {
@@ -72,7 +73,15 @@ export async function sendConfirmationEmail(data: NotificationData): Promise<voi
       </table>
     </div>
 
-    <p style="font-size:13px;color:#9A7060;margin:0 0 6px;">Need to reschedule or have questions?</p>
+    ${data.manageUrl ? `
+    <div style="text-align:center;margin:0 0 24px;">
+      <a href="${data.manageUrl}" style="display:inline-block;background:#E07898;color:#0A0A0A;text-decoration:none;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;padding:14px 28px;border-radius:999px;">
+        Manage Booking
+      </a>
+      <p style="margin:10px 0 0;font-size:11px;color:#9A7060;">Cancel or reschedule from this private link.</p>
+    </div>` : ""}
+
+    <p style="font-size:13px;color:#9A7060;margin:0 0 6px;">Questions?</p>
     <p style="font-size:13px;margin:0;line-height:1.7;color:#F5EDE6;">
       Call us at <a href="tel:+17542302480" style="color:#E07898;text-decoration:none;font-weight:600;">+1 (754) 230-2480</a><br>
       Email <a href="mailto:mkisservicesllc@gmail.com" style="color:#E07898;text-decoration:none;font-weight:600;">mkisservicesllc@gmail.com</a>
@@ -90,6 +99,38 @@ export async function sendConfirmationEmail(data: NotificationData): Promise<voi
     from:    `MKIS Nail Saloon <${process.env.SMTP_USER}>`,
     to:      data.email,
     subject: "Your Booking Request — MKIS Nail Saloon",
+    html,
+    attachments,
+  });
+}
+
+export async function sendCancellationEmail(data: NotificationData): Promise<void> {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return;
+
+  const bodyHtml = `
+    <p style="font-size:16px;margin:0 0 16px;line-height:1.6;color:#F5EDE6;">
+      Hi <strong>${data.name}</strong>,
+    </p>
+    <p style="font-size:14px;color:#9A7060;margin:0 0 24px;line-height:1.7;">
+      Your appointment for <strong style="color:#F5EDE6;">${data.service}</strong> on
+      <strong style="color:#F5EDE6;">${data.date} at ${data.startTime}</strong> has been cancelled.
+      We hope to see you again soon.
+    </p>
+    <p style="font-size:13px;color:#9A7060;margin:0;line-height:1.7;">
+      To rebook, visit our site or call <a href="tel:+17542302480" style="color:#E07898;font-weight:600;text-decoration:none;">+1 (754) 230-2480</a>.
+    </p>
+  `;
+
+  const { html, attachments } = await buildEmail({
+    headline:  "Booking Cancelled",
+    preheader: `Your appointment on ${data.date} has been cancelled.`,
+    bodyHtml,
+  });
+
+  await createTransport().sendMail({
+    from:    `MKIS Nail Saloon <${process.env.SMTP_USER}>`,
+    to:      data.email,
+    subject: "Your Booking Was Cancelled — MKIS Nail Saloon",
     html,
     attachments,
   });
