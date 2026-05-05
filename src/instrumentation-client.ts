@@ -9,6 +9,7 @@ Sentry.init({
   enableLogs: true,
   integrations: [
     Sentry.replayIntegration(),
+    Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
   ],
 });
 
