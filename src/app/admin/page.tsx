@@ -883,7 +883,7 @@ function TeamTab({ showToast }: { showToast: (m: string, ok?: boolean) => void }
   const [editingId, setEditingId] = useState<string | null>(null);
   const [inviting, setInviting] = useState(false);
   const [draft, setDraft] = useState<Partial<TeamMember>>({});
-  const [inviteDraft, setInviteDraft] = useState({ name: "", email: "", role: "", bio: "" });
+  const [inviteEmail, setInviteEmail] = useState("");
 
   const reload = useCallback(() => {
     fetch("/api/admin/team").then((r) => r.json()).then((d) => setTeam(Array.isArray(d) ? d : []));
@@ -891,19 +891,19 @@ function TeamTab({ showToast }: { showToast: (m: string, ok?: boolean) => void }
   useEffect(() => { reload(); }, [reload]);
 
   async function sendInvite() {
-    if (!inviteDraft.name.trim() || !inviteDraft.email.trim() || !inviteDraft.role.trim()) {
-      showToast("Name, email, and role are required", false); return;
+    if (!inviteEmail.trim() || !inviteEmail.includes("@")) {
+      showToast("Please enter a valid email", false); return;
     }
     const res = await fetch("/api/admin/invite", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(inviteDraft),
+      body: JSON.stringify({ email: inviteEmail.trim() }),
     });
     const data = await res.json().catch(() => ({}));
     if (res.ok) {
       showToast("Invite sent! They'll receive an email shortly.");
       setInviting(false);
-      setInviteDraft({ name: "", email: "", role: "", bio: "" });
+      setInviteEmail("");
       reload();
     } else {
       showToast(data.error ?? "Failed to send invite", false);
@@ -949,21 +949,16 @@ function TeamTab({ showToast }: { showToast: (m: string, ok?: boolean) => void }
           <div>
             <h3 className="font-semibold text-[#E07898]">Invite Team Member</h3>
             <p className="text-xs text-[#9A7060] mt-1">
-              They&apos;ll get an email to set their password. Once active, they can log in to update their bio, photo, and view their appointments.
+              Enter their email — they&apos;ll get a sign-up link. Once they activate, they can fill in their name, role, bio, and photo themselves.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Full Name" value={inviteDraft.name} onChange={(v) => setInviteDraft((d) => ({ ...d, name: v }))} />
-            <Field label="Email" value={inviteDraft.email} onChange={(v) => setInviteDraft((d) => ({ ...d, email: v }))} />
-          </div>
-          <Field label="Role / Title (e.g. Senior Nail Technician)" value={inviteDraft.role} onChange={(v) => setInviteDraft((d) => ({ ...d, role: v }))} />
-          <Field label="Bio (optional — they can edit later)" value={inviteDraft.bio} onChange={(v) => setInviteDraft((d) => ({ ...d, bio: v }))} multiline />
+          <Field label="Email" value={inviteEmail} onChange={setInviteEmail} />
           <div className="flex gap-3">
             <button type="button" onClick={sendInvite}
               className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white text-sm font-semibold">
               Send Invite Email
             </button>
-            <button type="button" onClick={() => { setInviting(false); setInviteDraft({ name: "", email: "", role: "", bio: "" }); }}
+            <button type="button" onClick={() => { setInviting(false); setInviteEmail(""); }}
               className="px-5 py-2 rounded-xl border border-[#E07898]/25 text-[#9A7060] text-sm">
               Cancel
             </button>
