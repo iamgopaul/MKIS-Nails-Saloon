@@ -19,21 +19,34 @@ export async function sendInviteEmail(opts: { to: string; inviteUrl: string }) {
   }
 
   const bodyHtml = `
-    <p style="font-size:16px;margin:0 0 16px;line-height:1.6;color:#F5EDE6;">
-      Welcome to the team! 💅
+    <p style="font-size:17px;margin:0 0 16px;line-height:1.6;color:#F5EDE6;font-weight:600;">
+      Welcome to the team 💅
     </p>
-    <p style="font-size:14px;color:#9A7060;margin:0 0 28px;line-height:1.7;">
-      You&apos;ve been invited to join MKIS Nail Saloon. Click the button below to set your password and finish setting up your account. Once activated, you&apos;ll be able to manage your profile, upload your photo, and view your scheduled appointments.
+    <p style="font-size:14px;color:#9A7060;margin:0 0 32px;line-height:1.7;">
+      You&apos;ve been invited to join MKIS Nail Saloon. Tap the button below to create your account — once activated, you&apos;ll be able to manage your profile, upload your photo, and view your scheduled appointments.
     </p>
 
-    <div style="text-align:center;margin:28px 0;">
-      <a href="${opts.inviteUrl}" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#E07898,#C9956B);color:#ffffff !important;font-weight:700;font-size:14px;text-decoration:none;border-radius:999px;letter-spacing:0.5px;box-shadow:0 4px 16px rgba(224,120,152,0.3);">
-        Activate My Account
-      </a>
-    </div>
+    <!-- ── Activate button (bullet-proof email-safe table) ─────────────────── -->
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 8px;">
+      <tr>
+        <td align="center"
+            style="border-radius:999px;background:linear-gradient(135deg,#E07898 0%,#C9956B 100%);box-shadow:0 8px 24px rgba(224,120,152,0.35);">
+          <a href="${opts.inviteUrl}"
+             style="display:inline-block;padding:16px 44px;color:#ffffff !important;font-weight:800;font-size:15px;text-decoration:none;letter-spacing:1.2px;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;border-radius:999px;border:1px solid rgba(255,255,255,0.25);">
+             ✨&nbsp; Activate Now &nbsp;→
+          </a>
+        </td>
+      </tr>
+    </table>
+    <p style="text-align:center;font-size:11px;color:#9A7060;margin:0 0 36px;">
+      This link will expire in 7 days.
+    </p>
 
-    <p style="font-size:12px;color:#9A7060;margin:24px 0 4px;">Or copy this link into your browser:</p>
-    <p style="font-size:11px;color:#E07898;word-break:break-all;margin:0 0 24px;">
+    <!-- Divider -->
+    <div style="height:1px;background:rgba(224,120,152,0.12);margin:0 0 20px;"></div>
+
+    <p style="font-size:12px;color:#9A7060;margin:0 0 6px;">Button not working? Paste this link in your browser:</p>
+    <p style="font-size:11px;color:#E07898;word-break:break-all;margin:0 0 24px;line-height:1.5;">
       <a href="${opts.inviteUrl}" style="color:#E07898;text-decoration:none;">${opts.inviteUrl}</a>
     </p>
 
