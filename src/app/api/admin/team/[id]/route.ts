@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, AuthError } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logAdminEvent } from "@/lib/adminLog";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await requireAdmin();
+    const session = await requireAdmin();
     const { id } = await params;
     const body = await req.json();
     const supabase = await createClient();
@@ -16,6 +17,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
     const { error } = await supabase.from("team").update(fields).eq("id", id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    logAdminEvent({ session, req, action: "team.update", targetTable: "team", targetId: id, metadata: { fields } });
     return NextResponse.json({ success: true });
   } catch (err) {
     if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
@@ -23,7 +25,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const adminSession = await requireAdmin();
     const { id } = await params;
@@ -51,6 +53,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     const { error: teamErr } = await supabase.from("team").delete().eq("id", id);
     if (teamErr) return NextResponse.json({ error: teamErr.message }, { status: 500 });
 
+    logAdminEvent({ session: adminSession, req, action: "team.delete", targetTable: "team", targetId: id, metadata: { linked_user_id: row?.user_id ?? null } });
     return NextResponse.json({ success: true });
   } catch (err) {
     if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });

@@ -3,6 +3,7 @@ import { randomBytes } from "crypto";
 import { requireAdmin, AuthError } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendInviteEmail } from "@/lib/inviteEmail";
+import { logAdminEvent } from "@/lib/adminLog";
 
 /**
  * POST /api/admin/invite — Body: { email }
@@ -52,6 +53,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to send invite email — check SMTP settings" }, { status: 500 });
     }
 
+    logAdminEvent({ session, req, action: "invite.send", targetTable: "pending_invites", metadata: { email: cleanEmail } });
     return NextResponse.json({ success: true });
   } catch (err) {
     if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });

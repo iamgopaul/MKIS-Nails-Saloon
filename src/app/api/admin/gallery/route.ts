@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, AuthError } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { logAdminEvent } from "@/lib/adminLog";
 
 export async function GET() {
   try {
@@ -20,7 +21,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    await requireAdmin();
+    const session = await requireAdmin();
     const supabase = await createClient();
     const body = await req.json();
     const { data, error } = await supabase
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest) {
       .select()
       .single();
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    logAdminEvent({ session, req, action: "gallery.create", targetTable: "gallery", targetId: data?.id, metadata: { name: data?.name } });
     return NextResponse.json(data, { status: 201 });
   } catch (err) {
     if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
