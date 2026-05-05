@@ -14,11 +14,12 @@ const WELCOME: Message = {
 };
 
 // Bella plays a small, calm queue of teasers while the chat is closed.
-const FALLBACK_WELCOME = "Hi 👋 Welcome to MKIS Nails!";
-const TEASER_VISIBLE_MS = 6500;     // how long each bubble stays
-const TEASER_GAP_MS     = 45_000;   // gap before the next bubble
-const FIRST_TEASER_MS   = 6_000;    // delay before the first bubble after page load
-const MAX_TEASERS       = 3;        // total bubbles per page session — keep it calm
+const FALLBACK_WELCOME  = "Welcome to MKIS Nails!";
+const CLOSING_TEASER    = "Need help? Tap me anytime 💅";
+const TEASER_VISIBLE_MS = 7000;     // how long each bubble stays (slightly longer to read)
+const TEASER_GAP_MS     = 22_000;   // gap before the next bubble
+const FIRST_TEASER_MS   = 5_000;    // delay before the first bubble after page load
+const MAX_TEASERS       = 5;        // total bubbles per page session
 
 // Initial position is computed on mount (defaults to bottom-right).
 const DEFAULT_POS = { left: 0, bottom: 20 };
@@ -39,12 +40,13 @@ export default function ChatWidget() {
   const launcherRef             = useRef<HTMLButtonElement>(null);
   const bubbleRef               = useRef<HTMLDivElement>(null);
   const dragRef                 = useRef({
+    active:        false,
     startX:        0,
     startY:        0,
     startLeft:     0,
     startBottom:   0,
     moved:         false,
-    pointerId:     0,
+    pointerId:     -1,
   });
 
   // Apply launcher + bubble positions imperatively (avoids inline style on JSX)
@@ -109,6 +111,7 @@ export default function ChatWidget() {
 
   function onPointerDown(e: React.PointerEvent<HTMLButtonElement>) {
     dragRef.current = {
+      active:      true,
       startX:      e.clientX,
       startY:      e.clientY,
       startLeft:   pos.left,
@@ -120,6 +123,7 @@ export default function ChatWidget() {
   }
 
   function onPointerMove(e: React.PointerEvent<HTMLButtonElement>) {
+    if (!dragRef.current.active) return;                     // ignore mouse hover
     if (e.pointerId !== dragRef.current.pointerId) return;
     const dx = e.clientX - dragRef.current.startX;
     const dy = e.clientY - dragRef.current.startY;
@@ -128,22 +132,30 @@ export default function ChatWidget() {
     if (!dragging) setDragging(true);
     setPos(clampPos({
       left:   dragRef.current.startLeft   + dx,
-      bottom: dragRef.current.startBottom - dy,    // pixels from bottom: dragging up = +bottom
+      bottom: dragRef.current.startBottom - dy,
     }));
   }
 
   function onPointerUp(e: React.PointerEvent<HTMLButtonElement>) {
+    if (!dragRef.current.active) return;
+    if (e.pointerId !== dragRef.current.pointerId) return;
     const wasDrag = dragRef.current.moved;
-    dragRef.current.moved = false;
+    dragRef.current.active = false;
+    dragRef.current.moved  = false;
     setDragging(false);
     if (wasDrag) {
       try { localStorage.setItem(POS_STORAGE_KEY, JSON.stringify(pos)); } catch { /* ignore */ }
       e.preventDefault();
       e.stopPropagation();
     } else {
-      // Treat as click — toggle the chat
       setOpen((v) => !v);
     }
+  }
+
+  function onPointerCancel() {
+    dragRef.current.active = false;
+    dragRef.current.moved  = false;
+    setDragging(false);
   }
 
   // Auto-scroll to bottom on new message
@@ -165,26 +177,27 @@ export default function ChatWidget() {
     async function start() {
       const queue: string[] = [];
 
-      // 1) Status-aware welcome
+      // 1) Always start with a friendly welcome
+      queue.push(FALLBACK_WELCOME);
+
+      // 2) Status-aware open / closed message
       try {
         const res  = await fetch("/api/status");
         const data = await res.json();
         queue.push(data.status === "open"
-          ? "Hey, we're open now! Book an appointment or drop by ;)"
-          : "We're closed right now — you can still book an appointment for our opening hours.");
-      } catch {
-        queue.push(FALLBACK_WELCOME);
-      }
+          ? "We're open now! Book an appointment or drop by."
+          : "We're currently closed. You can always book an appointment for our opening hours.");
+      } catch { /* skip if status unavailable */ }
 
-      // 2) One live notification (if any)
+      // 3) Live notifications (today's bookings, new gallery design, etc.)
       try {
         const res  = await fetch("/api/notifications");
         const data: { message: string }[] = await res.json();
-        if (data?.[0]?.message) queue.push(data[0].message);
+        (data ?? []).slice(0, 2).forEach((n) => { if (n?.message) queue.push(n.message); });
       } catch { /* ignore */ }
 
-      // 3) One friendly tap-prompt to wrap up
-      queue.push("Need help? Tap me anytime 💅");
+      // 4) Friendly closer
+      queue.push(CLOSING_TEASER);
 
       const sliced = queue.slice(0, MAX_TEASERS);
       if (cancelled) return;
@@ -221,7 +234,7 @@ export default function ChatWidget() {
 
       const sequence: string[] = [
         `Thank you for choosing us, ${name}! 💖`,
-        "Hope you enjoy your visit — your booking is on its way to confirmation.",
+        "Hope you enjoy your visit. Your booking is on its way to confirmation.",
         "Feel free to leave us a review afterwards :)",
       ];
       const timeouts: ReturnType<typeof setTimeout>[] = [];
@@ -302,6 +315,7 @@ export default function ChatWidget() {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
         aria-label={open ? "Close chat with Bella" : "Open chat with Bella (long-press to drag)"}
         title="Chat with Bella · drag to move"
         className={`fixed z-50 w-14 h-14 rounded-full shadow-2xl shadow-[#E07898]/40 overflow-hidden touch-none select-none
