@@ -16,11 +16,15 @@ const CARD_GAP  = 24;
 const STEP      = CARD_W + CARD_GAP;
 const DURATION  = 700;
 
+// Below this count we skip the looping carousel entirely — the triple-copy
+// pattern shows visible duplicates when only a few members exist, and there's
+// no need for "Next/Prev" controls when everything fits on screen.
+const STATIC_THRESHOLD = 4;
+
 export default function TeamScroller({ members }: { members: TeamMember[] }) {
   const n = members.length;
-  // With ≤1 member the looping carousel just renders the same card N times,
-  // which looks broken. Render a single static card and bail out.
-  if (n <= 1) return <SingleCard member={members[0]} />;
+  if (n === 0) return null;
+  if (n <= STATIC_THRESHOLD) return <StaticGrid members={members} />;
   const extended = [...members, ...members, ...members];
 
   const trackRef    = useRef<HTMLDivElement>(null);
@@ -262,45 +266,47 @@ export default function TeamScroller({ members }: { members: TeamMember[] }) {
   );
 }
 
-function SingleCard({ member }: { member: TeamMember | undefined }) {
-  if (!member) return null;
+function StaticGrid({ members }: { members: TeamMember[] }) {
   return (
-    <div className="flex justify-center">
-      <div
-        className="group w-64 bg-[#1C1614] rounded-3xl p-7 border border-[#E07898]/15
-                   hover:border-[#E07898]/50 hover:shadow-xl hover:shadow-[#E07898]/10
-                   transition-colors duration-300 flex flex-col items-center text-center"
-      >
-        <div className="relative mb-5">
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#E07898] to-[#C9956B] blur-lg opacity-30 group-hover:opacity-60 transition-opacity" />
-          <div className="relative w-24 h-24 rounded-full p-[3px] bg-gradient-to-br from-[#E07898] via-[#C9956B] to-[#D4A882]">
-            <div className="rounded-full bg-[#1C1614] w-full h-full overflow-hidden">
-              {member.photoUrl ? (
-                <Image
-                  src={member.photoUrl}
-                  alt={member.name}
-                  width={96}
-                  height={96}
-                  draggable={false}
-                  className="w-full h-full object-cover rounded-full"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center font-[family-name:var(--font-playfair)] text-3xl font-bold text-[#E07898]/50">
-                  {member.name.charAt(0)}
-                </div>
-              )}
+    <div className="flex flex-wrap justify-center gap-6">
+      {members.map((member) => (
+        <div
+          key={member.id}
+          className="group w-64 bg-[#1C1614] rounded-3xl p-7 border border-[#E07898]/15
+                     hover:border-[#E07898]/50 hover:shadow-xl hover:shadow-[#E07898]/10
+                     transition-colors duration-300 flex flex-col items-center text-center"
+        >
+          <div className="relative mb-5">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#E07898] to-[#C9956B] blur-lg opacity-30 group-hover:opacity-60 transition-opacity" />
+            <div className="relative w-24 h-24 rounded-full p-[3px] bg-gradient-to-br from-[#E07898] via-[#C9956B] to-[#D4A882]">
+              <div className="rounded-full bg-[#1C1614] w-full h-full overflow-hidden">
+                {member.photoUrl ? (
+                  <Image
+                    src={member.photoUrl}
+                    alt={member.name}
+                    width={96}
+                    height={96}
+                    draggable={false}
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center font-[family-name:var(--font-playfair)] text-3xl font-bold text-[#E07898]/50">
+                    {member.name.charAt(0)}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        <h3 className="font-[family-name:var(--font-playfair)] text-lg font-bold text-[#F5EDE6] mb-1">
-          {member.name}
-        </h3>
-        <span className="inline-block px-3 py-1 rounded-full bg-[#E07898]/15 border border-[#E07898]/30 text-[#E07898] text-xs font-semibold mb-4">
-          {member.role}
-        </span>
-        <p className="text-[#9A7060] text-xs leading-relaxed">{member.bio}</p>
-      </div>
+          <h3 className="font-[family-name:var(--font-playfair)] text-lg font-bold text-[#F5EDE6] mb-1">
+            {member.name}
+          </h3>
+          <span className="inline-block px-3 py-1 rounded-full bg-[#E07898]/15 border border-[#E07898]/30 text-[#E07898] text-xs font-semibold mb-4">
+            {member.role}
+          </span>
+          <p className="text-[#9A7060] text-xs leading-relaxed">{member.bio}</p>
+        </div>
+      ))}
     </div>
   );
 }
