@@ -48,6 +48,7 @@ export default function ChatWidget() {
   const launcherRef             = useRef<HTMLButtonElement>(null);
   const bubbleRef               = useRef<HTMLDivElement>(null);
   const panelRef                = useRef<HTMLDivElement>(null);
+  const textareaRef             = useRef<HTMLTextAreaElement>(null);
   const dragRef                 = useRef({
     active:        false,
     startX:        0,
@@ -208,6 +209,23 @@ export default function ChatWidget() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
 
+  // a11y: focus the input on open and close on Escape; restore focus to launcher on close.
+  useEffect(() => {
+    if (!open) return;
+    const t = setTimeout(() => textareaRef.current?.focus(), 60);
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setOpen(false);
+        launcherRef.current?.focus();
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
   // Show a small queue of teasers (status + live notifications) while the chat is closed.
   // Plays through once per session — capped at MAX_TEASERS to avoid spam.
   useEffect(() => {
@@ -366,6 +384,8 @@ export default function ChatWidget() {
         type="button"
         onPointerDown={onPointerDown}
         aria-label={open ? "Close chat with Bella" : "Open chat with Bella (drag to move)"}
+        aria-controls="bella-chat-panel"
+        aria-haspopup="dialog"
         title="Chat with Bella · drag to move"
         className={`fixed z-50 w-14 h-14 rounded-full shadow-2xl shadow-[#E07898]/40 overflow-hidden touch-none select-none
           ${dragging ? "cursor-grabbing" : "cursor-grab"}
@@ -394,6 +414,10 @@ export default function ChatWidget() {
       {open && (
         <div
           ref={panelRef}
+          id="bella-chat-panel"
+          role="dialog"
+          aria-label="Chat with Bella"
+          aria-modal="false"
           className="fixed sm:w-96 z-50 bg-[#1C1614] rounded-3xl border border-[#E07898]/25
                      shadow-2xl shadow-black/40 flex flex-col max-h-[70vh] overflow-hidden"
         >
@@ -415,7 +439,13 @@ export default function ChatWidget() {
           </div>
 
           {/* Messages */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-[#0E0B09]">
+          <div
+            ref={scrollRef}
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions"
+            className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-[#0E0B09]"
+          >
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
@@ -444,6 +474,7 @@ export default function ChatWidget() {
           <div className="px-3 py-3 bg-[#1C1614] border-t border-[#E07898]/15">
             <div className="flex items-end gap-2">
               <textarea
+                ref={textareaRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKey}

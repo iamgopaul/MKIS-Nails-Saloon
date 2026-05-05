@@ -127,10 +127,10 @@ export default function ManageBookingClient({ token, booking }: { token: string;
 
         {mode === "summary" && (
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <button onClick={() => setMode("reschedule")} disabled={submitting} style={btnPrimary}>
+            <button type="button" onClick={() => setMode("reschedule")} disabled={submitting} style={btnPrimary}>
               Reschedule
             </button>
-            <button onClick={cancel} disabled={submitting} style={btnDanger}>
+            <button type="button" onClick={cancel} disabled={submitting} style={btnDanger}>
               {submitting ? "Cancelling…" : "Cancel Booking"}
             </button>
           </div>
@@ -142,8 +142,9 @@ export default function ManageBookingClient({ token, booking }: { token: string;
               Pick a new time
             </h2>
 
-            <label style={{ display: "block", fontSize: 12, color: MUTED, marginBottom: 6 }}>New date</label>
+            <label htmlFor="reschedule-date" style={{ display: "block", fontSize: 12, color: MUTED, marginBottom: 6 }}>New date</label>
             <input
+              id="reschedule-date"
               type="date"
               min={todayStr}
               value={date}
@@ -163,6 +164,7 @@ export default function ManageBookingClient({ token, booking }: { token: string;
                     {slots.map((s) => (
                       <button
                         key={s}
+                        type="button"
                         onClick={() => setPickedTime(s)}
                         style={{
                           padding: "10px 8px",
@@ -184,10 +186,10 @@ export default function ManageBookingClient({ token, booking }: { token: string;
             )}
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <button onClick={reschedule} disabled={submitting || !pickedTime} style={btnPrimary}>
+              <button type="button" onClick={reschedule} disabled={submitting || !pickedTime} style={btnPrimary}>
                 {submitting ? "Saving…" : "Confirm reschedule"}
               </button>
-              <button onClick={() => { setMode("summary"); setError(""); }} disabled={submitting} style={btnSecondary}>
+              <button type="button" onClick={() => { setMode("summary"); setError(""); }} disabled={submitting} style={btnSecondary}>
                 Back
               </button>
             </div>
