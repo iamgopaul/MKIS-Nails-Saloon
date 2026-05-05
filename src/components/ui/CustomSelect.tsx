@@ -70,7 +70,8 @@ export default function CustomSelect({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
-        aria-expanded={open}
+        aria-expanded={open ? "true" : "false"}
+        aria-label={label}
         className={`w-full px-4 py-3 rounded-xl border text-left flex items-center justify-between gap-2
           bg-[#1C1614] transition focus:outline-none focus:ring-2 focus:ring-[#E07898]/50
           ${open
@@ -97,6 +98,7 @@ export default function CustomSelect({
       {open && (
         <ul
           role="listbox"
+          aria-label={label}
           className="absolute z-50 top-full mt-1 w-full rounded-xl border border-[#E07898]/20
             bg-[#1C1614] shadow-2xl shadow-[#E07898]/10 overflow-hidden
             max-h-64 overflow-y-auto"
@@ -107,7 +109,7 @@ export default function CustomSelect({
               <li
                 key={opt.value}
                 role="option"
-                aria-selected={isActive}
+                aria-selected={isActive ? "true" : "false"}
                 onClick={() => select(opt.value)}
                 className={`px-4 py-3 cursor-pointer text-sm transition-colors
                   ${isActive

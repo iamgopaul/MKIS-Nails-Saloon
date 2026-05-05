@@ -16,10 +16,18 @@ const WELCOME: Message = {
 // Bella plays a small, calm queue of teasers while the chat is closed.
 const FALLBACK_WELCOME  = "Welcome to MKIS Nails!";
 const CLOSING_TEASER    = "Need help? Tap me anytime 💅";
-const TEASER_VISIBLE_MS = 7000;     // how long each bubble stays (slightly longer to read)
-const TEASER_GAP_MS     = 22_000;   // gap before the next bubble
-const FIRST_TEASER_MS   = 5_000;    // delay before the first bubble after page load
-const MAX_TEASERS       = 5;        // total bubbles per page session
+const MEOW_LINES        = [
+  "Meow! 🐾",
+  "Purrfect day for a manicure 🐾",
+  "Meow… anyone out there? 🐱",
+  "Meow! Don't forget to book your nails.",
+  "*stretches paws* Meow 🐾",
+];
+const MEOW_CHANCE       = 0.4;       // ~40 % of sessions get a meow
+const TEASER_VISIBLE_MS = 7000;
+const TEASER_GAP_MS     = 22_000;
+const FIRST_TEASER_MS   = 5_000;
+const MAX_TEASERS       = 5;
 
 // Initial position is computed on mount (defaults to bottom-right).
 const DEFAULT_POS = { left: 0, bottom: 20 };
@@ -39,6 +47,7 @@ export default function ChatWidget() {
   const scrollRef               = useRef<HTMLDivElement>(null);
   const launcherRef             = useRef<HTMLButtonElement>(null);
   const bubbleRef               = useRef<HTMLDivElement>(null);
+  const panelRef                = useRef<HTMLDivElement>(null);
   const dragRef                 = useRef({
     active:        false,
     startX:        0,
@@ -49,27 +58,45 @@ export default function ChatWidget() {
     pointerId:     -1,
   });
 
-  // Apply launcher + bubble positions imperatively (avoids inline style on JSX)
+  // Apply launcher + bubble + panel positions imperatively (avoids inline style on JSX)
   useEffect(() => {
     if (launcherRef.current) {
       launcherRef.current.style.left   = `${pos.left}px`;
       launcherRef.current.style.bottom = `${pos.bottom}px`;
     }
-    if (bubbleRef.current && typeof window !== "undefined") {
-      const onLeftHalf = pos.left + LAUNCHER_SIZE / 2 < window.innerWidth / 2;
+
+    if (typeof window === "undefined") return;
+    const onLeftHalf = pos.left + LAUNCHER_SIZE / 2 < window.innerWidth / 2;
+
+    // Teaser bubble next to Bella
+    if (bubbleRef.current) {
       bubbleRef.current.style.bottom = `${pos.bottom + 8}px`;
       if (onLeftHalf) {
-        // Bella on left → bubble to her right
         bubbleRef.current.style.left  = `${pos.left + LAUNCHER_SIZE + BUBBLE_GAP}px`;
         bubbleRef.current.style.right = "auto";
       } else {
-        // Bella on right → bubble to her left
-        const fromRight = window.innerWidth - pos.left + BUBBLE_GAP;
-        bubbleRef.current.style.right = `${fromRight}px`;
+        bubbleRef.current.style.right = `${window.innerWidth - pos.left + BUBBLE_GAP}px`;
         bubbleRef.current.style.left  = "auto";
       }
     }
-  }, [pos, teaser]);
+
+    // Chat panel sits ABOVE the launcher; anchored to whichever side Bella is on
+    if (panelRef.current) {
+      panelRef.current.style.bottom = `${pos.bottom + LAUNCHER_SIZE + 12}px`;
+      const isMobile = window.innerWidth < 640;
+      if (isMobile) {
+        // On mobile: full width with side margins regardless of position
+        panelRef.current.style.left  = "12px";
+        panelRef.current.style.right = "12px";
+      } else if (onLeftHalf) {
+        panelRef.current.style.left  = `${pos.left}px`;
+        panelRef.current.style.right = "auto";
+      } else {
+        panelRef.current.style.right = `${window.innerWidth - pos.left - LAUNCHER_SIZE}px`;
+        panelRef.current.style.left  = "auto";
+      }
+    }
+  }, [pos, teaser, open]);
 
   // Restore launcher position from localStorage (defaults to bottom-right)
   useEffect(() => {
@@ -198,6 +225,13 @@ export default function ChatWidget() {
 
       // 4) Friendly closer
       queue.push(CLOSING_TEASER);
+
+      // 5) Occasionally splice in a random meow at a random spot in the middle
+      if (Math.random() < MEOW_CHANCE && queue.length >= 2) {
+        const meow    = MEOW_LINES[Math.floor(Math.random() * MEOW_LINES.length)];
+        const insertAt = 1 + Math.floor(Math.random() * (queue.length - 1));
+        queue.splice(insertAt, 0, meow);
+      }
 
       const sliced = queue.slice(0, MAX_TEASERS);
       if (cancelled) return;
@@ -341,11 +375,13 @@ export default function ChatWidget() {
         )}
       </button>
 
-      {/* Chat panel */}
+      {/* Chat panel — anchored to Bella's position imperatively */}
       {open && (
-        <div className="fixed inset-x-3 bottom-24 sm:inset-auto sm:bottom-24 sm:left-5 sm:w-96 z-50
-                        bg-[#1C1614] rounded-3xl border border-[#E07898]/25 shadow-2xl shadow-black/40
-                        flex flex-col max-h-[70vh] overflow-hidden">
+        <div
+          ref={panelRef}
+          className="fixed sm:w-96 z-50 bg-[#1C1614] rounded-3xl border border-[#E07898]/25
+                     shadow-2xl shadow-black/40 flex flex-col max-h-[70vh] overflow-hidden"
+        >
           {/* Header */}
           <div className="bg-gradient-to-br from-[#E07898] to-[#C9956B] px-5 py-4 flex items-center gap-3">
             <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white/60 flex-shrink-0 bg-white/10">
