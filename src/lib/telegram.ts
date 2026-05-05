@@ -8,7 +8,7 @@ export async function sendTelegramNotification(data: NotificationData): Promise<
   const url = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
 
   const message = [
-    "🌸 *New Booking — MKIS Nails Saloon* 🌸",
+    "🌸 *New Booking — MKIS Nail Saloon* 🌸",
     "",
     `👤 *Name:* ${data.name}`,
     `📞 *Phone:* ${data.phone}`,

@@ -14,7 +14,7 @@ export default function Footer() {
                 <div className="logo-glow absolute inset-0 rounded-full bg-[#E07898] blur-md" />
                 <div className="relative rounded-full p-[2px] bg-gradient-to-br from-[#E07898] via-[#C9956B] to-[#D4A882]">
                   <div className="rounded-full bg-[#050505] p-0.5">
-                    <Image src="/logo.png" alt="MKIS Nails Saloon" width={42} height={42} className="rounded-full object-cover" />
+                    <Image src="/logo.png" alt="MKIS Nail Saloon" width={42} height={42} className="rounded-full object-cover" />
                   </div>
                 </div>
               </div>
@@ -86,7 +86,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-[#E07898]/10 pt-6 text-center text-[#9A7060] text-sm">
-          © {year} MKIS Nails Saloon. All rights reserved.
+          © {year} MKIS Nail Saloon. All rights reserved.
         </div>
       </div>
     </footer>

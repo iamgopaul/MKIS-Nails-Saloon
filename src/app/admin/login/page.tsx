@@ -100,7 +100,7 @@ export default function AdminLoginPage() {
         </form>
 
         <p className="text-center text-[#9A7060]/50 text-xs mt-6">
-          MKIS Nails Saloon · Admin Portal
+          MKIS Nail Saloon · Admin Portal
         </p>
       </div>
     </div>

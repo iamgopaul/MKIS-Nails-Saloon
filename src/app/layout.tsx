@@ -21,12 +21,12 @@ export const metadata: Metadata = {
     template: "%s · MKIS Nails",
   },
   description:
-    "Book your nail appointment at MKIS Nails Saloon. We offer gel manicures, acrylics, nail art, and pedicures with a personal touch.",
+    "Book your nail appointment at MKIS Nail Saloon. We offer gel manicures, acrylics, nail art, and pedicures with a personal touch.",
   openGraph: {
     title: "MKIS Nails",
     description: "Premium nail art and care. Book your appointment online.",
     type: "website",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "MKIS Nails Saloon" }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "MKIS Nail Saloon" }],
   },
   twitter: {
     card: "summary_large_image",

@@ -66,7 +66,7 @@ export default function Navbar() {
             <div className="logo-glow absolute inset-0 rounded-full bg-[#E07898] blur-md" />
             <div className="relative rounded-full p-[2px] bg-gradient-to-br from-[#E07898] via-[#C9956B] to-[#D4A882]">
               <div className="rounded-full bg-[#0A0A0A] p-0.5">
-                <Image src="/logo.png" alt="MKIS Nails Saloon" width={34} height={34} className="rounded-full object-cover" />
+                <Image src="/logo.png" alt="MKIS Nail Saloon" width={34} height={34} className="rounded-full object-cover" />
               </div>
             </div>
           </div>

@@ -167,7 +167,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-[#050505] text-[#F5EDE6]">
       {toast && <Toast msg={toast.msg} ok={toast.ok} />}
       <Header session={session} onLogout={logout} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
         {session.role === "admin"
           ? <AdminDashboard session={session} myTeam={myTeam} showToast={showToast} reload={() => {
               fetch("/api/me").then(r => r.json()).then(d => { setSession(d.session); setMyTeam(d.team); });
@@ -183,32 +183,33 @@ export default function AdminPage() {
 function Header({ session, onLogout }: { session: Session; onLogout: () => void }) {
   return (
     <header className="sticky top-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-sm border-b border-[#E07898]/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="relative">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="relative flex-shrink-0">
             <div className="absolute inset-0 rounded-full bg-[#E07898] blur-md opacity-40" />
             <div className="relative rounded-full p-[2px] bg-gradient-to-br from-[#E07898] via-[#C9956B] to-[#D4A882]">
               <div className="rounded-full bg-[#0A0A0A] p-0.5">
-                <Image src="/logo.png" alt="MKIS" width={30} height={30} className="rounded-full object-cover" />
+                <Image src="/logo.png" alt="MKIS" width={26} height={26} className="rounded-full object-cover" />
               </div>
             </div>
           </div>
-          <div>
-            <span className="font-[family-name:var(--font-playfair)] text-lg font-bold">
+          <div className="min-w-0">
+            <span className="font-[family-name:var(--font-playfair)] text-base sm:text-lg font-bold whitespace-nowrap">
               MKIS <span className="bg-gradient-to-r from-[#E07898] to-[#C9956B] bg-clip-text text-transparent">{session.role === "admin" ? "Admin" : "Team"}</span>
             </span>
-            {session.email && <p className="text-xs text-[#9A7060]">{session.email}</p>}
+            {session.email && <p className="text-xs text-[#9A7060] truncate hidden sm:block">{session.email}</p>}
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <a href="/" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm text-[#9A7060] hover:text-[#E07898] hover:bg-[#E07898]/10 transition-all">
+        <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
+          <a href="/" aria-label="Back to public site"
+            className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-full text-xs sm:text-sm text-[#9A7060] hover:text-[#E07898] hover:bg-[#E07898]/10 transition-all">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            <span>Back to Site</span>
+            <span className="hidden sm:inline">Back to Site</span>
           </a>
           <button type="button" onClick={onLogout}
-            className="px-4 py-1.5 rounded-full border border-[#E07898]/30 text-sm text-[#9A7060] hover:border-[#E07898]/60 hover:text-[#F5EDE6] transition-all">
+            className="px-3 sm:px-4 py-1.5 rounded-full border border-[#E07898]/30 text-xs sm:text-sm text-[#9A7060] hover:border-[#E07898]/60 hover:text-[#F5EDE6] transition-all whitespace-nowrap">
             Sign Out
           </button>
         </div>
@@ -246,11 +247,11 @@ function TeamDashboard({ myTeam, session, showToast, reload }: {
   return (
     <div className="space-y-8">
       {/* Welcome */}
-      <div className="bg-gradient-to-br from-[#1C1614] to-[#0E0B09] rounded-3xl p-8 border border-[#E07898]/30 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#1C1614] to-[#0E0B09] rounded-3xl p-6 sm:p-8 border border-[#E07898]/30 relative overflow-hidden">
         <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-[#E07898]/10 blur-3xl" />
         <div className="relative">
           <p className="text-[#9A7060] text-sm uppercase tracking-wider mb-2">{todayLong}</p>
-          <h2 className="font-[family-name:var(--font-playfair)] text-3xl font-bold text-[#F5EDE6]">
+          <h2 className="font-[family-name:var(--font-playfair)] text-2xl sm:text-3xl font-bold text-[#F5EDE6]">
             Hey, welcome back {firstName} <span className="text-[#E07898]">👋</span>
           </h2>
           <p className="text-[#9A7060] mt-2">
@@ -265,7 +266,7 @@ function TeamDashboard({ myTeam, session, showToast, reload }: {
       {/* Appointments */}
       {myTeam && (
         <div>
-          <h3 className="font-[family-name:var(--font-playfair)] text-2xl font-bold mb-1">My Upcoming Appointments</h3>
+          <h3 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold mb-1">My Upcoming Appointments</h3>
           <p className="text-[#9A7060] text-sm mb-4">{appointments.length} upcoming appointment{appointments.length === 1 ? "" : "s"}.</p>
           {appointments.length === 0 ? (
             <div className="bg-[#1C1614] rounded-3xl p-10 border border-[#E07898]/15 text-center text-[#9A7060]">
@@ -302,10 +303,10 @@ function AdminDashboard({ session, myTeam, showToast, reload }: {
 
   return (
     <>
-      <div className="flex gap-2 mb-8 flex-wrap">
+      <div className="flex gap-2 mb-6 sm:mb-8 overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0 pb-2 sm:pb-0 hide-scrollbar">
         {tabs.map((t) => (
           <button key={t.key} type="button" onClick={() => setTab(t.key)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap flex-shrink-0 ${
               tab === t.key
                 ? "bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white shadow-lg shadow-[#E07898]/25"
                 : "bg-[#1C1614] border border-[#E07898]/15 text-[#9A7060] hover:border-[#E07898]/40 hover:text-[#F5EDE6]"
@@ -364,11 +365,11 @@ function HomeTab({ session, myTeam }: { session: Session; myTeam: TeamMember | n
   return (
     <div className="space-y-8">
       {/* Welcome */}
-      <div className="bg-gradient-to-br from-[#1C1614] to-[#0E0B09] rounded-3xl p-8 border border-[#E07898]/30 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#1C1614] to-[#0E0B09] rounded-3xl p-6 sm:p-8 border border-[#E07898]/30 relative overflow-hidden">
         <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-[#E07898]/10 blur-3xl" />
         <div className="relative">
           <p className="text-[#9A7060] text-sm uppercase tracking-wider mb-2">{todayLong}</p>
-          <h2 className="font-[family-name:var(--font-playfair)] text-3xl font-bold text-[#F5EDE6]">
+          <h2 className="font-[family-name:var(--font-playfair)] text-2xl sm:text-3xl font-bold text-[#F5EDE6]">
             Hey, welcome back {firstName} <span className="text-[#E07898]">👋</span>
           </h2>
           <p className="text-[#9A7060] mt-2">
@@ -437,7 +438,7 @@ function ProfileTab({ session, myTeam, showToast, reload }: {
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
-        <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold">My Profile</h2>
+        <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold">My Profile</h2>
         <p className="text-[#9A7060] text-sm mt-1">Each section saves on its own.</p>
       </div>
 
@@ -743,7 +744,7 @@ function PasswordSection({ showToast }: { showToast: (m: string, ok?: boolean) =
 
 function StatCard({ label, value, accent }: { label: string; value: number; accent: string }) {
   return (
-    <div className="bg-[#1C1614] rounded-3xl p-6 border border-[#E07898]/15">
+    <div className="bg-[#1C1614] rounded-3xl p-4 sm:p-6 border border-[#E07898]/15">
       <p className="text-xs font-semibold text-[#9A7060] uppercase tracking-wider">{label}</p>
       <p className={`mt-2 text-4xl font-bold bg-gradient-to-r ${accent} bg-clip-text text-transparent`}>
         {value}
@@ -796,23 +797,21 @@ function BookingsTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold">Bookings</h2>
-        <div className="flex gap-2 flex-wrap items-center">
-          <select value={techFilter} onChange={(e) => setTechFilter(e.target.value)}
-            aria-label="Filter by technician"
-            className="px-3 py-2 rounded-xl bg-[#1C1614] border border-[#E07898]/20 text-[#F5EDE6] text-sm focus:outline-none focus:border-[#E07898]/60">
-            <option value="all">All technicians</option>
-            {myTeamId && <option value="mine">My bookings</option>}
-            <optgroup label="By technician">
-              {team.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-            </optgroup>
-          </select>
-          <input value={filter} onChange={(e) => setFilter(e.target.value)}
-            placeholder="Search…"
-            aria-label="Search bookings"
-            className="px-4 py-2 rounded-xl bg-[#1C1614] border border-[#E07898]/20 text-[#F5EDE6] text-sm w-48 focus:outline-none focus:border-[#E07898]/60" />
-        </div>
+      <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold">Bookings</h2>
+      <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+        <select value={techFilter} onChange={(e) => setTechFilter(e.target.value)}
+          aria-label="Filter by technician"
+          className="px-3 py-2 rounded-xl bg-[#1C1614] border border-[#E07898]/20 text-[#F5EDE6] text-sm focus:outline-none focus:border-[#E07898]/60 w-full sm:w-auto">
+          <option value="all">All technicians</option>
+          {myTeamId && <option value="mine">My bookings</option>}
+          <optgroup label="By technician">
+            {team.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+          </optgroup>
+        </select>
+        <input value={filter} onChange={(e) => setFilter(e.target.value)}
+          placeholder="Search…"
+          aria-label="Search bookings"
+          className="px-4 py-2 rounded-xl bg-[#1C1614] border border-[#E07898]/20 text-[#F5EDE6] text-sm focus:outline-none focus:border-[#E07898]/60 w-full sm:w-48" />
       </div>
 
       <div>
@@ -832,47 +831,83 @@ function BookingsTab() {
   );
 }
 
+function statusBadge(status: string) {
+  const cls = status === "Confirmed" ? "bg-emerald-900/40 text-emerald-400"
+            : status === "Cancelled" ? "bg-red-900/40 text-red-400"
+            : status === "Completed" ? "bg-[#E07898]/15 text-[#E07898]"
+            : "bg-amber-900/40 text-amber-400";
+  return <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${cls}`}>{status}</span>;
+}
+
 function BookingsTable({ rows }: { rows: BookingRow[] }) {
   return (
-    <div className="bg-[#1C1614] rounded-2xl border border-[#E07898]/15 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead className="bg-[#0A0A0A]/50">
-            <tr className="text-left text-[#9A7060]">
-              <th className="px-4 py-3 font-semibold">Date</th>
-              <th className="px-4 py-3 font-semibold">Time</th>
-              <th className="px-4 py-3 font-semibold">Client</th>
-              <th className="px-4 py-3 font-semibold">Service</th>
-              <th className="px-4 py-3 font-semibold">Technician</th>
-              <th className="px-4 py-3 font-semibold">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id} className="border-t border-[#E07898]/10">
-                <td className="px-4 py-3 text-[#F5EDE6]">{r.preferred_date}</td>
-                <td className="px-4 py-3 text-[#9A7060]">{r.start_time?.slice(0, 5) ?? "—"} – {r.end_time?.slice(0, 5) ?? "—"}</td>
-                <td className="px-4 py-3 text-[#F5EDE6]">
-                  <div className="font-medium">{r.client_name}</div>
-                  {r.client_phone && <div className="text-xs text-[#9A7060]">{r.client_phone}</div>}
-                </td>
-                <td className="px-4 py-3 text-[#9A7060]">{r.service_name}</td>
-                <td className="px-4 py-3 text-[#9A7060]">{r.technician_name ?? "—"}</td>
-                <td className="px-4 py-3">
-                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold
-                    ${r.status === "Confirmed" ? "bg-emerald-900/40 text-emerald-400"
-                    : r.status === "Cancelled" ? "bg-red-900/40 text-red-400"
-                    : r.status === "Completed" ? "bg-[#E07898]/15 text-[#E07898]"
-                    : "bg-amber-900/40 text-amber-400"}`}>
-                    {r.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <>
+      {/* Mobile: stacked cards */}
+      <div className="grid grid-cols-1 gap-3 md:hidden">
+        {rows.map((r) => (
+          <div key={r.id} className="bg-[#1C1614] rounded-2xl border border-[#E07898]/15 p-4">
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <div>
+                <p className="font-semibold text-[#F5EDE6]">{r.client_name}</p>
+                {r.client_phone && <p className="text-xs text-[#9A7060]">{r.client_phone}</p>}
+              </div>
+              {statusBadge(r.status)}
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs mt-3">
+              <div>
+                <p className="text-[#9A7060] uppercase tracking-wider mb-0.5">Date</p>
+                <p className="text-[#F5EDE6]">{r.preferred_date}</p>
+              </div>
+              <div>
+                <p className="text-[#9A7060] uppercase tracking-wider mb-0.5">Time</p>
+                <p className="text-[#F5EDE6]">{r.start_time?.slice(0, 5) ?? "—"} – {r.end_time?.slice(0, 5) ?? "—"}</p>
+              </div>
+              <div>
+                <p className="text-[#9A7060] uppercase tracking-wider mb-0.5">Service</p>
+                <p className="text-[#F5EDE6]">{r.service_name}</p>
+              </div>
+              <div>
+                <p className="text-[#9A7060] uppercase tracking-wider mb-0.5">Technician</p>
+                <p className="text-[#F5EDE6]">{r.technician_name ?? "—"}</p>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
-    </div>
+
+      {/* Desktop: table */}
+      <div className="hidden md:block bg-[#1C1614] rounded-2xl border border-[#E07898]/15 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead className="bg-[#0A0A0A]/50">
+              <tr className="text-left text-[#9A7060]">
+                <th className="px-4 py-3 font-semibold">Date</th>
+                <th className="px-4 py-3 font-semibold">Time</th>
+                <th className="px-4 py-3 font-semibold">Client</th>
+                <th className="px-4 py-3 font-semibold">Service</th>
+                <th className="px-4 py-3 font-semibold">Technician</th>
+                <th className="px-4 py-3 font-semibold">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id} className="border-t border-[#E07898]/10">
+                  <td className="px-4 py-3 text-[#F5EDE6]">{r.preferred_date}</td>
+                  <td className="px-4 py-3 text-[#9A7060]">{r.start_time?.slice(0, 5) ?? "—"} – {r.end_time?.slice(0, 5) ?? "—"}</td>
+                  <td className="px-4 py-3 text-[#F5EDE6]">
+                    <div className="font-medium">{r.client_name}</div>
+                    {r.client_phone && <div className="text-xs text-[#9A7060]">{r.client_phone}</div>}
+                  </td>
+                  <td className="px-4 py-3 text-[#9A7060]">{r.service_name}</td>
+                  <td className="px-4 py-3 text-[#9A7060]">{r.technician_name ?? "—"}</td>
+                  <td className="px-4 py-3">{statusBadge(r.status)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -937,7 +972,7 @@ function TeamTab({ showToast }: { showToast: (m: string, ok?: boolean) => void }
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold">Team Members</h2>
+        <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold">Team Members</h2>
         <button type="button" onClick={() => { setInviting(true); setEditingId(null); }}
           className="px-4 py-2 rounded-full bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white text-sm font-semibold hover:from-[#C45E7A] hover:to-[#B07A52] transition-all">
           ✉ Invite Team Member
@@ -945,7 +980,7 @@ function TeamTab({ showToast }: { showToast: (m: string, ok?: boolean) => void }
       </div>
 
       {inviting && (
-        <div className="bg-[#1C1614] rounded-3xl p-6 border border-[#E07898]/40 space-y-4">
+        <div className="bg-[#1C1614] rounded-3xl p-4 sm:p-6 border border-[#E07898]/40 space-y-4">
           <div>
             <h3 className="font-semibold text-[#E07898]">Invite Team Member</h3>
             <p className="text-xs text-[#9A7060] mt-1">
@@ -1057,7 +1092,7 @@ function ServicesTab({ showToast }: { showToast: (m: string, ok?: boolean) => vo
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold">Services</h2>
+        <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold">Services</h2>
         <button type="button" onClick={() => { setAdding(true); setEditingId(null); setDraft({ active: true, icon: "💅", duration_minutes: 60 }); }}
           className="px-4 py-2 rounded-full bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white text-sm font-semibold hover:from-[#C45E7A] hover:to-[#B07A52] transition-all">
           + Add Service
@@ -1066,7 +1101,7 @@ function ServicesTab({ showToast }: { showToast: (m: string, ok?: boolean) => vo
       <p className="text-[#9A7060] text-sm">Duration sets how long the booking blocks for the technician. Use 30-min increments for cleanest scheduling.</p>
 
       {adding && (
-        <div className="bg-[#1C1614] rounded-3xl p-6 border border-[#E07898]/40 space-y-4">
+        <div className="bg-[#1C1614] rounded-3xl p-4 sm:p-6 border border-[#E07898]/40 space-y-4">
           <h3 className="font-semibold text-[#E07898]">New Service</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Field label="Icon" value={draft.icon ?? "💅"} onChange={(v) => setDraft((d) => ({ ...d, icon: v }))} />
@@ -1176,7 +1211,7 @@ function GalleryTab({ showToast }: { showToast: (m: string, ok?: boolean) => voi
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold">Gallery</h2>
+        <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold">Gallery</h2>
         <button type="button" onClick={() => { setAdding(true); setEditingId(null); setDraft({ active: true }); }}
           className="px-4 py-2 rounded-full bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white text-sm font-semibold hover:from-[#C45E7A] hover:to-[#B07A52] transition-all">
           + Add Design
@@ -1184,7 +1219,7 @@ function GalleryTab({ showToast }: { showToast: (m: string, ok?: boolean) => voi
       </div>
 
       {adding && (
-        <div className="bg-[#1C1614] rounded-3xl p-6 border border-[#E07898]/40 space-y-4">
+        <div className="bg-[#1C1614] rounded-3xl p-4 sm:p-6 border border-[#E07898]/40 space-y-4">
           <h3 className="font-semibold text-[#E07898]">New Gallery Item</h3>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Design Name" value={draft.name ?? ""} onChange={(v) => setDraft((d) => ({ ...d, name: v }))} />
@@ -1265,7 +1300,7 @@ function ContentTab({ showToast }: { showToast: (m: string, ok?: boolean) => voi
 
   return (
     <div className="space-y-4 max-w-2xl">
-      <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold mb-6">Site Content</h2>
+      <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold mb-6">Site Content</h2>
       <p className="text-[#9A7060] text-sm mb-6">Edit text blocks on the public site. Changes update immediately.</p>
 
       <div className="bg-[#1C1614] rounded-2xl p-5 border border-[#E07898]/15">

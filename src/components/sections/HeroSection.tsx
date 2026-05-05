@@ -24,7 +24,7 @@ export default function HeroSection({ id }: HeroSectionProps) {
             <span className="bg-gradient-to-r from-[#E07898] to-[#C9956B] bg-clip-text text-transparent">Meets Art</span>
           </h1>
           <p className="text-[#9A7060] text-lg md:text-xl leading-relaxed mb-10 max-w-lg">
-            At MKIS Nails Saloon, every set is a masterpiece. From classic elegance to bold nail art, we craft looks that are truly unforgettable.
+            At MKIS Nail Saloon, every set is a masterpiece. From classic elegance to bold nail art, we craft looks that are truly unforgettable.
           </p>
           <div className="flex flex-wrap gap-4">
             <a href="#booking">
@@ -60,7 +60,7 @@ export default function HeroSection({ id }: HeroSectionProps) {
                 <div className="logo-glow absolute inset-0 rounded-full bg-[#E07898] blur-xl" />
                 <div className="relative rounded-full p-[3px] bg-gradient-to-br from-[#E07898] via-[#C9956B] to-[#D4A882]">
                   <div className="rounded-full bg-[#1C1614] p-1">
-                    <Image src="/logo.png" alt="MKIS Nails Saloon" width={144} height={144} className="rounded-full object-contain" />
+                    <Image src="/logo.png" alt="MKIS Nail Saloon" width={144} height={144} className="rounded-full object-contain" />
                   </div>
                 </div>
               </div>
