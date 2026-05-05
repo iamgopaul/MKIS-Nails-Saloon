@@ -1,5 +1,5 @@
-import Image from "next/image";
 import SectionHeading from "@/components/ui/SectionHeading";
+import GalleryItem from "@/components/ui/GalleryItem";
 import { getGallery } from "@/lib/db";
 
 interface GallerySectionProps { id: string; }
@@ -28,29 +28,12 @@ export default async function GallerySection({ id }: GallerySectionProps) {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
             {items.map((item) => (
-              <div
+              <GalleryItem
                 key={item.id}
-                className="group relative aspect-square rounded-2xl overflow-hidden bg-[#1C1614] border border-[#E07898]/15
-                           shadow-sm hover:shadow-xl hover:shadow-[#E07898]/10 hover:border-[#E07898]/40 transition-all duration-300"
-              >
-                <Image
-                  src={item.image_url}
-                  alt={item.name}
-                  fill
-                  unoptimized
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-transparent to-transparent
-                                opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                  <p className="text-[#F5EDE6] font-semibold text-sm leading-tight">{item.name}</p>
-                  {item.category && (
-                    <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white text-xs w-fit">
-                      {item.category}
-                    </span>
-                  )}
-                </div>
-              </div>
+                name={item.name}
+                category={item.category}
+                imageUrl={item.image_url}
+              />
             ))}
           </div>
         )}
