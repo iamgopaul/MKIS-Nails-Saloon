@@ -7,10 +7,12 @@ import {
   slotsForBooking,
   timeToMinutes,
   endTimeFor,
+  todayInSalonTZ,
 } from "@/lib/booking";
 import { sendConfirmationEmail } from "@/lib/resend";
 import { sendTelegramNotification } from "@/lib/telegram";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
+import { isAllowedOrigin } from "@/lib/origin";
 
 const EMAIL_RX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RX = /^\+?[\d\s\-()\\.]{7,20}$/;
@@ -196,8 +198,7 @@ async function tool_create_booking(args: {
   if (!isWorkingDay(args.date))                                       return { error: "Salon is closed on this day." };
   if ((args.notes ?? "").length > 500)                                return { error: "Notes too long." };
 
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  if (new Date(args.date + "T00:00:00") < today)                      return { error: "Date is in the past." };
+  if (args.date < todayInSalonTZ())                                   return { error: "Date is in the past." };
 
   // Slot must be a real working slot (not 02:13 etc.) AND fit inside business hours
   if (!dailySlots(args.date).includes(args.start_time))               return { error: "Selected time is outside business hours." };
@@ -264,6 +265,7 @@ async function tool_create_booking(args: {
     })
     .select()
     .single();
+  if (error?.code === "23P01") return { error: "That slot was just taken — please pick another time." };
   if (error || !booking) return { error: "Failed to save booking." };
 
   // Best-effort notifications
@@ -287,11 +289,11 @@ function makeToolHandlers(ip: string): Record<string, (args: Record<string, unkn
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     check_availability: (args: any) => tool_check_availability(args),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    create_booking:     (args: any) => {
+    create_booking:     async (args: any) => {
       // Cap real bookings via chat at 3 per IP per hour to prevent abuse
-      const rl = rateLimit(`chat-book:${ip}`, { max: 3, windowMs: 60 * 60_000 });
+      const rl = await rateLimit(`chat-book:${ip}`, { max: 3, windowMs: 60 * 60_000 });
       if (!rl.allowed) {
-        return Promise.resolve({ error: "Too many bookings from this device. Please use the booking form on the page." });
+        return { error: "Too many bookings from this device. Please use the booking form on the page." };
       }
       return tool_create_booking(args);
     },
@@ -337,13 +339,17 @@ ${context}
 type GroqMsg = any;
 
 export async function POST(req: NextRequest) {
+  if (!isAllowedOrigin(req)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   if (!process.env.GROQ_API_KEY) {
     return NextResponse.json({ error: "Chatbot not configured" }, { status: 503 });
   }
 
   // Rate limit chat traffic — 30 messages per IP per 5 minutes
   const ip = getClientIp(req);
-  const rl = rateLimit(`chat:${ip}`, { max: 30, windowMs: 5 * 60_000 });
+  const rl = await rateLimit(`chat:${ip}`, { max: 30, windowMs: 5 * 60_000 });
   if (!rl.allowed) {
     return NextResponse.json({ error: "Too many messages, please slow down." }, { status: 429 });
   }
@@ -355,6 +361,12 @@ export async function POST(req: NextRequest) {
   if (userMsgs.length === 0) return NextResponse.json({ error: "No messages" }, { status: 400 });
   if (userMsgs.some((m) => typeof m.content !== "string" || m.content.length > 2000)) {
     return NextResponse.json({ error: "Message too long" }, { status: 400 });
+  }
+  // Total budget across the whole conversation window — bounds Groq spend
+  // even when an attacker pads many borderline-2000-char messages.
+  const totalChars = userMsgs.reduce((n, m) => n + m.content.length, 0);
+  if (totalChars > 8000) {
+    return NextResponse.json({ error: "Conversation too long, please start a new chat." }, { status: 400 });
   }
 
   // Short-circuit obvious prompt-injection / data-extraction attempts so they

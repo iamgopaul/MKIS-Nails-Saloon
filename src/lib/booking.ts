@@ -4,6 +4,18 @@
  */
 
 export const SLOT_MINUTES = 30;
+export const SALON_TZ = "America/New_York";
+
+/** Today's date as YYYY-MM-DD in the salon's timezone. */
+export function todayInSalonTZ(): string {
+  // en-CA gives YYYY-MM-DD format directly.
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: SALON_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
 
 // Per-day open/close times in minutes from midnight
 const HOURS: Record<number, { open: number; close: number } | null> = {

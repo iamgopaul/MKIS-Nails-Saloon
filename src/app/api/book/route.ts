@@ -3,9 +3,21 @@ import { bookingSchema } from "@/lib/validators";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendConfirmationEmail } from "@/lib/resend";
 import { sendTelegramNotification } from "@/lib/telegram";
-import { endTimeFor, slotsForBooking, timeToMinutes, isWorkingDay } from "@/lib/booking";
+import { endTimeFor, slotsForBooking, timeToMinutes, isWorkingDay, todayInSalonTZ } from "@/lib/booking";
+import { rateLimit, getClientIp } from "@/lib/rateLimit";
+import { isAllowedOrigin } from "@/lib/origin";
 
 export async function POST(req: NextRequest) {
+  if (!isAllowedOrigin(req)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // 5 bookings per IP per hour — prevents form-spam abuse
+  const rl = await rateLimit(`book:${getClientIp(req)}`, { max: 5, windowMs: 60 * 60_000 });
+  if (!rl.allowed) {
+    return NextResponse.json({ error: "Too many booking attempts. Please try again later." }, { status: 429 });
+  }
+
   let body: unknown;
   try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid request body" }, { status: 400 }); }
 
@@ -17,6 +29,9 @@ export async function POST(req: NextRequest) {
 
   if (!isWorkingDay(data.date)) {
     return NextResponse.json({ error: "Selected date is not a working day" }, { status: 422 });
+  }
+  if (data.date < todayInSalonTZ()) {
+    return NextResponse.json({ error: "Date is in the past" }, { status: 422 });
   }
 
   const supabase = createAdminClient();
@@ -99,6 +114,9 @@ export async function POST(req: NextRequest) {
     })
     .select()
     .single();
+  if (insErr?.code === "23P01") {
+    return NextResponse.json({ error: "That slot was just taken — please pick another time." }, { status: 409 });
+  }
   if (insErr) {
     console.error("[Supabase] Booking insert failed:", insErr);
     return NextResponse.json({ error: "Failed to save your booking. Please try again." }, { status: 500 });

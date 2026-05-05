@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
+import { isAllowedOrigin } from "@/lib/origin";
 import { validatePassword } from "@/lib/password";
 
 /**
@@ -9,8 +10,12 @@ import { validatePassword } from "@/lib/password";
  * Atomically claims a pending invite token, creates the auth user + team listing.
  */
 export async function POST(req: NextRequest) {
+  if (!isAllowedOrigin(req)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   // Defensive rate limit — 10 signup attempts per IP per 10 min
-  const rl = rateLimit(`signup:${getClientIp(req)}`, { max: 10, windowMs: 10 * 60_000 });
+  const rl = await rateLimit(`signup:${getClientIp(req)}`, { max: 10, windowMs: 10 * 60_000 });
   if (!rl.allowed) {
     return NextResponse.json({ error: "Too many attempts. Please try again later." }, { status: 429 });
   }

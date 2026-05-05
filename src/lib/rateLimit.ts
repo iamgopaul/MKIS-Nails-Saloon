@@ -1,16 +1,12 @@
 /**
- * Tiny in-memory IP rate limiter.
- *
- * Cheap & cheerful — resets on cold-start in serverless, doesn't share state
- * across Vercel instances. Good enough as a first line of defense against
- * casual scripted abuse on public endpoints. For production-grade limits use
- * a shared store (Redis, Supabase, Upstash).
+ * Rate limiter backed by a Supabase table so quotas are shared across
+ * serverless instances and survive cold starts. Falls open on infrastructure
+ * failure — we'd rather serve real users than 500 the whole site if the DB
+ * is briefly unreachable.
  */
 
 import { NextRequest } from "next/server";
-
-type Bucket = { count: number; resetAt: number };
-const store = new Map<string, Bucket>();
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export function getClientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for");
@@ -20,24 +16,25 @@ export function getClientIp(req: NextRequest): string {
   return "anon";
 }
 
-/**
- * Returns true if the request is within the limit and consumes one token.
- * Returns false if the limit has been exceeded.
- */
-export function rateLimit(
+export async function rateLimit(
   key: string,
   opts: { max: number; windowMs: number }
-): { allowed: boolean; resetAt: number } {
-  const now    = Date.now();
-  const bucket = store.get(key);
-  if (!bucket || bucket.resetAt < now) {
-    const resetAt = now + opts.windowMs;
-    store.set(key, { count: 1, resetAt });
-    return { allowed: true, resetAt };
+): Promise<{ allowed: boolean; resetAt: number }> {
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase.rpc("rate_limit_consume", {
+      p_key: key,
+      p_max: opts.max,
+      p_window_ms: opts.windowMs,
+    });
+    if (error || !data || !Array.isArray(data) || data.length === 0) {
+      console.error("[rateLimit] rpc error, failing open:", error);
+      return { allowed: true, resetAt: Date.now() + opts.windowMs };
+    }
+    const row = data[0] as { allowed: boolean; reset_at: string };
+    return { allowed: !!row.allowed, resetAt: new Date(row.reset_at).getTime() };
+  } catch (err) {
+    console.error("[rateLimit] threw, failing open:", err);
+    return { allowed: true, resetAt: Date.now() + opts.windowMs };
   }
-  if (bucket.count >= opts.max) {
-    return { allowed: false, resetAt: bucket.resetAt };
-  }
-  bucket.count += 1;
-  return { allowed: true, resetAt: bucket.resetAt };
 }

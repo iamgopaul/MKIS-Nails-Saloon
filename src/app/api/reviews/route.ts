@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
+import { isAllowedOrigin } from "@/lib/origin";
 
 export const revalidate = 60;
 
@@ -22,9 +23,13 @@ export async function GET() {
 
 /** Public: submit a new review (lands in 'pending' for admin to approve) */
 export async function POST(req: NextRequest) {
+  if (!isAllowedOrigin(req)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   // Rate limit — 3 reviews per IP per hour
   const ip = getClientIp(req);
-  const rl = rateLimit(`review:${ip}`, { max: 3, windowMs: 60 * 60_000 });
+  const rl = await rateLimit(`review:${ip}`, { max: 3, windowMs: 60 * 60_000 });
   if (!rl.allowed) {
     return NextResponse.json(
       { error: "You've submitted too many reviews recently. Please try again later." },
