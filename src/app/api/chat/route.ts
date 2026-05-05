@@ -14,6 +14,7 @@ import { sendTelegramNotification } from "@/lib/telegram";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
 import { isAllowedOrigin } from "@/lib/origin";
 import { generateManageToken, manageTokenExpiry, manageUrl } from "@/lib/manageToken";
+import { logChatEvent } from "@/lib/chatLog";
 
 const EMAIL_RX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RX = /^\+?[\d\s\-()\\.]{7,20}$/;
@@ -281,6 +282,15 @@ async function tool_create_booking(args: {
     manageUrl: manageUrl(token),
   };
   Promise.allSettled([sendConfirmationEmail(notify), sendTelegramNotification(notify)]).catch(() => {});
+  logChatEvent("booking_created", {
+    metadata: {
+      booking_id: booking.id,
+      service:    svc.name,
+      date:       args.date,
+      start_time: args.start_time,
+      technician: techName,
+    },
+  });
 
   return {
     success: true,
@@ -356,6 +366,7 @@ export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
   const rl = await rateLimit(`chat:${ip}`, { max: 30, windowMs: 5 * 60_000 });
   if (!rl.allowed) {
+    logChatEvent("rate_limited", { ip });
     return NextResponse.json({ error: "Too many messages, please slow down." }, { status: 429 });
   }
 
@@ -378,6 +389,7 @@ export async function POST(req: NextRequest) {
   // never reach the model.
   const lastUser = [...userMsgs].reverse().find((m) => m.role === "user");
   if (lastUser && looksLikeInjection(lastUser.content)) {
+    logChatEvent("injection_blocked", { ip, excerpt: lastUser.content });
     return NextResponse.json({
       reply: "I'm just here to help you with bookings and questions about MKIS Nail Saloon. How can I help?",
     });
@@ -430,6 +442,10 @@ export async function POST(req: NextRequest) {
         result = handler ? await handler(parsed) : { error: `Unknown tool: ${fnName}` };
       } catch (err) {
         console.error("[chat] tool error:", fnName, err);
+        logChatEvent("tool_error", {
+          ip,
+          metadata: { tool: fnName, message: err instanceof Error ? err.message : String(err) },
+        });
         result = { error: "Tool execution failed" };
       }
       conversation.push({
