@@ -3,55 +3,45 @@ import { requireAdmin, AuthError } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
- * POST /api/admin/invite
+ * POST /api/admin/invite — Body: { email }
  *
- * Body: { email, name, role, bio? }
- *
- * Sends a Supabase magic-link invite email to the new user.
- * On click, they land on /admin/setup with a session and finish signup.
- * Also creates a `team` row linked to the new user.
+ * Sends a Supabase magic-link invite email. The team member fills in their
+ * name + password on /admin/setup, then can edit their job title, bio, and
+ * photo from their profile tab.
  */
 export async function POST(req: NextRequest) {
   try {
     await requireAdmin();
-    const { email, name, role, bio } = await req.json();
-
-    if (!email || !name || !role) {
-      return NextResponse.json({ error: "Email, name, and role are required" }, { status: 400 });
+    const { email } = await req.json();
+    if (!email || typeof email !== "string") {
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
     const supabase = createAdminClient();
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-    // 1) Send invite (creates auth user, no password yet, email goes out)
     const { data: invite, error: inviteErr } = await supabase.auth.admin.inviteUserByEmail(email, {
-      data: { full_name: name },
       redirectTo: `${siteUrl}/admin/setup`,
     });
     if (inviteErr || !invite.user) {
       return NextResponse.json({ error: inviteErr?.message ?? "Invite failed" }, { status: 500 });
     }
 
-    // 2) Update profile name (trigger auto-creates the row with full_name from metadata, but be safe)
-    await supabase
-      .from("profiles")
-      .upsert({ id: invite.user.id, role: "team", full_name: name }, { onConflict: "id" });
-
-    // 3) Create team row linked to this user (or upsert if one exists for the email)
+    // Auto-create an empty team listing linked to the new user.
+    // Name + role get filled in once the user completes setup and edits their profile.
     const { count } = await supabase
       .from("team")
       .select("id", { count: "exact", head: true })
       .eq("user_id", invite.user.id);
-
     if (!count || count === 0) {
       await supabase.from("team").insert({
         user_id:       invite.user.id,
-        name,
-        role,
-        bio:           bio ?? "",
+        name:          email.split("@")[0],
+        role:          "Nail Technician",
+        bio:           "",
         photo_url:     "",
         display_order: 99,
-        active:        true,
+        active:        false,    // hidden until they complete their profile
       });
     }
 
