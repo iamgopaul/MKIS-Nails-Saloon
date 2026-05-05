@@ -16,15 +16,14 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://mkisnails.com"),
-  title: "MKIS Nails Saloon — Premium Nail Art & Care",
+  title: {
+    default:  "MKIS Nails",
+    template: "%s · MKIS Nails",
+  },
   description:
     "Book your nail appointment at MKIS Nails Saloon. We offer gel manicures, acrylics, nail art, and pedicures with a personal touch.",
-  icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
-  },
   openGraph: {
-    title: "MKIS Nails Saloon",
+    title: "MKIS Nails",
     description: "Premium nail art and care. Book your appointment online.",
     type: "website",
     images: [{ url: "/og.png", width: 1200, height: 630, alt: "MKIS Nails Saloon" }],

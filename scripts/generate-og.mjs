@@ -84,3 +84,11 @@ await sharp(Buffer.from(svg))
   .toFile(join(root, "public/og.png"));
 
 console.log("✓ public/og.png generated");
+
+// ── Favicon (32x32 + 192x192 + apple-touch 180x180) ──────────────────────────
+const logoPath = join(root, "public/logo.png");
+
+await sharp(logoPath).resize(32, 32).png().toFile(join(root, "src/app/icon.png"));
+await sharp(logoPath).resize(180, 180).png().toFile(join(root, "src/app/apple-icon.png"));
+
+console.log("✓ favicon + apple-touch icon generated");
