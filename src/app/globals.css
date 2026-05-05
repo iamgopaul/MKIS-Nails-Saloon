@@ -41,6 +41,10 @@ html {
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; }
 
+.typing-dot-1 { animation-delay: 0ms; }
+.typing-dot-2 { animation-delay: 150ms; }
+.typing-dot-3 { animation-delay: 300ms; }
+
 body {
   background: var(--background);
   color: var(--foreground);
