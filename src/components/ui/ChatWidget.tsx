@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 
 interface Message {
@@ -65,10 +66,10 @@ export default function ChatWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Close chat with Bella" : "Open chat with Bella"}
         title="Chat with Bella"
-        className={`fixed bottom-5 left-5 z-50 w-14 h-14 rounded-full shadow-2xl shadow-[#E07898]/40 flex items-center justify-center transition-all
+        className={`fixed bottom-5 left-5 z-50 w-14 h-14 rounded-full shadow-2xl shadow-[#E07898]/40 transition-all overflow-hidden
           ${open
-            ? "bg-[#1C1614] border border-[#E07898]/50 hover:bg-[#0E0B09]"
-            : "bg-gradient-to-br from-[#E07898] to-[#C9956B] hover:scale-105"
+            ? "bg-[#1C1614] border-2 border-[#E07898]/60 hover:bg-[#0E0B09] flex items-center justify-center"
+            : "bg-gradient-to-br from-[#E07898] to-[#C9956B] hover:scale-105 p-[2px]"
           }`}
       >
         {open ? (
@@ -76,10 +77,13 @@ export default function ChatWidget() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
+          <Image
+            src="/bella.jpeg"
+            alt="Bella"
+            width={56}
+            height={56}
+            className="w-full h-full rounded-full object-cover"
+          />
         )}
       </button>
 
@@ -90,8 +94,14 @@ export default function ChatWidget() {
                         flex flex-col max-h-[70vh] overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-br from-[#E07898] to-[#C9956B] px-5 py-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white/20 border border-white/30 flex items-center justify-center text-lg">
-              💅
+            <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white/60 flex-shrink-0 bg-white/10">
+              <Image
+                src="/bella.jpeg"
+                alt="Bella"
+                width={44}
+                height={44}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <p className="font-[family-name:var(--font-playfair)] text-base font-bold text-white leading-tight">Bella</p>
