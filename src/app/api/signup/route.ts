@@ -83,7 +83,8 @@ export async function POST(req: NextRequest) {
     .from("profiles")
     .upsert({ id: created.user.id, role: "team", full_name: name }, { onConflict: "id" });
 
-  // 4) Create the team listing — unique constraint on user_id prevents dupes
+  // 4) Create the team listing — unique constraint on user_id prevents dupes.
+  // Default avatar to the salon logo until they upload their own.
   await supabase
     .from("team")
     .insert({
@@ -91,7 +92,7 @@ export async function POST(req: NextRequest) {
       name,
       role:           "Nail Technician",
       bio:            "",
-      photo_url:      "",
+      photo_url:      "/logo.png",
       display_order:  99,
       active:         false,
     });
