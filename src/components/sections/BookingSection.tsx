@@ -224,45 +224,53 @@ export default function BookingSection({ id }: BookingSectionProps) {
                   />
                 </div>
 
-                {form.date && form.serviceId && (
-                  <div className="sm:col-span-2">
-                    <span className="text-sm font-medium text-[#F5EDE6] mb-2 block">
-                      Available Times
-                      <span className="text-[#E07898] ml-0.5">*</span>
-                    </span>
-                    {loadingSlots ? (
-                      <div className="text-[#9A7060] text-sm py-4">Checking availability…</div>
-                    ) : slots.length === 0 ? (
-                      <div className="bg-[#0A0A0A]/60 rounded-xl border border-[#E07898]/15 p-6 text-center">
-                        <p className="text-[#9A7060] text-sm">
-                          {form.technicianId
-                            ? "This technician is fully booked on this date."
-                            : "No availability on this date — try another."}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                        {slots.map((slot) => {
-                          const active = form.startTime === slot;
-                          return (
-                            <button
-                              key={slot}
-                              type="button"
-                              onClick={() => updateField("startTime", slot)}
-                              className={`px-2 py-2 rounded-lg text-sm font-medium transition-all
-                                ${active
-                                  ? "bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white shadow-md shadow-[#E07898]/30"
-                                  : "bg-[#0A0A0A] text-[#F5EDE6] border border-[#E07898]/20 hover:border-[#E07898]/50 hover:bg-[#E07898]/10"
-                                }`}
-                            >
-                              {timeLabel(slot)}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )}
+                <div className="sm:col-span-2">
+                  <span className="text-sm font-medium text-[#F5EDE6] mb-2 block">
+                    Preferred Time
+                    <span className="text-[#E07898] ml-0.5">*</span>
+                  </span>
+                  {!form.serviceId ? (
+                    <div className="bg-[#0A0A0A]/60 rounded-xl border border-dashed border-[#E07898]/20 p-6 text-center">
+                      <p className="text-[#9A7060] text-sm">Select a service to see available times.</p>
+                    </div>
+                  ) : !form.date ? (
+                    <div className="bg-[#0A0A0A]/60 rounded-xl border border-dashed border-[#E07898]/20 p-6 text-center">
+                      <p className="text-[#9A7060] text-sm">Pick a date to see available times.</p>
+                    </div>
+                  ) : loadingSlots ? (
+                    <div className="bg-[#0A0A0A]/60 rounded-xl border border-[#E07898]/15 p-6 text-center">
+                      <p className="text-[#9A7060] text-sm">Checking availability…</p>
+                    </div>
+                  ) : slots.length === 0 ? (
+                    <div className="bg-[#0A0A0A]/60 rounded-xl border border-[#E07898]/15 p-6 text-center">
+                      <p className="text-[#9A7060] text-sm">
+                        {form.technicianId
+                          ? "This technician is fully booked on this date — try another date or a different technician."
+                          : "No availability on this date — try another."}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                      {slots.map((slot) => {
+                        const active = form.startTime === slot;
+                        return (
+                          <button
+                            key={slot}
+                            type="button"
+                            onClick={() => updateField("startTime", slot)}
+                            className={`px-2 py-2 rounded-lg text-sm font-medium transition-all
+                              ${active
+                                ? "bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white shadow-md shadow-[#E07898]/30"
+                                : "bg-[#0A0A0A] text-[#F5EDE6] border border-[#E07898]/20 hover:border-[#E07898]/50 hover:bg-[#E07898]/10"
+                              }`}
+                          >
+                            {timeLabel(slot)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
 
                 <div className="sm:col-span-2">
                   <Textarea label="Additional Notes" name="notes" value={form.notes}
