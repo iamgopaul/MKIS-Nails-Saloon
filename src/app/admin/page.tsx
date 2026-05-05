@@ -1118,6 +1118,7 @@ function TeamTab({ showToast }: { showToast: (m: string, ok?: boolean) => void }
   const [inviting, setInviting] = useState(false);
   const [draft, setDraft] = useState<Partial<TeamMember>>({});
   const [inviteEmail, setInviteEmail] = useState("");
+  const [sendingInvite, setSendingInvite] = useState(false);
 
   const reload = useCallback(() => {
     fetch("/api/admin/team").then((r) => r.json()).then((d) => setTeam(Array.isArray(d) ? d : []));
@@ -1125,22 +1126,28 @@ function TeamTab({ showToast }: { showToast: (m: string, ok?: boolean) => void }
   useEffect(() => { reload(); }, [reload]);
 
   async function sendInvite() {
+    if (sendingInvite) return; // guard against double-click
     if (!inviteEmail.trim() || !inviteEmail.includes("@")) {
       showToast("Please enter a valid email", false); return;
     }
-    const res = await fetch("/api/admin/invite", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: inviteEmail.trim() }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok) {
-      showToast("Invite sent! They'll receive an email shortly.");
-      setInviting(false);
-      setInviteEmail("");
-      reload();
-    } else {
-      showToast(data.error ?? "Failed to send invite", false);
+    setSendingInvite(true);
+    try {
+      const res = await fetch("/api/admin/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: inviteEmail.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        showToast("Invite sent! They'll receive an email shortly.");
+        setInviting(false);
+        setInviteEmail("");
+        reload();
+      } else {
+        showToast(data.error ?? "Failed to send invite", false);
+      }
+    } finally {
+      setSendingInvite(false);
     }
   }
 
@@ -1188,12 +1195,13 @@ function TeamTab({ showToast }: { showToast: (m: string, ok?: boolean) => void }
           </div>
           <Field label="Email" value={inviteEmail} onChange={setInviteEmail} />
           <div className="flex gap-3">
-            <button type="button" onClick={sendInvite}
-              className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white text-sm font-semibold">
-              Send Invite Email
+            <button type="button" onClick={sendInvite} disabled={sendingInvite}
+              className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white text-sm font-semibold hover:from-[#C45E7A] hover:to-[#B07A52] disabled:opacity-60 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2">
+              {sendingInvite && <span className="inline-block w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" aria-hidden="true" />}
+              {sendingInvite ? "Sending…" : "Send Invite Email"}
             </button>
-            <button type="button" onClick={() => { setInviting(false); setInviteEmail(""); }}
-              className="px-5 py-2 rounded-xl border border-[#E07898]/25 text-[#9A7060] text-sm">
+            <button type="button" onClick={() => { setInviting(false); setInviteEmail(""); }} disabled={sendingInvite}
+              className="px-5 py-2 rounded-xl border border-[#E07898]/25 text-[#9A7060] text-sm disabled:opacity-50 disabled:cursor-not-allowed">
               Cancel
             </button>
           </div>
