@@ -135,7 +135,7 @@ export default function ReviewsSection({ id }: ReviewsSectionProps) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    placeholder="Jane Doe"
+                    placeholder="Bella Boss"
                     className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-[#E07898]/20 text-[#F5EDE6] placeholder-[#9A7060]/50 focus:outline-none focus:border-[#E07898]/60 transition-colors"
                   />
                 </div>
