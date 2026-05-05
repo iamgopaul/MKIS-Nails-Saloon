@@ -13,17 +13,47 @@ const WELCOME: Message = {
   content: "Hi, I'm Bella 💅 Your assistant for MKIS Nail Saloon. Ask me anything about our services, team, hours, or how to book an appointment.",
 };
 
+// Bubble teasers shown next to the launcher while the chat is closed.
+// { delay: ms after page load, text: shown for ~6s }
+const TEASERS: { delay: number; text: string }[] = [
+  { delay:  10_000, text: "Hi 👋 Welcome to MKIS Nails!" },
+  { delay:  45_000, text: "Need help? Tap me anytime." },
+  { delay:  90_000, text: "Hope you're having a wonderful day :)" },
+  { delay: 150_000, text: "Have a question? I'm here 💅" },
+];
+const TEASER_VISIBLE_MS = 6500;
+
 export default function ChatWidget() {
   const [open, setOpen]         = useState(false);
   const [messages, setMessages] = useState<Message[]>([WELCOME]);
   const [input, setInput]       = useState("");
   const [loading, setLoading]   = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [teaser, setTeaser]     = useState<string | null>(null);
+  const teaserDismissed         = useRef(false);
+  const scrollRef               = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom on new message
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
+
+  // Schedule teaser messages — once the chat is opened, stop showing them
+  useEffect(() => {
+    if (open) {
+      teaserDismissed.current = true;
+      setTeaser(null);
+      return;
+    }
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    TEASERS.forEach(({ delay, text }) => {
+      timeouts.push(setTimeout(() => {
+        if (teaserDismissed.current) return;
+        setTeaser(text);
+        timeouts.push(setTimeout(() => setTeaser(null), TEASER_VISIBLE_MS));
+      }, delay));
+    });
+    return () => timeouts.forEach(clearTimeout);
+  }, [open]);
 
   async function send() {
     const trimmed = input.trim();
@@ -60,6 +90,28 @@ export default function ChatWidget() {
 
   return (
     <>
+      {/* Teaser speech bubble — only when closed */}
+      {!open && teaser && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 left-24 z-50 max-w-[220px] sm:max-w-xs
+                     bg-[#1C1614] border border-[#E07898]/30 rounded-2xl rounded-bl-sm
+                     px-4 py-2.5 shadow-xl shadow-black/40 chat-teaser-in cursor-pointer"
+          onClick={() => setOpen(true)}
+        >
+          <p className="text-sm text-[#F5EDE6] leading-snug">{teaser}</p>
+          <button
+            type="button"
+            aria-label="Dismiss"
+            onClick={(e) => { e.stopPropagation(); teaserDismissed.current = true; setTeaser(null); }}
+            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#0A0A0A] border border-[#E07898]/30 text-[#9A7060] hover:text-[#E07898] flex items-center justify-center text-xs"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Floating launcher */}
       <button
         type="button"
@@ -82,7 +134,7 @@ export default function ChatWidget() {
             alt="Bella"
             width={56}
             height={56}
-            className="w-full h-full rounded-full object-cover"
+            className="w-full h-full rounded-full object-cover scale-[1.6] object-[50%_30%]"
           />
         )}
       </button>
@@ -100,7 +152,7 @@ export default function ChatWidget() {
                 alt="Bella"
                 width={44}
                 height={44}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover scale-[1.6] object-[50%_30%]"
               />
             </div>
             <div>
