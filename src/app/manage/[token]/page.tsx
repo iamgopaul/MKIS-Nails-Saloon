@@ -28,14 +28,14 @@ export default async function ManagePage({ params }: Props) {
 
   if (!booking) {
     return (
-      <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "#0A0A0A", color: "#F5EDE6" }}>
-        <div style={{ maxWidth: 480, textAlign: "center" }}>
-          <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Link expired or invalid</h1>
-          <p style={{ color: "#9A7060", marginBottom: 24, lineHeight: 1.6 }}>
+      <main className="min-h-screen flex items-center justify-center p-6 bg-[#0A0A0A] text-[#F5EDE6]">
+        <div className="max-w-md text-center">
+          <h1 className="text-2xl font-bold mb-3">Link expired or invalid</h1>
+          <p className="text-[#9A7060] mb-6 leading-relaxed">
             This management link is no longer valid. If you need to change a booking, please call us at{" "}
-            <a href="tel:+17542365112" style={{ color: "#E07898" }}>+1 (754) 236-5112</a>.
+            <a href="tel:+17542365112" className="text-[#E07898]">+1 (754) 236-5112</a>.
           </p>
-          <Link href="/" style={{ color: "#E07898", textDecoration: "none", fontWeight: 600 }}>
+          <Link href="/" className="text-[#E07898] no-underline font-semibold hover:underline">
             ← Back to MKIS Nail Saloon
           </Link>
         </div>
@@ -45,13 +45,13 @@ export default async function ManagePage({ params }: Props) {
 
   if (booking.status === "Cancelled") {
     return (
-      <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "#0A0A0A", color: "#F5EDE6" }}>
-        <div style={{ maxWidth: 480, textAlign: "center" }}>
-          <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>This booking is cancelled</h1>
-          <p style={{ color: "#9A7060", marginBottom: 24, lineHeight: 1.6 }}>
+      <main className="min-h-screen flex items-center justify-center p-6 bg-[#0A0A0A] text-[#F5EDE6]">
+        <div className="max-w-md text-center">
+          <h1 className="text-2xl font-bold mb-3">This booking is cancelled</h1>
+          <p className="text-[#9A7060] mb-6 leading-relaxed">
             Your appointment for <strong>{booking.service_name}</strong> on {fmtDate(booking.preferred_date)} has been cancelled.
           </p>
-          <Link href="/#booking" style={{ color: "#E07898", textDecoration: "none", fontWeight: 600 }}>
+          <Link href="/#booking" className="text-[#E07898] no-underline font-semibold hover:underline">
             Book a new appointment →
           </Link>
         </div>

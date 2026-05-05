@@ -26,11 +26,16 @@ function fmtTime(t: string) {
   return `${hour12}:${String(m).padStart(2, "0")} ${ampm}`;
 }
 
-const BG    = "#0A0A0A";
-const CARD  = "#111111";
-const PINK  = "#E07898";
-const TEXT  = "#F5EDE6";
-const MUTED = "#9A7060";
+function formatDate(d: string) {
+  return new Date(`${d}T12:00:00`).toLocaleDateString("en-US", {
+    weekday: "long", year: "numeric", month: "long", day: "numeric",
+  });
+}
+
+const CARD_CLS    = "bg-[#111111] border border-[#E07898]/15 rounded-2xl";
+const BTN_PRIMARY = "flex-1 min-w-[160px] px-6 py-3.5 rounded-full bg-[#E07898] text-[#0A0A0A] font-bold text-xs uppercase tracking-wider hover:bg-[#C45E7A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors";
+const BTN_DANGER  = "flex-1 min-w-[160px] px-6 py-3.5 rounded-full bg-transparent text-[#ff8b9d] font-bold text-xs uppercase tracking-wider border border-[#ff8b9d]/40 hover:bg-[#ff8b9d]/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors";
+const BTN_GHOST   = "flex-1 min-w-[120px] px-6 py-3.5 rounded-full bg-transparent text-[#F5EDE6] font-semibold text-xs uppercase tracking-wider border border-[#E07898]/25 hover:border-[#E07898]/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors";
 
 export default function ManageBookingClient({ token, booking }: { token: string; booking: Booking }) {
   const [mode, setMode]               = useState<"summary" | "reschedule" | "done">("summary");
@@ -38,13 +43,11 @@ export default function ManageBookingClient({ token, booking }: { token: string;
   const [error, setError]             = useState("");
   const [submitting, setSubmitting]   = useState(false);
 
-  // Reschedule state
   const [date, setDate]               = useState("");
   const [slots, setSlots]             = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [pickedTime, setPickedTime]   = useState("");
 
-  // Updated summary after reschedule
   const [updated, setUpdated]         = useState<{ date: string; startTime: string; endTime: string } | null>(null);
 
   const todayStr = new Date().toISOString().split("T")[0];
@@ -104,17 +107,17 @@ export default function ManageBookingClient({ token, booking }: { token: string;
   }
 
   return (
-    <main style={{ minHeight: "100vh", padding: "48px 24px", background: BG, color: TEXT }}>
-      <div style={{ maxWidth: 560, margin: "0 auto" }}>
-        <Link href="/" style={{ color: MUTED, fontSize: 13, textDecoration: "none" }}>
+    <main className="min-h-screen bg-[#0A0A0A] text-[#F5EDE6] py-12 px-6">
+      <div className="max-w-xl mx-auto">
+        <Link href="/" className="text-[#9A7060] text-sm no-underline hover:text-[#E07898] transition-colors">
           ← MKIS Nail Saloon
         </Link>
-        <h1 style={{ fontSize: 28, fontWeight: 700, margin: "16px 0 8px" }}>Manage Booking</h1>
-        <p style={{ color: MUTED, marginBottom: 28 }}>
+        <h1 className="text-3xl font-bold mt-4 mb-2 font-[family-name:var(--font-playfair)]">Manage Booking</h1>
+        <p className="text-[#9A7060] mb-7">
           Hi {booking.clientName.split(" ")[0]}, here are your appointment details.
         </p>
 
-        <div style={{ background: CARD, border: `1px solid rgba(224,120,152,0.15)`, borderRadius: 14, padding: 24, marginBottom: 24 }}>
+        <div className={`${CARD_CLS} p-6 mb-6`}>
           <Row label="Service"    value={booking.serviceName} />
           <Row label="Date"       value={updated ? formatDate(updated.date) : booking.prettyDate} />
           <Row label="Time"       value={
@@ -126,70 +129,70 @@ export default function ManageBookingClient({ token, booking }: { token: string;
         </div>
 
         {mode === "summary" && (
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <button type="button" onClick={() => setMode("reschedule")} disabled={submitting} style={btnPrimary}>
+          <div className="flex gap-3 flex-wrap">
+            <button type="button" onClick={() => setMode("reschedule")} disabled={submitting} className={BTN_PRIMARY}>
               Reschedule
             </button>
-            <button type="button" onClick={cancel} disabled={submitting} style={btnDanger}>
+            <button type="button" onClick={cancel} disabled={submitting} className={BTN_DANGER}>
               {submitting ? "Cancelling…" : "Cancel Booking"}
             </button>
           </div>
         )}
 
         {mode === "reschedule" && (
-          <div style={{ background: CARD, border: `1px solid rgba(224,120,152,0.15)`, borderRadius: 14, padding: 24 }}>
-            <h2 style={{ fontSize: 14, textTransform: "uppercase", letterSpacing: 1.5, color: PINK, fontWeight: 700, marginBottom: 16 }}>
+          <div className={`${CARD_CLS} p-6`}>
+            <h2 className="text-sm uppercase tracking-widest text-[#E07898] font-bold mb-4">
               Pick a new time
             </h2>
 
-            <label htmlFor="reschedule-date" style={{ display: "block", fontSize: 12, color: MUTED, marginBottom: 6 }}>New date</label>
+            <label htmlFor="reschedule-date" className="block text-xs text-[#9A7060] mb-1.5">
+              New date
+            </label>
             <input
               id="reschedule-date"
               type="date"
               min={todayStr}
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              style={{ width: "100%", padding: "12px 14px", borderRadius: 10, background: BG, border: `1px solid rgba(224,120,152,0.2)`, color: TEXT, fontSize: 15, marginBottom: 18, colorScheme: "dark" }}
+              className="w-full px-3.5 py-3 rounded-xl bg-[#0A0A0A] border border-[#E07898]/20 text-[#F5EDE6] text-base mb-4 [color-scheme:dark] focus:outline-none focus:border-[#E07898]/60"
             />
 
             {date && (
               <>
-                <label style={{ display: "block", fontSize: 12, color: MUTED, marginBottom: 6 }}>Available times</label>
+                <span className="block text-xs text-[#9A7060] mb-1.5">Available times</span>
                 {loadingSlots ? (
-                  <p style={{ color: MUTED, fontSize: 13 }}>Loading…</p>
+                  <p className="text-[#9A7060] text-sm">Loading…</p>
                 ) : slots.length === 0 ? (
-                  <p style={{ color: MUTED, fontSize: 13 }}>No openings on this date. Try another.</p>
+                  <p className="text-[#9A7060] text-sm">No openings on this date. Try another.</p>
                 ) : (
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(96px, 1fr))", gap: 8, marginBottom: 18 }}>
-                    {slots.map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => setPickedTime(s)}
-                        style={{
-                          padding: "10px 8px",
-                          borderRadius: 8,
-                          background: pickedTime === s ? PINK : "transparent",
-                          color: pickedTime === s ? BG : TEXT,
-                          border: pickedTime === s ? "none" : `1px solid rgba(224,120,152,0.25)`,
-                          fontWeight: 600,
-                          fontSize: 13,
-                          cursor: "pointer",
-                        }}
-                      >
-                        {fmtTime(s)}
-                      </button>
-                    ))}
+                  <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-2 mb-4">
+                    {slots.map((s) => {
+                      const selected = pickedTime === s;
+                      return (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => setPickedTime(s)}
+                          className={`px-2 py-2.5 rounded-lg font-semibold text-sm transition-colors ${
+                            selected
+                              ? "bg-[#E07898] text-[#0A0A0A] border-none"
+                              : "bg-transparent text-[#F5EDE6] border border-[#E07898]/25 hover:border-[#E07898]/60"
+                          }`}
+                        >
+                          {fmtTime(s)}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </>
             )}
 
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <button type="button" onClick={reschedule} disabled={submitting || !pickedTime} style={btnPrimary}>
+            <div className="flex gap-3 flex-wrap">
+              <button type="button" onClick={reschedule} disabled={submitting || !pickedTime} className={BTN_PRIMARY}>
                 {submitting ? "Saving…" : "Confirm reschedule"}
               </button>
-              <button type="button" onClick={() => { setMode("summary"); setError(""); }} disabled={submitting} style={btnSecondary}>
+              <button type="button" onClick={() => { setMode("summary"); setError(""); }} disabled={submitting} className={BTN_GHOST}>
                 Back
               </button>
             </div>
@@ -197,23 +200,23 @@ export default function ManageBookingClient({ token, booking }: { token: string;
         )}
 
         {mode === "done" && (
-          <div style={{ background: CARD, border: `1px solid rgba(224,120,152,0.15)`, borderRadius: 14, padding: 28, textAlign: "center" }}>
-            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>
+          <div className={`${CARD_CLS} p-7 text-center`}>
+            <h2 className="text-xl font-bold mb-2">
               {doneKind === "cancelled" ? "Booking cancelled" : "Booking updated"}
             </h2>
-            <p style={{ color: MUTED, marginBottom: 16, lineHeight: 1.6 }}>
+            <p className="text-[#9A7060] mb-4 leading-relaxed">
               {doneKind === "cancelled"
                 ? "We've cancelled your appointment. A confirmation email is on its way."
                 : "Your new appointment time is saved. A confirmation email is on its way."}
             </p>
-            <Link href="/" style={{ color: PINK, textDecoration: "none", fontWeight: 600 }}>
+            <Link href="/" className="text-[#E07898] no-underline font-semibold hover:underline">
               Back to MKIS Nail Saloon →
             </Link>
           </div>
         )}
 
         {error && (
-          <p style={{ marginTop: 16, color: "#ff8b9d", fontSize: 13 }}>
+          <p className="mt-4 text-[#ff8b9d] text-sm">
             {error}
           </p>
         )}
@@ -224,36 +227,9 @@ export default function ManageBookingClient({ token, booking }: { token: string;
 
 function Row({ label, value, last }: { label: string; value: string; last?: boolean }) {
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "space-between",
-      gap: 16,
-      padding: "10px 0",
-      borderBottom: last ? "none" : "1px solid rgba(224,120,152,0.1)",
-      fontSize: 14,
-    }}>
-      <span style={{ color: MUTED }}>{label}</span>
-      <span style={{ fontWeight: 600 }}>{value}</span>
+    <div className={`flex justify-between gap-4 py-2.5 text-sm ${last ? "" : "border-b border-[#E07898]/10"}`}>
+      <span className="text-[#9A7060]">{label}</span>
+      <span className="font-semibold">{value}</span>
     </div>
   );
 }
-
-function formatDate(d: string) {
-  return new Date(`${d}T12:00:00`).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-}
-
-const btnPrimary: React.CSSProperties = {
-  padding: "14px 24px", borderRadius: 999, background: PINK, color: BG,
-  fontWeight: 700, fontSize: 13, letterSpacing: 1, textTransform: "uppercase",
-  border: "none", cursor: "pointer", flex: "1 1 160px",
-};
-const btnDanger: React.CSSProperties = {
-  padding: "14px 24px", borderRadius: 999, background: "transparent", color: "#ff8b9d",
-  fontWeight: 700, fontSize: 13, letterSpacing: 1, textTransform: "uppercase",
-  border: "1px solid rgba(255,139,157,0.4)", cursor: "pointer", flex: "1 1 160px",
-};
-const btnSecondary: React.CSSProperties = {
-  padding: "14px 24px", borderRadius: 999, background: "transparent", color: TEXT,
-  fontWeight: 600, fontSize: 13, letterSpacing: 1, textTransform: "uppercase",
-  border: "1px solid rgba(224,120,152,0.25)", cursor: "pointer", flex: "1 1 120px",
-};
