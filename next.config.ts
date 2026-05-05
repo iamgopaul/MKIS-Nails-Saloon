@@ -17,6 +17,8 @@ const securityHeaders = [
   { key: "X-Frame-Options",           value: "DENY" },
   { key: "Referrer-Policy",           value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy",        value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
+  // Required by Sentry's browser profiler to access the JS Self-Profiling API.
+  { key: "Document-Policy",           value: "js-profiling" },
   {
     key: "Content-Security-Policy",
     value: [
