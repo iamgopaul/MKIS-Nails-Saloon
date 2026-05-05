@@ -776,6 +776,7 @@ function BookingsTab() {
   const [filter, setFilter] = useState("");
   const [techFilter, setTechFilter] = useState<string>("all"); // "all" | "mine" | <team.id>
   const [myTeamId, setMyTeamId] = useState<string | null>(null);
+  const [myRole, setMyRole]   = useState<"admin" | "team" | null>(null);
   const [showPast, setShowPast] = useState(false);
 
   useEffect(() => {
@@ -788,7 +789,10 @@ function BookingsTab() {
       .limit(500)
       .then(({ data }) => setRows(data ?? []));
     supabase.from("team").select("*").eq("active", true).order("display_order").then(({ data }) => setTeam(data ?? []));
-    fetch("/api/me").then((r) => r.json()).then((d) => setMyTeamId(d.team?.id ?? null));
+    fetch("/api/me").then((r) => r.json()).then((d) => {
+      setMyTeamId(d.team?.id ?? null);
+      setMyRole((d.session?.role as "admin" | "team") ?? null);
+    });
   }, []);
 
   const filtered = rows.filter((r) => {
@@ -810,6 +814,25 @@ function BookingsTab() {
 
   const upcoming = filtered.filter((r) => r.preferred_date >= new Date().toISOString().split("T")[0]);
   const past     = filtered.filter((r) => r.preferred_date <  new Date().toISOString().split("T")[0]);
+
+  const canEdit = (r: BookingRow) =>
+    myRole === "admin" || (myTeamId !== null && r.technician_id === myTeamId);
+
+  async function changeStatus(row: BookingRow, next: string) {
+    const previous = row.status;
+    setRows((rs) => rs.map((r) => r.id === row.id ? { ...r, status: next } : r)); // optimistic
+    const res = await fetch(`/api/bookings/${row.id}/status`, {
+      method:  "PUT",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ status: next }),
+    });
+    if (!res.ok) {
+      // revert
+      setRows((rs) => rs.map((r) => r.id === row.id ? { ...r, status: previous } : r));
+      const json = await res.json().catch(() => ({}));
+      alert(json.error ?? "Could not update status");
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -834,7 +857,7 @@ function BookingsTab() {
         <h3 className="text-sm font-semibold text-[#9A7060] uppercase tracking-wider mb-3">Upcoming ({upcoming.length})</h3>
         {upcoming.length === 0 ? (
           <p className="text-[#9A7060] text-sm">No upcoming bookings match your filters.</p>
-        ) : <BookingsTable rows={upcoming} />}
+        ) : <BookingsTable rows={upcoming} canEdit={canEdit} onStatusChange={changeStatus} />}
       </div>
 
       {past.length > 0 && (
@@ -848,7 +871,7 @@ function BookingsTab() {
           </button>
           {showPast && (
             <div className="mt-3">
-              <BookingsTable rows={past} />
+              <BookingsTable rows={past} canEdit={canEdit} onStatusChange={changeStatus} />
             </div>
           )}
         </div>
@@ -866,7 +889,34 @@ function statusBadge(status: string) {
   return <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${cls}`}>{status}</span>;
 }
 
-function BookingsTable({ rows }: { rows: BookingRow[] }) {
+const STATUS_OPTIONS = ["Pending", "Confirmed", "Completed", "No Show", "Cancelled"] as const;
+
+function StatusSelect({ row, onChange }: { row: BookingRow; onChange: (next: string) => void }) {
+  return (
+    <select
+      value={row.status}
+      onChange={(e) => onChange(e.target.value)}
+      aria-label={`Status for ${row.client_name}`}
+      className="bg-[#0A0A0A] border border-[#E07898]/25 text-[#F5EDE6] text-xs rounded-md px-2 py-1 focus:outline-none focus:border-[#E07898]/60"
+    >
+      {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+    </select>
+  );
+}
+
+function BookingsTable({
+  rows,
+  canEdit,
+  onStatusChange,
+}: {
+  rows: BookingRow[];
+  canEdit?: (row: BookingRow) => boolean;
+  onStatusChange?: (row: BookingRow, next: string) => void;
+}) {
+  const renderStatus = (r: BookingRow) =>
+    canEdit && onStatusChange && canEdit(r)
+      ? <StatusSelect row={r} onChange={(next) => onStatusChange(r, next)} />
+      : statusBadge(r.status);
   return (
     <>
       {/* Mobile: stacked cards */}
@@ -878,7 +928,7 @@ function BookingsTable({ rows }: { rows: BookingRow[] }) {
                 <p className="font-semibold text-[#F5EDE6]">{r.client_name}</p>
                 {r.client_phone && <p className="text-xs text-[#9A7060]">{r.client_phone}</p>}
               </div>
-              {statusBadge(r.status)}
+              {renderStatus(r)}
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs mt-3">
               <div>
@@ -927,7 +977,7 @@ function BookingsTable({ rows }: { rows: BookingRow[] }) {
                   </td>
                   <td className="px-4 py-3 text-[#9A7060]">{r.service_name}</td>
                   <td className="px-4 py-3 text-[#9A7060]">{r.technician_name ?? "—"}</td>
-                  <td className="px-4 py-3">{statusBadge(r.status)}</td>
+                  <td className="px-4 py-3">{renderStatus(r)}</td>
                 </tr>
               ))}
             </tbody>
