@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, AuthError } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendInviteEmail } from "@/lib/inviteEmail";
 
 /**
  * POST /api/admin/invite — Body: { email }
  *
- * Sends a Supabase magic-link invite email. The team member fills in their
- * name + password on /admin/setup, then can edit their job title, bio, and
- * photo from their profile tab.
+ * Generates a Supabase magic link, then sends a branded invite email
+ * via our Gmail SMTP. Team member clicks the link → /admin/setup → finishes signup.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -20,32 +20,46 @@ export async function POST(req: NextRequest) {
     const supabase = createAdminClient();
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-    const { data: invite, error: inviteErr } = await supabase.auth.admin.inviteUserByEmail(email, {
-      redirectTo: `${siteUrl}/admin/setup`,
+    // 1) Generate invite link (creates the auth user, returns the magic URL — does NOT email)
+    const { data, error } = await supabase.auth.admin.generateLink({
+      type:  "invite",
+      email,
+      options: {
+        redirectTo: `${siteUrl}/admin/setup`,
+      },
     });
-    if (inviteErr || !invite.user) {
-      return NextResponse.json({ error: inviteErr?.message ?? "Invite failed" }, { status: 500 });
+    if (error || !data?.user || !data?.properties?.action_link) {
+      return NextResponse.json({ error: error?.message ?? "Invite failed" }, { status: 500 });
     }
 
-    // Auto-create an empty team listing linked to the new user.
-    // Name + role get filled in once the user completes setup and edits their profile.
+    // 2) Send the branded email through Gmail SMTP
+    try {
+      await sendInviteEmail({ to: email, inviteUrl: data.properties.action_link });
+    } catch (mailErr) {
+      console.error("[invite] email send failed:", mailErr);
+      return NextResponse.json({
+        error: "User created, but invite email failed to send. Check your SMTP settings."
+      }, { status: 500 });
+    }
+
+    // 3) Auto-create a hidden team listing — name/role/bio filled in by the user later
     const { count } = await supabase
       .from("team")
       .select("id", { count: "exact", head: true })
-      .eq("user_id", invite.user.id);
+      .eq("user_id", data.user.id);
     if (!count || count === 0) {
       await supabase.from("team").insert({
-        user_id:       invite.user.id,
+        user_id:       data.user.id,
         name:          email.split("@")[0],
         role:          "Nail Technician",
         bio:           "",
         photo_url:     "",
         display_order: 99,
-        active:        false,    // hidden until they complete their profile
+        active:        false,
       });
     }
 
-    return NextResponse.json({ success: true, userId: invite.user.id });
+    return NextResponse.json({ success: true, userId: data.user.id });
   } catch (err) {
     if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
     console.error("[invite] error:", err);

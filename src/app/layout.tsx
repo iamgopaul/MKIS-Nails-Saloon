@@ -15,7 +15,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://mkisnailssaloon.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://mkisnails.com"),
   title: "MKIS Nails Saloon — Premium Nail Art & Care",
   description:
     "Book your nail appointment at MKIS Nails Saloon. We offer gel manicures, acrylics, nail art, and pedicures with a personal touch.",
