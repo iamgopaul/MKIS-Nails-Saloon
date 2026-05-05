@@ -17,8 +17,6 @@ const securityHeaders = [
   { key: "X-Frame-Options",           value: "DENY" },
   { key: "Referrer-Policy",           value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy",        value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
-  // Required by Sentry's browser profiler to access the JS Self-Profiling API.
-  { key: "Document-Policy",           value: "js-profiling" },
   {
     key: "Content-Security-Policy",
     value: [
@@ -38,6 +36,14 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Transcode gallery / team photos hosted in Supabase Storage to AVIF/WebP
+  // and resize on demand. Massive page-weight savings on image-heavy pages.
+  images: {
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" },
+    ],
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
