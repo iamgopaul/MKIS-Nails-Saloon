@@ -361,17 +361,17 @@ export default function ChatWidget() {
           role="status"
           aria-live="polite"
           className={`fixed z-50 max-w-[220px] sm:max-w-xs
-                     bg-[#1C1614] border border-[#E07898]/30 rounded-2xl
+                     bg-white border border-[#EADBD2] rounded-2xl
                      ${teaserOnLeft ? "rounded-br-sm" : "rounded-bl-sm"}
-                     px-4 py-2.5 shadow-xl shadow-black/40 chat-teaser-in cursor-pointer`}
+                     px-4 py-2.5 shadow-[0_15px_30px_-12px_rgba(26,20,16,0.18)] chat-teaser-in cursor-pointer`}
           onClick={() => setOpen(true)}
         >
-          <p className="text-sm text-[#F5EDE6] leading-snug">{teaser}</p>
+          <p className="text-sm text-[#1A1410] leading-snug">{teaser}</p>
           <button
             type="button"
             aria-label="Dismiss"
             onClick={(e) => { e.stopPropagation(); teaserDismissed.current = true; setTeaser(null); }}
-            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#0A0A0A] border border-[#E07898]/30 text-[#9A7060] hover:text-[#E07898] flex items-center justify-center text-xs"
+            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-white border border-[#EADBD2] text-[#A89484] hover:text-[#C45E7A] flex items-center justify-center text-xs"
           >
             ✕
           </button>
@@ -387,16 +387,16 @@ export default function ChatWidget() {
         aria-controls="bella-chat-panel"
         aria-haspopup="dialog"
         title="Chat with Bella · drag to move"
-        className={`fixed z-50 w-14 h-14 rounded-full shadow-2xl shadow-[#E07898]/40 overflow-hidden touch-none select-none
+        className={`fixed z-50 w-14 h-14 rounded-full shadow-[0_15px_30px_-8px_rgba(224,120,152,0.5)] overflow-hidden touch-none select-none
           ${dragging ? "cursor-grabbing" : "cursor-grab"}
           ${dragging ? "" : "transition-shadow"}
           ${open
-            ? "bg-[#1C1614] border-2 border-[#E07898]/60 hover:bg-[#0E0B09] flex items-center justify-center"
+            ? "bg-white border border-[#EADBD2] hover:bg-[#FBF7F4] flex items-center justify-center"
             : "bg-gradient-to-br from-[#E07898] to-[#C9956B] hover:scale-105 p-[2px]"
           }`}
       >
         {open ? (
-          <svg className="w-6 h-6 text-[#E07898]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-[#1A1410]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
@@ -418,12 +418,12 @@ export default function ChatWidget() {
           role="dialog"
           aria-label="Chat with Bella"
           aria-modal="false"
-          className="fixed sm:w-96 z-50 bg-[#1C1614] rounded-3xl border border-[#E07898]/25
-                     shadow-2xl shadow-black/40 flex flex-col max-h-[70vh] overflow-hidden"
+          className="fixed sm:w-96 z-50 bg-white rounded-3xl border border-[#EADBD2]
+                     shadow-[0_25px_60px_-15px_rgba(26,20,16,0.25)] flex flex-col max-h-[70vh] overflow-hidden"
         >
           {/* Header */}
           <div className="bg-gradient-to-br from-[#E07898] to-[#C9956B] px-5 py-4 flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white/60 flex-shrink-0 bg-white/10">
+            <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white/70 flex-shrink-0 bg-white/10">
               <Image
                 src="/bella.jpeg"
                 alt="Bella"
@@ -433,8 +433,8 @@ export default function ChatWidget() {
               />
             </div>
             <div>
-              <p className="font-[family-name:var(--font-playfair)] text-base font-bold text-white leading-tight">Bella</p>
-              <p className="text-xs text-white/80">MKIS Nail Saloon assistant</p>
+              <p className="font-[family-name:var(--font-playfair)] text-base font-medium text-white leading-tight">Bella</p>
+              <p className="text-xs text-white/80 font-light">MKIS Nail Saloon assistant</p>
             </div>
           </div>
 
@@ -444,15 +444,15 @@ export default function ChatWidget() {
             role="log"
             aria-live="polite"
             aria-relevant="additions"
-            className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-[#0E0B09]"
+            className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-[#FBF7F4]"
           >
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
                   className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed
                     ${m.role === "user"
-                      ? "bg-gradient-to-br from-[#E07898] to-[#C9956B] text-white rounded-br-sm"
-                      : "bg-[#1C1614] text-[#F5EDE6] border border-[#E07898]/15 rounded-bl-sm"
+                      ? "bg-[#E07898] text-white rounded-br-sm"
+                      : "bg-white text-[#1A1410] border border-[#EADBD2] rounded-bl-sm"
                     }`}
                 >
                   {m.content}
@@ -461,17 +461,17 @@ export default function ChatWidget() {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-[#1C1614] border border-[#E07898]/15 rounded-2xl rounded-bl-sm px-4 py-2.5 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#E07898]/70 animate-bounce typing-dot-1" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#E07898]/70 animate-bounce typing-dot-2" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#E07898]/70 animate-bounce typing-dot-3" />
+                <div className="bg-white border border-[#EADBD2] rounded-2xl rounded-bl-sm px-4 py-2.5 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#E07898] animate-bounce typing-dot-1" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#E07898] animate-bounce typing-dot-2" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#E07898] animate-bounce typing-dot-3" />
                 </div>
               </div>
             )}
           </div>
 
           {/* Input */}
-          <div className="px-3 py-3 bg-[#1C1614] border-t border-[#E07898]/15">
+          <div className="px-3 py-3 bg-white border-t border-[#EADBD2]">
             <div className="flex items-end gap-2">
               <textarea
                 ref={textareaRef}
@@ -481,16 +481,16 @@ export default function ChatWidget() {
                 placeholder="Type your question…"
                 rows={1}
                 aria-label="Type a message"
-                className="flex-1 px-3 py-2 rounded-xl bg-[#0A0A0A] border border-[#E07898]/20 text-[#F5EDE6] text-sm
-                           placeholder-[#9A7060]/60 focus:outline-none focus:border-[#E07898]/60 resize-none max-h-32"
+                className="flex-1 px-3 py-2 rounded-xl bg-[#FBF7F4] border border-[#EADBD2] text-[#1A1410] text-sm
+                           placeholder:text-[#A89484] focus:outline-none focus:border-[#E07898] focus:ring-2 focus:ring-[#E07898]/20 resize-none max-h-32"
               />
               <button
                 type="button"
                 onClick={send}
                 disabled={!input.trim() || loading}
                 aria-label="Send message"
-                className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E07898] to-[#C9956B] text-white flex items-center justify-center
-                           hover:from-[#C45E7A] hover:to-[#B07A52] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0"
+                className="w-10 h-10 rounded-xl bg-[#E07898] text-white flex items-center justify-center
+                           hover:bg-[#C45E7A] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

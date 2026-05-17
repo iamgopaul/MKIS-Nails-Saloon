@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import SectionHeading from "@/components/ui/SectionHeading";
+import Button from "@/components/ui/Button";
 
 interface TrendingService {
   name: string;
@@ -9,24 +10,16 @@ interface TrendingService {
   percentage: number;
 }
 
-const BADGE_COLORS = [
-  "from-[#E07898] to-[#C9956B]",
-  "from-[#C9956B] to-[#D4A882]",
-  "from-[#D4849A] to-[#E07898]",
-  "from-[#C9956B] to-[#E07898]",
-  "from-[#E07898] to-[#D4849A]",
-];
-
 const RANK_LABELS = ["01", "02", "03", "04", "05"];
 
-function ProgressBar({ percentage, colorClass }: { percentage: number; colorClass: string }) {
+function ProgressBar({ percentage }: { percentage: number }) {
   const barRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (barRef.current) barRef.current.style.width = `${percentage}%`;
   }, [percentage]);
   return (
-    <div className="h-1.5 bg-[#E07898]/10 rounded-full overflow-hidden">
-      <div ref={barRef} className={`h-full bg-gradient-to-r ${colorClass} rounded-full transition-all duration-700`} />
+    <div className="h-1 bg-[#F5EDE6] rounded-full overflow-hidden">
+      <div ref={barRef} className="h-full bg-[#E07898] rounded-full transition-all duration-700" />
     </div>
   );
 }
@@ -52,26 +45,25 @@ export default function TrendingSection({ id }: { id: string }) {
 
   useEffect(() => {
     fetchTrending();
-    const id = setInterval(fetchTrending, 5 * 60_000); // refresh every 5 min
+    const id = setInterval(fetchTrending, 5 * 60_000);
     return () => clearInterval(id);
   }, []);
 
-  // Always render — show empty state when no booking data yet
-
   return (
-    <section id={id} className="py-24 bg-[#080808]/90 backdrop-blur-sm">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id={id} className="py-24 bg-[#FBF7F4]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         <SectionHeading
-          title="Trending This Week"
-          subtitle="Based on real bookings, updated automatically."
+          eyebrow="This week"
+          title="What clients are loving"
+          subtitle="Based on real bookings — updated automatically."
         />
 
         {lastUpdated && (
-          <div className="flex justify-center mb-8 -mt-6">
-            <div className="flex items-center gap-2 text-xs text-[#9A7060] bg-[#1C1614] border border-[#E07898]/15 rounded-full px-4 py-2">
-              <span className="relative flex h-2 w-2">
+          <div className="flex justify-center mb-10 -mt-6">
+            <div className="flex items-center gap-2 text-[11px] text-[#6B5448] bg-white border border-[#EADBD2] rounded-full px-3 py-1">
+              <span className="relative flex h-1.5 w-1.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E07898] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E07898]" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#E07898]" />
               </span>
               Live
             </div>
@@ -81,22 +73,20 @@ export default function TrendingSection({ id }: { id: string }) {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-[#1C1614] rounded-3xl p-6 border border-[#E07898]/10 animate-pulse h-40" />
+              <div key={i} className="bg-white rounded-3xl p-6 border border-[#EADBD2] animate-pulse h-40" />
             ))}
           </div>
         ) : trending.length === 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {["Gel Manicure", "Acrylic Full Set", "Nail Art"].map((name, i) => (
-              <div key={name} className={`bg-[#1C1614] rounded-3xl p-6 border border-[#E07898]/15 opacity-50`}>
+              <div key={name} className="bg-white rounded-3xl p-7 border border-[#EADBD2] opacity-60">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-[#E07898]/40 tracking-tight">{RANK_LABELS[i]}</span>
-                  {i === 0 && <span className="px-3 py-1 rounded-full bg-[#E07898]/20 text-[#E07898] text-xs font-bold">Trending</span>}
+                  <span className="display-md text-2xl text-[#A89484] tracking-tight">{RANK_LABELS[i]}</span>
+                  {i === 0 && <span className="px-3 py-1 rounded-full bg-[#FCE7EE] text-[#C45E7A] text-[11px] font-medium">Trending</span>}
                 </div>
-                <h3 className="font-[family-name:var(--font-playfair)] text-xl font-bold text-[#F5EDE6] mb-2">{name}</h3>
-                <p className="text-[#9A7060] text-sm mb-4">Trending data appears once bookings come in</p>
-                <div className="h-1.5 bg-[#E07898]/10 rounded-full overflow-hidden">
-                  <div className={`h-full bg-gradient-to-r ${BADGE_COLORS[i]} rounded-full ${["w-[70%]","w-[50%]","w-[30%]"][i]}`} />
-                </div>
+                <h3 className="display-md text-xl text-[#1A1410] mb-2">{name}</h3>
+                <p className="text-[#A89484] text-sm mb-4">Trending data appears once bookings come in</p>
+                <ProgressBar percentage={[70, 50, 30][i]} />
               </div>
             ))}
           </div>
@@ -105,45 +95,37 @@ export default function TrendingSection({ id }: { id: string }) {
             {trending.map((svc, i) => (
               <div
                 key={svc.name}
-                className={`group relative bg-[#1C1614] rounded-3xl p-6 border transition-all duration-300
+                className={`group bg-white rounded-3xl p-7 border transition-all duration-300
                   ${i === 0
-                    ? "border-[#E07898]/50 shadow-xl shadow-[#E07898]/10 lg:col-span-1"
-                    : "border-[#E07898]/15 hover:border-[#E07898]/40"
+                    ? "border-[#E07898]/40 shadow-[0_20px_40px_-20px_rgba(224,120,152,0.25)]"
+                    : "border-[#EADBD2] hover:border-[#E07898]/40 hover:shadow-[0_12px_30px_-15px_rgba(26,20,16,0.12)]"
                   }`}
               >
-                {/* Rank badge */}
                 <div className="flex items-center justify-between mb-4">
-                  <span className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-[#E07898]/40 tracking-tight">{RANK_LABELS[i]}</span>
+                  <span className="display-md text-2xl text-[#A89484] tracking-tight">{RANK_LABELS[i]}</span>
                   {i === 0 && (
-                    <span className="px-3 py-1 rounded-full bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white text-xs font-bold">
-                      Most Popular
+                    <span className="px-3 py-1 rounded-full bg-[#E07898] text-white text-[11px] font-medium">
+                      Most popular
                     </span>
                   )}
                 </div>
 
-                <h3 className="font-[family-name:var(--font-playfair)] text-xl font-bold text-[#F5EDE6] mb-2">
-                  {svc.name}
-                </h3>
+                <h3 className="display-md text-xl text-[#1A1410] mb-2">{svc.name}</h3>
 
-                <p className="text-[#9A7060] text-sm mb-4">
+                <p className="text-[#6B5448] text-sm mb-5 font-light">
                   {svc.count} booking{svc.count !== 1 ? "s" : ""} this week
                 </p>
 
-                <ProgressBar percentage={svc.percentage} colorClass={BADGE_COLORS[i]} />
-                <p className="text-xs text-[#9A7060] mt-1.5 text-right">{svc.percentage}% of bookings</p>
+                <ProgressBar percentage={svc.percentage} />
+                <p className="text-[11px] text-[#A89484] mt-2 text-right tracking-wide">{svc.percentage}% of bookings</p>
               </div>
             ))}
           </div>
         )}
 
-        <div className="mt-12 text-center">
-          <a
-            href="#booking"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-[#E07898] to-[#C9956B]
-                       text-white text-lg font-semibold hover:from-[#C45E7A] hover:to-[#B07A52] transition-all
-                       shadow-lg shadow-[#E07898]/25"
-          >
-            Book a Trending Service →
+        <div className="mt-14 text-center">
+          <a href="#booking">
+            <Button size="lg">Book a Trending Service</Button>
           </a>
         </div>
       </div>

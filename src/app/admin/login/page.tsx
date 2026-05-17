@@ -31,34 +31,37 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center px-4 relative">
+    <div className="min-h-screen bg-[#FBF7F4] flex items-center justify-center px-4 relative">
+      {/* Soft decorative blooms */}
+      <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#FCE7EE] blur-3xl opacity-60 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-[#F1E3D3] blur-3xl opacity-50 pointer-events-none" />
+
       <a href={SITE_URL} aria-label="Back to homepage"
-        className="absolute top-6 left-6 flex items-center gap-2 px-3 py-2 rounded-full text-[#9A7060] hover:text-[#E07898] hover:bg-[#1C1614] transition-all">
+        className="absolute top-6 left-6 flex items-center gap-2 px-3 py-2 rounded-full text-[#6B5448] hover:text-[#C45E7A] hover:bg-white transition-all z-10">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
         <span className="text-sm font-medium">Back to site</span>
       </a>
-      <div className="w-full max-w-md">
+      <div className="relative w-full max-w-md">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <div className="relative mb-4">
-            <div className="absolute inset-0 rounded-full bg-[#E07898] blur-xl opacity-40" />
-            <div className="relative rounded-full p-[3px] bg-gradient-to-br from-[#E07898] via-[#C9956B] to-[#D4A882]">
-              <div className="rounded-full bg-[#0A0A0A] p-1">
+            <div className="relative rounded-full p-[3px] bg-gradient-to-br from-[#E07898] to-[#C9956B]">
+              <div className="rounded-full bg-white p-1">
                 <Image src="/logo.png" alt="MKIS" width={56} height={56} className="rounded-full object-cover" />
               </div>
             </div>
           </div>
-          <h1 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-[#F5EDE6]">
-            MKIS <span className="bg-gradient-to-r from-[#E07898] to-[#C9956B] bg-clip-text text-transparent">Admin</span>
+          <h1 className="font-[family-name:var(--font-playfair)] text-2xl font-normal text-[#1A1410]">
+            MKIS <span className="italic text-[#C45E7A]">Admin</span>
           </h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-[#1C1614] rounded-3xl p-8 border border-[#E07898]/20 shadow-2xl shadow-[#E07898]/5">
+        <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-8 border border-[#EADBD2] shadow-[0_30px_60px_-25px_rgba(26,20,16,0.15)]">
           <div className="space-y-5">
             <div>
-              <label htmlFor="login-email" className="block text-sm font-medium text-[#F5EDE6]/80 mb-2">Email</label>
+              <label htmlFor="login-email" className="block text-[13px] font-medium text-[#1A1410] mb-1.5">Email</label>
               <input
                 id="login-email"
                 type="email"
@@ -66,12 +69,12 @@ export default function AdminLoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="your@email.com"
-                className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-[#E07898]/20 text-[#F5EDE6]
-                           placeholder-[#9A7060]/50 focus:outline-none focus:border-[#E07898]/60 transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-white border border-[#EADBD2] text-[#1A1410]
+                           placeholder:text-[#A89484] focus:outline-none focus:ring-2 focus:ring-[#E07898]/30 focus:border-[#E07898] transition"
               />
             </div>
             <div>
-              <label htmlFor="login-password" className="block text-sm font-medium text-[#F5EDE6]/80 mb-2">Password</label>
+              <label htmlFor="login-password" className="block text-[13px] font-medium text-[#1A1410] mb-1.5">Password</label>
               <input
                 id="login-password"
                 type="password"
@@ -79,13 +82,13 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-[#E07898]/20 text-[#F5EDE6]
-                           placeholder-[#9A7060]/50 focus:outline-none focus:border-[#E07898]/60 transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-white border border-[#EADBD2] text-[#1A1410]
+                           placeholder:text-[#A89484] focus:outline-none focus:ring-2 focus:ring-[#E07898]/30 focus:border-[#E07898] transition"
               />
             </div>
 
             {status === "error" && (
-              <p className="text-red-400 text-sm text-center">
+              <p className="text-red-500 text-sm text-center">
                 {errorMsg || "Incorrect email or password. Please try again."}
               </p>
             )}
@@ -93,15 +96,16 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={status === "loading"}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white font-semibold
-                         hover:from-[#C45E7A] hover:to-[#B07A52] disabled:opacity-60 transition-all shadow-lg shadow-[#E07898]/25"
+              className="w-full py-3 rounded-full bg-[#E07898] text-white font-medium tracking-wide
+                         hover:bg-[#C45E7A] hover:-translate-y-[1px] disabled:opacity-60 disabled:hover:translate-y-0
+                         transition-all shadow-[0_8px_24px_-8px_rgba(224,120,152,0.55)]"
             >
               {status === "loading" ? "Signing in…" : "Sign In"}
             </button>
           </div>
         </form>
 
-        <p className="text-center text-[#9A7060]/50 text-xs mt-6">
+        <p className="text-center text-[#A89484] text-xs mt-6 tracking-wide">
           MKIS Nail Saloon · Admin Portal
         </p>
       </div>

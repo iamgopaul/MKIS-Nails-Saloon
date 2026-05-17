@@ -29,8 +29,8 @@ function SignupForm() {
     return (
       <Layout>
         <div className="text-center">
-          <h1 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-[#F5EDE6] mb-2">Invite link missing</h1>
-          <p className="text-[#9A7060] text-sm">This page must be opened from your invite email.</p>
+          <h1 className="font-[family-name:var(--font-playfair)] text-2xl font-normal text-[#1A1410] mb-2">Invite link missing</h1>
+          <p className="text-[#6B5448] text-sm font-light">This page must be opened from your invite email.</p>
         </div>
       </Layout>
     );
@@ -74,27 +74,27 @@ function SignupForm() {
   return (
     <Layout>
       <div className="flex flex-col items-center mb-6">
-        <h1 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-[#F5EDE6] mb-1">
-          Welcome to <span className="bg-gradient-to-r from-[#E07898] to-[#C9956B] bg-clip-text text-transparent">MKIS Nails</span>
+        <h1 className="font-[family-name:var(--font-playfair)] text-2xl font-normal text-[#1A1410] mb-1">
+          Welcome to <span className="italic text-[#C45E7A]">MKIS Nails</span>
         </h1>
-        <p className="text-[#9A7060] text-sm">Create your team account to get started.</p>
+        <p className="text-[#6B5448] text-sm font-light">Create your team account to get started.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-[#1C1614] rounded-3xl p-6 sm:p-8 border border-[#E07898]/20 shadow-2xl shadow-[#E07898]/5 space-y-5">
+      <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EADBD2] shadow-[0_30px_60px_-25px_rgba(26,20,16,0.15)] space-y-5">
         <div>
-          <label htmlFor="signup-name" className="block text-sm font-medium text-[#F5EDE6]/80 mb-2">Full Name</label>
+          <label htmlFor="signup-name" className="block text-[13px] font-medium text-[#1A1410] mb-1.5">Full Name</label>
           <input
             id="signup-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
             placeholder="Jane Doe"
-            className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-[#E07898]/20 text-[#F5EDE6] placeholder-[#9A7060]/50 focus:outline-none focus:border-[#E07898]/60 transition-colors"
+            className="w-full px-4 py-3 rounded-xl bg-white border border-[#EADBD2] text-[#1A1410] placeholder:text-[#A89484] focus:outline-none focus:ring-2 focus:ring-[#E07898]/30 focus:border-[#E07898] transition"
           />
         </div>
 
         <div>
-          <label htmlFor="signup-password" className="block text-sm font-medium text-[#F5EDE6]/80 mb-2">Password</label>
+          <label htmlFor="signup-password" className="block text-[13px] font-medium text-[#1A1410] mb-1.5">Password</label>
           <input
             id="signup-password"
             type="password"
@@ -102,13 +102,13 @@ function SignupForm() {
             onChange={(e) => setPassword(e.target.value)}
             required
             placeholder="Choose a strong password"
-            className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-[#E07898]/20 text-[#F5EDE6] placeholder-[#9A7060]/50 focus:outline-none focus:border-[#E07898]/60 transition-colors"
+            className="w-full px-4 py-3 rounded-xl bg-white border border-[#EADBD2] text-[#1A1410] placeholder:text-[#A89484] focus:outline-none focus:ring-2 focus:ring-[#E07898]/30 focus:border-[#E07898] transition"
           />
-          <p className="text-xs text-[#9A7060]/70 mt-1.5">{PASSWORD_HINT}</p>
+          <p className="text-xs text-[#A89484] mt-1.5 font-light">{PASSWORD_HINT}</p>
         </div>
 
         <div>
-          <label htmlFor="signup-confirm" className="block text-sm font-medium text-[#F5EDE6]/80 mb-2">Confirm Password</label>
+          <label htmlFor="signup-confirm" className="block text-[13px] font-medium text-[#1A1410] mb-1.5">Confirm Password</label>
           <input
             id="signup-confirm"
             type="password"
@@ -116,18 +116,20 @@ function SignupForm() {
             onChange={(e) => setConfirm(e.target.value)}
             required
             placeholder="••••••••"
-            className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-[#E07898]/20 text-[#F5EDE6] placeholder-[#9A7060]/50 focus:outline-none focus:border-[#E07898]/60 transition-colors"
+            className="w-full px-4 py-3 rounded-xl bg-white border border-[#EADBD2] text-[#1A1410] placeholder:text-[#A89484] focus:outline-none focus:ring-2 focus:ring-[#E07898]/30 focus:border-[#E07898] transition"
           />
         </div>
 
         {status === "error" && (
-          <p className="text-red-400 text-sm text-center">{errorMsg}</p>
+          <p className="text-red-500 text-sm text-center">{errorMsg}</p>
         )}
 
         <button
           type="submit"
           disabled={status === "saving"}
-          className="w-full py-3 rounded-xl bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white font-semibold hover:from-[#C45E7A] hover:to-[#B07A52] disabled:opacity-60 transition-all shadow-lg shadow-[#E07898]/25"
+          className="w-full py-3 rounded-full bg-[#E07898] text-white font-medium tracking-wide
+                     hover:bg-[#C45E7A] hover:-translate-y-[1px] disabled:opacity-60 disabled:hover:translate-y-0
+                     transition-all shadow-[0_8px_24px_-8px_rgba(224,120,152,0.55)]"
         >
           {status === "saving" ? "Creating account…" : "Create My Account"}
         </button>
@@ -138,20 +140,21 @@ function SignupForm() {
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-[#FBF7F4] flex items-center justify-center px-4 py-10 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#FCE7EE] blur-3xl opacity-60 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-[#F1E3D3] blur-3xl opacity-50 pointer-events-none" />
+      <div className="relative w-full max-w-md">
         <div className="flex flex-col items-center mb-6">
           <div className="relative mb-4">
-            <div className="absolute inset-0 rounded-full bg-[#E07898] blur-xl opacity-40" />
-            <div className="relative rounded-full p-[3px] bg-gradient-to-br from-[#E07898] via-[#C9956B] to-[#D4A882]">
-              <div className="rounded-full bg-[#0A0A0A] p-1">
+            <div className="relative rounded-full p-[3px] bg-gradient-to-br from-[#E07898] to-[#C9956B]">
+              <div className="rounded-full bg-white p-1">
                 <Image src="/logo.png" alt="MKIS" width={56} height={56} className="rounded-full object-cover" />
               </div>
             </div>
           </div>
         </div>
         {children}
-        <p className="text-center text-[#9A7060]/50 text-xs mt-6">
+        <p className="text-center text-[#A89484] text-xs mt-6 tracking-wide">
           MKIS Nail Saloon · Team Sign-up
         </p>
       </div>

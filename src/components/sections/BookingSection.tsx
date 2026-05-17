@@ -45,13 +45,11 @@ export default function BookingSection({ id }: BookingSectionProps) {
   const [slots, setSlots]     = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
 
-  // Load services + team on mount
   useEffect(() => {
     fetch("/api/services").then((r) => r.json()).then(setServices).catch(() => {});
     fetch("/api/team").then((r) => r.json()).then(setTeam).catch(() => {});
   }, []);
 
-  // Re-fetch availability when service / date / technician changes
   const fetchSlots = useCallback(async () => {
     if (!form.date || !form.serviceId) { setSlots([]); return; }
     setLoadingSlots(true);
@@ -83,7 +81,6 @@ export default function BookingSection({ id }: BookingSectionProps) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
       setStatus("success");
-      // Notify Bella so she can pop a thank-you bubble
       const firstName = (form.name || "").trim().split(" ")[0] || "there";
       window.dispatchEvent(new CustomEvent("mkis:booking-complete", { detail: { firstName } }));
     } catch (err) {
@@ -106,21 +103,21 @@ export default function BookingSection({ id }: BookingSectionProps) {
   ];
 
   return (
-    <section id={id} className="py-24 bg-[#0A0A0A]/85 backdrop-blur-sm">
+    <section id={id} className="py-24 bg-[#F5EDE6]">
       {status === "success" ? (
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-[#1C1614] rounded-3xl p-12 shadow-2xl border border-[#E07898]/25 shadow-[#E07898]/10">
-            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#E07898] to-[#C9956B] flex items-center justify-center">
+          <div className="bg-white rounded-3xl p-12 shadow-[0_30px_60px_-30px_rgba(26,20,16,0.2)] border border-[#EADBD2]">
+            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#E07898] flex items-center justify-center">
               <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="font-[family-name:var(--font-playfair)] text-3xl font-bold text-[#F5EDE6] mb-4">Booking Received</h2>
-            <p className="text-[#9A7060] text-lg mb-6">
-              Thank you, <span className="font-semibold text-[#F5EDE6]">{form.name}</span>!
+            <h2 className="display text-3xl text-[#1A1410] mb-4">Booking received</h2>
+            <p className="text-[#6B5448] text-base mb-8 font-light">
+              Thank you, <span className="font-medium text-[#1A1410]">{form.name}</span>!
               Your request is in. We&apos;ll confirm your appointment shortly.
             </p>
-            <div className="bg-[#0A0A0A]/60 rounded-2xl p-6 text-left mb-8 border border-[#E07898]/15">
+            <div className="bg-[#FBF7F4] rounded-2xl p-6 text-left mb-8 border border-[#EADBD2]">
               <div className="space-y-3 text-sm">
                 {[
                   { label: "Service",    value: selectedService?.name ?? "" },
@@ -130,60 +127,61 @@ export default function BookingSection({ id }: BookingSectionProps) {
                   { label: "Phone",      value: form.phone },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex justify-between">
-                    <span className="text-[#9A7060]">{label}</span>
-                    <span className="font-semibold text-[#F5EDE6]">{value}</span>
+                    <span className="text-[#A89484]">{label}</span>
+                    <span className="font-medium text-[#1A1410]">{value}</span>
                   </div>
                 ))}
               </div>
             </div>
-            <p className="text-sm text-[#9A7060] mb-6">
+            <p className="text-sm text-[#6B5448] mb-6 font-light">
               A confirmation email has been sent to{" "}
-              <span className="text-[#E07898] font-medium">{form.email}</span>.
+              <span className="text-[#C45E7A] font-medium">{form.email}</span>.
             </p>
-            <Button onClick={() => { setStatus("idle"); setForm(initialForm); }}>Make Another Booking</Button>
+            <Button onClick={() => { setStatus("idle"); setForm(initialForm); }}>Make another booking</Button>
           </div>
         </div>
       ) : (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
           <SectionHeading
-            title="Book an Appointment"
+            eyebrow="Reservations"
+            title="Book an appointment"
             subtitle="Pick your service, technician, and time. We'll confirm your slot."
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-[#1C1614] rounded-3xl p-7 border border-[#E07898]/20">
-                <h3 className="font-[family-name:var(--font-playfair)] text-xl font-bold text-[#F5EDE6] mb-5">
-                  Why Book With Us?
+              <div className="bg-white rounded-3xl p-8 border border-[#EADBD2]">
+                <h3 className="display-md text-xl text-[#1A1410] mb-6">
+                  Why book with us
                 </h3>
                 {[
-                  "Premium quality products and techniques",
+                  "Premium products and techniques",
                   "Personalized nail art just for you",
                   "Real-time availability — no double bookings",
                   "Instant confirmation via email",
                   "Easy rescheduling by phone",
                 ].map((text) => (
-                  <div key={text} className="flex items-start gap-3 mb-4">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#E07898] mt-2 flex-shrink-0" />
-                    <p className="text-[#9A7060] text-sm leading-relaxed">{text}</p>
+                  <div key={text} className="flex items-start gap-3 mb-3">
+                    <span className="w-1 h-1 rounded-full bg-[#E07898] mt-2.5 flex-shrink-0" />
+                    <p className="text-[#6B5448] text-sm leading-relaxed font-light">{text}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="bg-gradient-to-br from-[#E07898] to-[#C9956B] rounded-3xl p-7 text-white">
-                <h3 className="font-semibold text-lg mb-2">Need help?</h3>
-                <p className="text-white/80 text-sm mb-4">
+              <div className="bg-[#1A1410] rounded-3xl p-8 text-white">
+                <h3 className="display-md text-xl mb-2">Need help?</h3>
+                <p className="text-white/70 text-sm mb-5 font-light leading-relaxed">
                   Call or WhatsApp us directly and we&apos;ll set up your appointment.
                 </p>
                 <a href="tel:+17542365112"
-                   className="inline-block px-5 py-2 rounded-full bg-[#0A0A0A] text-[#E07898] font-semibold text-sm hover:bg-[#1C1614] transition-colors">
-                  Call Us Now
+                   className="inline-block px-5 py-2.5 rounded-full bg-white text-[#1A1410] font-medium text-sm hover:bg-[#FBF7F4] transition-colors">
+                  Call us now
                 </a>
               </div>
             </div>
 
             <form onSubmit={handleSubmit}
-                  className="lg:col-span-3 bg-[#1C1614] rounded-3xl p-8 border border-[#E07898]/20 shadow-xl shadow-[#E07898]/5">
+                  className="lg:col-span-3 bg-white rounded-3xl p-10 border border-[#EADBD2] shadow-[0_20px_50px_-25px_rgba(26,20,16,0.12)]">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="sm:col-span-2">
                   <Input label="Full Name" name="name" value={form.name}
@@ -228,25 +226,25 @@ export default function BookingSection({ id }: BookingSectionProps) {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <span className="text-sm font-medium text-[#F5EDE6] mb-2 block">
+                  <span className="text-[13px] font-medium text-[#1A1410] mb-1.5 block">
                     Preferred Time
-                    <span className="text-[#E07898] ml-0.5">*</span>
+                    <span className="text-[#C45E7A] ml-0.5">*</span>
                   </span>
                   {!form.serviceId ? (
-                    <div className="bg-[#0A0A0A]/60 rounded-xl border border-dashed border-[#E07898]/20 p-6 text-center">
-                      <p className="text-[#9A7060] text-sm">Select a service to see available times.</p>
+                    <div className="bg-[#FBF7F4] rounded-xl border border-dashed border-[#EADBD2] p-6 text-center">
+                      <p className="text-[#A89484] text-sm font-light">Select a service to see available times.</p>
                     </div>
                   ) : !form.date ? (
-                    <div className="bg-[#0A0A0A]/60 rounded-xl border border-dashed border-[#E07898]/20 p-6 text-center">
-                      <p className="text-[#9A7060] text-sm">Pick a date to see available times.</p>
+                    <div className="bg-[#FBF7F4] rounded-xl border border-dashed border-[#EADBD2] p-6 text-center">
+                      <p className="text-[#A89484] text-sm font-light">Pick a date to see available times.</p>
                     </div>
                   ) : loadingSlots ? (
-                    <div className="bg-[#0A0A0A]/60 rounded-xl border border-[#E07898]/15 p-6 text-center">
-                      <p className="text-[#9A7060] text-sm">Checking availability…</p>
+                    <div className="bg-[#FBF7F4] rounded-xl border border-[#EADBD2] p-6 text-center">
+                      <p className="text-[#A89484] text-sm font-light">Checking availability…</p>
                     </div>
                   ) : slots.length === 0 ? (
-                    <div className="bg-[#0A0A0A]/60 rounded-xl border border-[#E07898]/15 p-6 text-center">
-                      <p className="text-[#9A7060] text-sm">
+                    <div className="bg-[#FBF7F4] rounded-xl border border-[#EADBD2] p-6 text-center">
+                      <p className="text-[#6B5448] text-sm font-light">
                         {form.technicianId
                           ? "This technician is fully booked on this date — try another date or a different technician."
                           : "No availability on this date — try another."}
@@ -261,10 +259,10 @@ export default function BookingSection({ id }: BookingSectionProps) {
                             key={slot}
                             type="button"
                             onClick={() => updateField("startTime", slot)}
-                            className={`px-2 py-2 rounded-lg text-sm font-medium transition-all
+                            className={`px-2 py-2.5 rounded-lg text-sm font-medium transition-all
                               ${active
-                                ? "bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white shadow-md shadow-[#E07898]/30"
-                                : "bg-[#0A0A0A] text-[#F5EDE6] border border-[#E07898]/20 hover:border-[#E07898]/50 hover:bg-[#E07898]/10"
+                                ? "bg-[#E07898] text-white shadow-[0_6px_16px_-6px_rgba(224,120,152,0.55)]"
+                                : "bg-white text-[#1A1410] border border-[#EADBD2] hover:border-[#E07898]/60 hover:bg-[#FCE7EE]/30"
                               }`}
                           >
                             {timeLabel(slot)}
@@ -283,17 +281,17 @@ export default function BookingSection({ id }: BookingSectionProps) {
               </div>
 
               {status === "error" && (
-                <div className="mt-4 p-4 rounded-xl bg-red-950/50 border border-red-500/30 text-red-400 text-sm">
+                <div className="mt-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
                   {errorMsg}
                 </div>
               )}
 
-              <div className="mt-6">
+              <div className="mt-7">
                 <Button type="submit" size="lg" className="w-full"
                         disabled={status === "submitting" || !form.startTime}>
                   {status === "submitting" ? "Sending your request..." : "Book My Appointment"}
                 </Button>
-                <p className="text-center text-xs text-[#9A7060] mt-3">
+                <p className="text-center text-xs text-[#A89484] mt-3 font-light">
                   We&apos;ll confirm your slot within 24 hours.
                 </p>
               </div>

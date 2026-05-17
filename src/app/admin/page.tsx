@@ -198,9 +198,8 @@ function Header({ session, onLogout }: { session: Session; onLogout: () => void 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <div className="relative flex-shrink-0">
-            <div className="absolute inset-0 rounded-full bg-[#E07898] blur-md opacity-40" />
-            <div className="relative rounded-full p-[2px] bg-gradient-to-br from-[#E07898] via-[#C9956B] to-[#D4A882]">
-              <div className="rounded-full bg-[#0A0A0A] p-0.5">
+            <div className="relative rounded-full p-[2px] bg-gradient-to-br from-[#E07898] to-[#C9956B]">
+              <div className="rounded-full bg-white p-0.5">
                 <Image src="/logo.png" alt="MKIS" width={26} height={26} className="rounded-full object-cover" />
               </div>
             </div>

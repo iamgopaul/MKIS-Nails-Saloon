@@ -10,9 +10,9 @@ const MONTH_NAMES = [
 
 interface CalendarPickerProps {
   label: string;
-  value: string;       // YYYY-MM-DD or ""
+  value: string;
   onChange: (val: string) => void;
-  min?: string;        // YYYY-MM-DD earliest selectable
+  min?: string;
   required?: boolean;
 }
 
@@ -46,7 +46,6 @@ export default function CalendarPicker({
       })
     : "Select a date...";
 
-  // Close on outside click or Escape
   useEffect(() => {
     function onMouse(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node))
@@ -81,7 +80,6 @@ export default function CalendarPicker({
     setOpen(false);
   }
 
-  // Build grid: leading nulls + days + trailing nulls to fill rows
   const firstDow     = new Date(viewYear, viewMonth, 1).getDay();
   const daysInMonth  = new Date(viewYear, viewMonth + 1, 0).getDate();
   const cells: (number | null)[] = [
@@ -114,54 +112,41 @@ export default function CalendarPicker({
   }
 
   return (
-    <div ref={containerRef} className="flex flex-col gap-1 relative">
-      <span className="text-sm font-medium text-[#F5EDE6]">
+    <div ref={containerRef} className="flex flex-col gap-1.5 relative">
+      <span className="text-[13px] font-medium text-[#1A1410]">
         {label}
-        {required && <span className="text-[#E07898] ml-0.5">*</span>}
+        {required && <span className="text-[#C45E7A] ml-0.5">*</span>}
       </span>
 
-      {/* Trigger button */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="dialog"
         aria-expanded={open}
         className={`w-full px-4 py-3 rounded-xl border text-left flex items-center justify-between gap-2
-          bg-[#1C1614] transition focus:outline-none focus:ring-2 focus:ring-[#E07898]/50
+          bg-white transition focus:outline-none focus:ring-2 focus:ring-[#E07898]/30
           ${open
-            ? "border-[#E07898]/50 ring-2 ring-[#E07898]/50"
-            : "border-[#E07898]/20 hover:border-[#E07898]/40"
+            ? "border-[#E07898] ring-2 ring-[#E07898]/30"
+            : "border-[#EADBD2] hover:border-[#E07898]/60"
           }`}
       >
-        <span className={value ? "text-[#F5EDE6]" : "text-[#9A7060]/60"}>
+        <span className={value ? "text-[#1A1410]" : "text-[#A89484]"}>
           {displayLabel}
         </span>
-        {/* Calendar icon */}
-        <svg
-          className="w-4 h-4 flex-shrink-0 text-[#9A7060]"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-          />
+        <svg className="w-4 h-4 flex-shrink-0 text-[#6B5448]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       </button>
 
-      {/* Calendar panel */}
       {open && (
         <div
           role="dialog"
           aria-label="Date picker"
           className="absolute z-50 top-full mt-2 left-0 right-0 rounded-2xl
-            border border-[#E07898]/20 bg-[#1C1614]
-            shadow-2xl shadow-[#E07898]/10 p-4 select-none"
+            border border-[#EADBD2] bg-white
+            shadow-[0_20px_40px_-15px_rgba(26,20,16,0.15)] p-4 select-none"
         >
-          {/* Month / year nav */}
           <div className="flex items-center justify-between mb-4">
             <button
               type="button"
@@ -169,7 +154,7 @@ export default function CalendarPicker({
               disabled={!canGoPrev}
               aria-label="Previous month"
               className="w-8 h-8 rounded-full flex items-center justify-center
-                text-[#9A7060] hover:bg-[#E07898]/15 hover:text-[#E07898]
+                text-[#6B5448] hover:bg-[#FCE7EE] hover:text-[#C45E7A]
                 disabled:opacity-25 disabled:cursor-not-allowed transition"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +162,7 @@ export default function CalendarPicker({
               </svg>
             </button>
 
-            <span className="font-[family-name:var(--font-playfair)] font-bold text-[#F5EDE6] text-sm tracking-wide">
+            <span className="display-md text-[#1A1410] text-base">
               {MONTH_NAMES[viewMonth]} {viewYear}
             </span>
 
@@ -186,7 +171,7 @@ export default function CalendarPicker({
               onClick={nextMonth}
               aria-label="Next month"
               className="w-8 h-8 rounded-full flex items-center justify-center
-                text-[#9A7060] hover:bg-[#E07898]/15 hover:text-[#E07898] transition"
+                text-[#6B5448] hover:bg-[#FCE7EE] hover:text-[#C45E7A] transition"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -194,16 +179,14 @@ export default function CalendarPicker({
             </button>
           </div>
 
-          {/* Day-of-week headers */}
           <div className="grid grid-cols-7 mb-1">
             {DAY_LABELS.map((d) => (
-              <div key={d} className="text-center text-[10px] font-semibold uppercase tracking-wider text-[#9A7060] py-1">
+              <div key={d} className="text-center text-[10px] font-medium uppercase tracking-wider text-[#A89484] py-1">
                 {d}
               </div>
             ))}
           </div>
 
-          {/* Day grid */}
           <div className="grid grid-cols-7 gap-y-0.5">
             {cells.map((day, i) =>
               day === null ? (
@@ -218,12 +201,12 @@ export default function CalendarPicker({
                     mx-auto w-8 h-8 flex items-center justify-center rounded-full text-sm
                     font-medium transition-all duration-150
                     ${isSelected(day)
-                      ? "bg-gradient-to-br from-[#E07898] to-[#C9956B] text-white shadow-lg shadow-[#E07898]/30 scale-110"
+                      ? "bg-[#E07898] text-white shadow-[0_6px_16px_-6px_rgba(224,120,152,0.55)] scale-110"
                       : isDisabled(day)
-                        ? "text-[#9A7060]/25 cursor-not-allowed"
+                        ? "text-[#A89484]/40 cursor-not-allowed"
                         : isToday(day)
-                          ? "text-[#E07898] ring-1 ring-[#E07898]/50 hover:bg-[#E07898]/15"
-                          : "text-[#F5EDE6] hover:bg-[#E07898]/15 hover:text-[#E07898] cursor-pointer"
+                          ? "text-[#C45E7A] ring-1 ring-[#E07898]/50 hover:bg-[#FCE7EE]"
+                          : "text-[#1A1410] hover:bg-[#FCE7EE] hover:text-[#C45E7A] cursor-pointer"
                     }
                   `}
                 >
@@ -233,8 +216,7 @@ export default function CalendarPicker({
             )}
           </div>
 
-          {/* Footer hint */}
-          <p className="text-center text-[10px] text-[#9A7060]/50 mt-3 tracking-wide">
+          <p className="text-center text-[10px] text-[#A89484] mt-3 tracking-wide">
             Past dates are unavailable
           </p>
         </div>

@@ -4,33 +4,30 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#050505] border-t border-[#E07898]/15 text-[#F5EDE6]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+    <footer className="bg-[#F5EDE6] border-t border-[#EADBD2] text-[#1A1410]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="relative">
-                <div className="logo-glow absolute inset-0 rounded-full bg-[#E07898] blur-md" />
-                <div className="relative rounded-full p-[2px] bg-gradient-to-br from-[#E07898] via-[#C9956B] to-[#D4A882]">
-                  <div className="rounded-full bg-[#050505] p-0.5">
-                    <Image src="/logo.png" alt="MKIS Nail Saloon" width={42} height={42} className="rounded-full object-cover" />
-                  </div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="relative rounded-full p-[2px] bg-gradient-to-br from-[#E07898] to-[#C9956B]">
+                <div className="rounded-full bg-white p-0.5">
+                  <Image src="/logo.png" alt="MKIS Nail Saloon" width={42} height={42} className="rounded-full object-cover" />
                 </div>
               </div>
-              <h3 className="font-[family-name:var(--font-playfair)] text-2xl font-bold">
-                MKIS <span className="bg-gradient-to-r from-[#E07898] to-[#C9956B] bg-clip-text text-transparent">Nails</span>
+              <h3 className="font-[family-name:var(--font-playfair)] text-2xl font-normal text-[#1A1410]">
+                MKIS <span className="italic text-[#C45E7A]">Nails</span>
               </h3>
             </div>
-            <p className="text-[#9A7060] text-sm leading-relaxed">
+            <p className="text-[#6B5448] text-sm leading-relaxed font-light max-w-xs">
               Where every nail tells a story. Premium nail art and care crafted just for you.
             </p>
           </div>
 
           {/* Quick links */}
           <div>
-            <h4 className="font-semibold mb-4 text-[#F5EDE6]/90 text-sm uppercase tracking-widest">Quick Links</h4>
-            <ul className="space-y-2 text-sm text-[#9A7060]">
+            <h4 className="text-[11px] font-medium tracking-[0.22em] uppercase text-[#1A1410] mb-5">Quick Links</h4>
+            <ul className="space-y-2.5 text-sm text-[#6B5448]">
               {[
                 { href: "#home",     label: "Home" },
                 { href: "#trending", label: "Trending" },
@@ -42,7 +39,7 @@ export default function Footer() {
                 { href: "#contact",  label: "Contact" },
               ].map(({ href, label }) => (
                 <li key={href}>
-                  <a href={href} className="hover:text-[#E07898] transition-colors">
+                  <a href={href} className="hover:text-[#C45E7A] transition-colors">
                     {label}
                   </a>
                 </li>
@@ -52,7 +49,7 @@ export default function Footer() {
 
           {/* Social */}
           <div>
-            <h4 className="font-semibold mb-4 text-[#F5EDE6]/90 text-sm uppercase tracking-widest">Follow Us</h4>
+            <h4 className="text-[11px] font-medium tracking-[0.22em] uppercase text-[#1A1410] mb-5">Follow Us</h4>
             <div className="flex gap-3">
               {[
                 {
@@ -77,7 +74,8 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="w-10 h-10 rounded-full border border-[#E07898]/30 flex items-center justify-center text-[#9A7060] hover:bg-[#E07898] hover:text-white hover:border-[#E07898] transition-all"
+                  className="w-10 h-10 rounded-full bg-white border border-[#EADBD2] flex items-center justify-center text-[#6B5448]
+                             hover:bg-[#E07898] hover:text-white hover:border-[#E07898] transition-all"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">{icon}</svg>
                 </a>
@@ -86,7 +84,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-[#E07898]/10 pt-6 text-center text-[#9A7060] text-sm">
+        <div className="border-t border-[#EADBD2] pt-6 text-center text-[#A89484] text-xs tracking-wide">
           © {year} MKIS Nail Saloon. All rights reserved.
         </div>
       </div>

@@ -8,13 +8,11 @@ import ContactSection from "@/components/sections/ContactSection";
 import AboutSection from "@/components/sections/AboutSection";
 import TrendingSection from "@/components/sections/TrendingSection";
 import ReviewsSection from "@/components/sections/ReviewsSection";
-import LiveBackground from "@/components/ui/LiveBackground";
 import ChatWidget from "@/components/ui/ChatWidget";
 
 export default function Home() {
   return (
     <>
-      <LiveBackground />
       <Navbar />
       <main>
         <HeroSection id="home" />

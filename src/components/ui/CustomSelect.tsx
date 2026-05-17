@@ -33,7 +33,6 @@ export default function CustomSelect({
   const displayLabel = selected ? selected.label : placeholder ?? "Select...";
   const isPlaceholder = !selected;
 
-  // Close on outside click
   useEffect(() => {
     function handler(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -44,7 +43,6 @@ export default function CustomSelect({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Close on Escape
   useEffect(() => {
     function handler(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false);
@@ -59,13 +57,12 @@ export default function CustomSelect({
   }
 
   return (
-    <div ref={containerRef} className="flex flex-col gap-1 relative">
-      <span className="text-sm font-medium text-[#F5EDE6]">
+    <div ref={containerRef} className="flex flex-col gap-1.5 relative">
+      <span className="text-[13px] font-medium text-[#1A1410]">
         {label}
-        {required && <span className="text-[#E07898] ml-0.5">*</span>}
+        {required && <span className="text-[#C45E7A] ml-0.5">*</span>}
       </span>
 
-      {/* Trigger */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -73,19 +70,19 @@ export default function CustomSelect({
         aria-expanded={open ? "true" : "false"}
         aria-label={label}
         className={`w-full px-4 py-3 rounded-xl border text-left flex items-center justify-between gap-2
-          bg-[#1C1614] transition focus:outline-none focus:ring-2 focus:ring-[#E07898]/50
+          bg-white transition focus:outline-none focus:ring-2 focus:ring-[#E07898]/30
           ${open
-            ? "border-[#E07898]/50 ring-2 ring-[#E07898]/50"
+            ? "border-[#E07898] ring-2 ring-[#E07898]/30"
             : error
-              ? "border-red-500/50"
-              : "border-[#E07898]/20 hover:border-[#E07898]/40"
+              ? "border-red-400"
+              : "border-[#EADBD2] hover:border-[#E07898]/60"
           }`}
       >
-        <span className={isPlaceholder ? "text-[#9A7060]/60" : "text-[#F5EDE6]"}>
+        <span className={isPlaceholder ? "text-[#A89484]" : "text-[#1A1410]"}>
           {displayLabel}
         </span>
         <svg
-          className={`w-4 h-4 flex-shrink-0 text-[#9A7060] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`w-4 h-4 flex-shrink-0 text-[#6B5448] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -94,13 +91,12 @@ export default function CustomSelect({
         </svg>
       </button>
 
-      {/* Dropdown */}
       {open && (
         <ul
           role="listbox"
           aria-label={label}
-          className="absolute z-50 top-full mt-1 w-full rounded-xl border border-[#E07898]/20
-            bg-[#1C1614] shadow-2xl shadow-[#E07898]/10 overflow-hidden
+          className="absolute z-50 top-full mt-1 w-full rounded-xl border border-[#EADBD2]
+            bg-white shadow-[0_20px_40px_-15px_rgba(26,20,16,0.15)] overflow-hidden
             max-h-64 overflow-y-auto"
         >
           {options.map((opt) => {
@@ -113,8 +109,8 @@ export default function CustomSelect({
                 onClick={() => select(opt.value)}
                 className={`px-4 py-3 cursor-pointer text-sm transition-colors
                   ${isActive
-                    ? "bg-gradient-to-r from-[#E07898]/20 to-[#C9956B]/20 text-[#E07898] font-semibold"
-                    : "text-[#F5EDE6] hover:bg-[#E07898]/10 hover:text-[#E07898]"
+                    ? "bg-[#FCE7EE] text-[#C45E7A] font-medium"
+                    : "text-[#1A1410] hover:bg-[#FBF7F4]"
                   }`}
               >
                 {opt.label}
@@ -124,7 +120,7 @@ export default function CustomSelect({
         </ul>
       )}
 
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
 }
