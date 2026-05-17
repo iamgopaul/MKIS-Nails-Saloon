@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mkisnails.com";
+
 export default function AdminLoginPage() {
   const router   = useRouter();
   const supabase = createClient();
@@ -30,7 +32,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-[#050505] flex items-center justify-center px-4 relative">
-      <a href="/" aria-label="Back to homepage"
+      <a href={SITE_URL} aria-label="Back to homepage"
         className="absolute top-6 left-6 flex items-center gap-2 px-3 py-2 rounded-full text-[#9A7060] hover:text-[#E07898] hover:bg-[#1C1614] transition-all">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

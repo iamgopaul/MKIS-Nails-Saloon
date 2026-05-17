@@ -2,9 +2,10 @@
 
 import { Suspense, useState } from "react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useSearchParams } from "next/navigation";
 import { PASSWORD_HINT, validatePassword } from "@/lib/password";
+
+const ADMIN_URL = process.env.NEXT_PUBLIC_ADMIN_URL ?? "https://admin.mkisnails.com";
 
 export default function SignupPage() {
   return (
@@ -15,9 +16,7 @@ export default function SignupPage() {
 }
 
 function SignupForm() {
-  const router       = useRouter();
   const searchParams = useSearchParams();
-  const supabase     = createClient();
   const token        = searchParams.get("token") ?? "";
 
   const [name, setName]         = useState("");
@@ -65,18 +64,11 @@ function SignupForm() {
       return;
     }
 
-    // Sign them in with the credentials they just chose
-    const { error: signInErr } = await supabase.auth.signInWithPassword({
-      email:    data.email,
-      password,
-    });
-    if (signInErr) {
-      // Account was created — they can log in manually
-      router.push("/admin/login");
-      return;
-    }
-    router.push("/admin");
-    router.refresh();
+    // Account exists — sign in happens on the admin subdomain so the
+    // session cookie lands on the right host.
+    const target = new URL("/admin/login", ADMIN_URL);
+    if (data.email) target.searchParams.set("email", data.email);
+    window.location.assign(target.toString());
   }
 
   return (
