@@ -146,9 +146,7 @@ function Layout({ children }: { children: React.ReactNode }) {
       <div className="relative w-full max-w-md">
         <div className="flex flex-col items-center mb-6">
           <div className="relative mb-4">
-            <div className="rounded-full bg-[#1A1410] p-4 ring-1 ring-[#EADBD2] shadow-[0_12px_30px_-10px_rgba(26,20,16,0.3)]">
-              <Image src="/logo.png" alt="MKIS" width={56} height={56} className="object-contain" />
-            </div>
+            <Image src="/mkislogo.png" alt="MKIS" width={80} height={80} className="rounded-2xl ring-1 ring-[#EADBD2] shadow-[0_14px_30px_-12px_rgba(26,20,16,0.3)]" />
           </div>
         </div>
         {children}

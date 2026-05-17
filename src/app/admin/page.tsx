@@ -198,9 +198,7 @@ function Header({ session, onLogout }: { session: Session; onLogout: () => void 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <div className="relative flex-shrink-0">
-            <div className="rounded-full bg-[#1A1410] p-1.5 ring-1 ring-[#E07898]/30">
-              <Image src="/logo.png" alt="MKIS" width={22} height={22} className="object-contain" />
-            </div>
+            <Image src="/mkislogo.png" alt="MKIS" width={36} height={36} className="rounded-full object-cover ring-1 ring-[#E07898]/30" />
           </div>
           <div className="min-w-0">
             <span className="font-[family-name:var(--font-playfair)] text-base sm:text-lg font-bold whitespace-nowrap">

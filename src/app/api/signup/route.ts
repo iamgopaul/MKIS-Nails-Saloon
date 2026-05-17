@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
       name,
       role:           "Nail Technician",
       bio:            "",
-      photo_url:      "/logo.png",
+      photo_url:      "/mkislogo.png",
       display_order:  99,
       active:         false,
     });

@@ -62,17 +62,14 @@ export default function Navbar() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 h-[72px] flex items-center justify-between">
         {/* Logo */}
         <a href="#home" className="flex items-center gap-2.5 group">
-          <div className="relative">
-            <div className="rounded-full bg-[#1A1410] p-1.5 transition-transform group-hover:scale-105 ring-1 ring-[#EADBD2]">
-              <Image
-                src="/logo.png"
-                alt="MKIS Nail Saloon"
-                width={28}
-                height={28}
-                className="rounded-full object-contain"
-              />
-            </div>
-          </div>
+          <Image
+            src="/mkislogo.png"
+            alt="MKIS Nail Saloon"
+            width={42}
+            height={42}
+            priority
+            className="rounded-full object-cover ring-1 ring-[#EADBD2] transition-transform group-hover:scale-105"
+          />
           <span className="font-[family-name:var(--font-playfair)] text-xl font-normal text-[#1A1410] tracking-tight">
             MKIS <span className="italic text-[#C45E7A]">Nails</span>
           </span>
