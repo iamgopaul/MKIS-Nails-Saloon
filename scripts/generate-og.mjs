@@ -19,7 +19,7 @@ const LOGO_Y    = 90;
 const LOGO_CY   = LOGO_Y + LOGO_SIZE / 2;
 const LOGO_CX   = CX;
 
-const logo64 = (await readFile(join(root, "public/logo.png"))).toString("base64");
+const logo64 = (await readFile(join(root, "public/mkislogo.png"))).toString("base64");
 
 const svg = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
@@ -86,7 +86,7 @@ await sharp(Buffer.from(svg))
 console.log("✓ public/og.png generated");
 
 // ── Favicon (32x32 + 192x192 + apple-touch 180x180) ──────────────────────────
-const logoPath = join(root, "public/logo.png");
+const logoPath = join(root, "public/mkislogo.png");
 
 await sharp(logoPath).resize(32, 32).png().toFile(join(root, "src/app/icon.png"));
 await sharp(logoPath).resize(180, 180).png().toFile(join(root, "src/app/apple-icon.png"));
