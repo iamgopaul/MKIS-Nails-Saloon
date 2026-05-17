@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const links = [
-  { label: "Home",     href: "#home" },
   { label: "Trending", href: "#trending" },
   { label: "Gallery",  href: "#gallery" },
   { label: "Services", href: "#services" },
@@ -38,19 +37,19 @@ function BusinessStatusBadge() {
   return (
     <div
       title={message || (isOpen ? "We are open" : "We are currently closed")}
-      className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-semibold transition-all
+      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide transition-all
         ${isOpen
-          ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-400"
-          : "bg-red-950/60 border-red-500/40 text-red-400"
+          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+          : "bg-red-50 text-red-700 border border-red-200"
         }`}
     >
-      <span className="relative flex h-2 w-2">
+      <span className="relative flex h-1.5 w-1.5">
         {isOpen && (
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
         )}
-        <span className={`relative inline-flex rounded-full h-2 w-2 ${isOpen ? "bg-emerald-400" : "bg-red-400"}`} />
+        <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${isOpen ? "bg-emerald-500" : "bg-red-500"}`} />
       </span>
-      {isOpen ? "Open Now" : "Closed"}
+      {isOpen ? "Open now" : "Closed"}
     </div>
   );
 }
@@ -59,30 +58,37 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0A0A0A]/95 backdrop-blur-sm border-b border-[#E07898]/20">
-      <nav className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <header className="sticky top-0 z-50 bg-[#FBF7F4]/85 backdrop-blur-md border-b border-[#EADBD2]/70">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 h-[72px] flex items-center justify-between">
         {/* Logo */}
-        <a href="#home" className="flex items-center gap-2.5">
+        <a href="#home" className="flex items-center gap-2.5 group">
           <div className="relative">
-            <div className="logo-glow absolute inset-0 rounded-full bg-[#E07898] blur-md" />
-            <div className="relative rounded-full p-[2px] bg-gradient-to-br from-[#E07898] via-[#C9956B] to-[#D4A882]">
-              <div className="rounded-full bg-[#0A0A0A] p-0.5">
-                <Image src="/logo.png" alt="MKIS Nail Saloon" width={34} height={34} className="rounded-full object-cover" />
+            <div className="relative rounded-full p-[2px] bg-gradient-to-br from-[#E07898] to-[#C9956B] transition-transform group-hover:scale-105">
+              <div className="rounded-full bg-white p-0.5">
+                <Image
+                  src="/logo.png"
+                  alt="MKIS Nail Saloon"
+                  width={34}
+                  height={34}
+                  className="rounded-full object-cover"
+                />
               </div>
             </div>
           </div>
-          <span className="font-[family-name:var(--font-playfair)] text-xl font-bold text-[#F5EDE6] tracking-wide">
-            MKIS <span className="bg-gradient-to-r from-[#E07898] to-[#C9956B] bg-clip-text text-transparent">Nails</span>
+          <span className="font-[family-name:var(--font-playfair)] text-xl font-normal text-[#1A1410] tracking-tight">
+            MKIS <span className="italic text-[#C45E7A]">Nails</span>
           </span>
         </a>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-8">
           {links.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-[#9A7060] hover:text-[#E07898] transition-colors"
+              className="text-[13px] font-medium text-[#6B5448] hover:text-[#1A1410] transition-colors relative
+                         after:content-[''] after:absolute after:left-0 after:right-0 after:-bottom-1.5 after:h-px
+                         after:bg-[#E07898] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:origin-left"
             >
               {link.label}
             </a>
@@ -90,7 +96,9 @@ export default function Navbar() {
           <BusinessStatusBadge />
           <a
             href="#booking"
-            className="px-5 py-2 rounded-full bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white text-sm font-semibold hover:from-[#C45E7A] hover:to-[#B07A52] transition-all shadow-lg shadow-[#E07898]/25"
+            className="px-5 py-2 rounded-full bg-[#E07898] text-white text-[13px] font-medium tracking-wide
+                       hover:bg-[#C45E7A] hover:-translate-y-[1px] transition-all
+                       shadow-[0_6px_16px_-6px_rgba(224,120,152,0.55)]"
           >
             Book Now
           </a>
@@ -101,7 +109,7 @@ export default function Navbar() {
           <BusinessStatusBadge />
           <button
             type="button"
-            className="p-2 rounded-lg text-[#F5EDE6] hover:bg-[#1C1614] transition"
+            className="p-2 rounded-lg text-[#1A1410] hover:bg-white/70 transition"
             onClick={() => setOpen(!open)}
             aria-label="Toggle menu"
           >
@@ -114,13 +122,13 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden bg-[#0A0A0A] border-t border-[#E07898]/20 px-4 py-4 flex flex-col gap-4">
+        <div className="md:hidden bg-[#FBF7F4] border-t border-[#EADBD2] px-4 py-5 flex flex-col gap-4">
           {links.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="text-base font-medium text-[#9A7060] hover:text-[#E07898] transition-colors"
+              className="text-base font-medium text-[#6B5448] hover:text-[#C45E7A] transition-colors"
             >
               {link.label}
             </a>
@@ -128,7 +136,8 @@ export default function Navbar() {
           <a
             href="#booking"
             onClick={() => setOpen(false)}
-            className="text-center px-5 py-2 rounded-full bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white font-semibold hover:from-[#C45E7A] hover:to-[#B07A52] transition-all"
+            className="text-center px-5 py-2.5 rounded-full bg-[#E07898] text-white font-medium tracking-wide
+                       hover:bg-[#C45E7A] transition-all shadow-[0_6px_16px_-6px_rgba(224,120,152,0.55)]"
           >
             Book Now
           </a>
