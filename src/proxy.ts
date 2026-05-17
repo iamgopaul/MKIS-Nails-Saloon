@@ -53,7 +53,7 @@ function redirectToHost(request: NextRequest, targetHost: string, targetPath?: s
   return NextResponse.redirect(url, 308);
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const method = request.method.toUpperCase();
   const host = request.headers.get("host") ?? "";
