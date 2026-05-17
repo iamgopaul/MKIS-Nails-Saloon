@@ -10,10 +10,8 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="relative rounded-full p-[2px] bg-gradient-to-br from-[#E07898] to-[#C9956B]">
-                <div className="rounded-full bg-white p-0.5">
-                  <Image src="/logo.png" alt="MKIS Nail Saloon" width={42} height={42} className="rounded-full object-cover" />
-                </div>
+              <div className="rounded-full bg-[#1A1410] p-2 ring-1 ring-[#EADBD2]">
+                <Image src="/logo.png" alt="MKIS Nail Saloon" width={36} height={36} className="object-contain" />
               </div>
               <h3 className="font-[family-name:var(--font-playfair)] text-2xl font-normal text-[#1A1410]">
                 MKIS <span className="italic text-[#C45E7A]">Nails</span>

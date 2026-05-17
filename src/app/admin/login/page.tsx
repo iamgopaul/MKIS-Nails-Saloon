@@ -47,10 +47,8 @@ export default function AdminLoginPage() {
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <div className="relative mb-4">
-            <div className="relative rounded-full p-[3px] bg-gradient-to-br from-[#E07898] to-[#C9956B]">
-              <div className="rounded-full bg-white p-1">
-                <Image src="/logo.png" alt="MKIS" width={56} height={56} className="rounded-full object-cover" />
-              </div>
+            <div className="rounded-full bg-[#1A1410] p-4 ring-1 ring-[#EADBD2] shadow-[0_12px_30px_-10px_rgba(26,20,16,0.3)]">
+              <Image src="/logo.png" alt="MKIS" width={56} height={56} className="object-contain" />
             </div>
           </div>
           <h1 className="font-[family-name:var(--font-playfair)] text-2xl font-normal text-[#1A1410]">

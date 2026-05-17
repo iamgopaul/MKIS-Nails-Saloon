@@ -66,17 +66,15 @@ export default function HeroSection({ id }: HeroSectionProps) {
 
             <div className="relative w-[22rem] h-[28rem] rounded-[2rem] bg-white border border-[#EADBD2] shadow-[0_30px_60px_-30px_rgba(196,94,122,0.25)] flex flex-col items-center justify-center gap-7 p-10">
               <div className="relative">
-                <div className="logo-glow absolute inset-0 rounded-full bg-[#E07898] blur-xl" />
-                <div className="relative rounded-full p-[2px] bg-gradient-to-br from-[#E07898] to-[#C9956B]">
-                  <div className="rounded-full bg-white p-1.5">
-                    <Image
-                      src="/logo.png"
-                      alt="MKIS Nail Saloon"
-                      width={144}
-                      height={144}
-                      className="rounded-full object-contain"
-                    />
-                  </div>
+                <div className="logo-glow absolute inset-0 rounded-full bg-[#E07898] blur-2xl opacity-30" />
+                <div className="relative rounded-full bg-[#1A1410] p-6 ring-1 ring-[#EADBD2] shadow-[0_15px_35px_-10px_rgba(26,20,16,0.35)]">
+                  <Image
+                    src="/logo.png"
+                    alt="MKIS Nail Saloon"
+                    width={130}
+                    height={130}
+                    className="object-contain"
+                  />
                 </div>
               </div>
 

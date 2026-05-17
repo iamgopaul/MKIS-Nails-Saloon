@@ -63,16 +63,14 @@ export default function Navbar() {
         {/* Logo */}
         <a href="#home" className="flex items-center gap-2.5 group">
           <div className="relative">
-            <div className="relative rounded-full p-[2px] bg-gradient-to-br from-[#E07898] to-[#C9956B] transition-transform group-hover:scale-105">
-              <div className="rounded-full bg-white p-0.5">
-                <Image
-                  src="/logo.png"
-                  alt="MKIS Nail Saloon"
-                  width={34}
-                  height={34}
-                  className="rounded-full object-cover"
-                />
-              </div>
+            <div className="rounded-full bg-[#1A1410] p-1.5 transition-transform group-hover:scale-105 ring-1 ring-[#EADBD2]">
+              <Image
+                src="/logo.png"
+                alt="MKIS Nail Saloon"
+                width={28}
+                height={28}
+                className="rounded-full object-contain"
+              />
             </div>
           </div>
           <span className="font-[family-name:var(--font-playfair)] text-xl font-normal text-[#1A1410] tracking-tight">
