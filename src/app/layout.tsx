@@ -37,6 +37,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: ["/og.png"],
   },
+  manifest: "/manifest.json",
+  themeColor: "#D89AAE",
 };
 
 export default function RootLayout({
