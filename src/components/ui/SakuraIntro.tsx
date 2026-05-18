@@ -58,6 +58,12 @@ export default function SakuraIntro() {
       style={{
         zIndex: 60,
         transition: `opacity ${FADE_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`,
+        // Same wallpaper the page uses (bg.png + 78% scrim) painted on the
+        // overlay itself, so page content never bleeds through the transparent
+        // video element while it's still loading. Renders instantly from the
+        // very first paint — no FOUC of page content underneath.
+        background:
+          "linear-gradient(rgba(26, 20, 16, 0.78), rgba(26, 20, 16, 0.78)), url('/bg.png') center center / cover no-repeat",
       }}
     >
       <video
@@ -70,7 +76,8 @@ export default function SakuraIntro() {
         onEnded={beginFade}
         className="absolute inset-0 w-full h-full object-cover"
       />
-      {/* Dark scrim — exact same rgba as body::before in globals.css. */}
+      {/* Dark scrim — exact same rgba as body::before in globals.css, applied
+          over the video so the petals are toned to match the page palette. */}
       <div className="absolute inset-0" style={{ background: "rgba(26, 20, 16, 0.78)" }} />
 
       {/* Centered logo with rose halo */}
