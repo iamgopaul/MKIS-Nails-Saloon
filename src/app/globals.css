@@ -93,7 +93,10 @@ html {
 
 
 body {
-  background: var(--background);
+  /* Transparent so body::before (the bg.png + scrim wallpaper) shows through.
+     The dark color is set on <html> instead — no flash on refresh, and the
+     pseudo-element with z-index: -2 isn't hidden behind body's bg. */
+  background: transparent;
   color: var(--foreground);
   font-family: var(--font-body), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;

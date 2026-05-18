@@ -50,10 +50,7 @@ export default function RootLayout({
       className={`${montserrat.variable} ${cormorant.variable}`}
       style={{ backgroundColor: "#1A1410" }}
     >
-      <body
-        className="min-h-full flex flex-col antialiased font-[family-name:var(--font-montserrat)]"
-        style={{ backgroundColor: "#1A1410" }}
-      >
+      <body className="min-h-full flex flex-col antialiased font-[family-name:var(--font-montserrat)]">
         {children}
         <Analytics />
       </body>
