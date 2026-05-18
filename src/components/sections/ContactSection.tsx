@@ -48,21 +48,12 @@ function ClockIcon() {
   );
 }
 
-function MapIcon() {
-  return (
-    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2}
-        d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7" />
-    </svg>
-  );
-}
-
 export default function ContactSection({ id }: ContactSectionProps) {
   const items = [
     {
       Icon: PinIcon,
       label: "Address",
-      content: <p className="text-[#B8A89A] font-light leading-relaxed">123 Beauty Lane<br />Your City, ST 00000</p>,
+      content: <p className="text-[#B8A89A] font-light leading-relaxed">7000 NW 17th St, Building 2, Apt 211<br />Plantation, FL 33313</p>,
     },
     {
       Icon: PhoneIcon,
@@ -130,18 +121,27 @@ export default function ContactSection({ id }: ContactSectionProps) {
             </div>
           </div>
 
-          {/* Map placeholder */}
-          <div className="rounded-lg overflow-hidden border border-[#3A2E26]/60 min-h-80 bg-[#2A1F18] flex items-center justify-center">
-            <div className="text-center p-8 text-[#7A6657]">
-              <div className="inline-flex w-14 h-14 mb-4 rounded-lg bg-[#2E1F24] text-[#D89AAE] items-center justify-center">
-                <MapIcon />
-              </div>
-              <p className="font-[family-name:var(--font-cormorant)] text-2xl text-[#F0E4D8]">Map coming soon</p>
-              <p className="text-[#7A6657] text-sm mt-2 font-light">
-                Add your Google Maps embed URL in ContactSection.tsx
-              </p>
-            </div>
-          </div>
+          {/* Map */}
+          <a
+            href="https://www.google.com/maps/dir/?api=1&destination=7000+NW+17th+St+Plantation+FL+33313"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Get directions on Google Maps"
+            className="group block rounded-lg overflow-hidden border border-[#3A2E26]/60 min-h-80 bg-[#2A1F18] relative"
+          >
+            <iframe
+              title="MKIS Nails Salon location"
+              src="https://www.google.com/maps?q=7000+NW+17th+St+Building+2+Apt+211+Plantation+FL+33313&z=16&output=embed"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="w-full h-full min-h-80 grayscale-[0.4] contrast-95 transition-all duration-300 group-hover:grayscale-0"
+              style={{ border: 0 }}
+              allowFullScreen
+            />
+            <span className="pointer-events-none absolute bottom-3 right-3 px-3 py-1.5 rounded-full bg-[#1A1410]/80 backdrop-blur-sm text-[10px] tracking-[0.2em] uppercase text-[#F0E4D8] border border-[#3A2E26] opacity-0 group-hover:opacity-100 transition-opacity">
+              Get Directions
+            </span>
+          </a>
         </div>
       </div>
     </section>

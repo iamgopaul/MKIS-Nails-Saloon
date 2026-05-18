@@ -72,8 +72,8 @@ export default function Footer() {
             </h4>
             <div className="space-y-3 text-sm text-[#B8A89A] font-light leading-relaxed">
               <p>
-                123 Beauty Lane<br />
-                Your City, ST 00000
+                7000 NW 17th St, Building 2, Apt 211<br />
+                Plantation, FL 33313
               </p>
               <p>
                 <a href="tel:+17542365112" className="hover:text-[#D89AAE] transition-colors">
