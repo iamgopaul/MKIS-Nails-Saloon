@@ -89,9 +89,7 @@ export default function SakuraIntro() {
       </div>
 
       <style>{`
-        /* Lock body scroll while the intro is mounted. The <style> tag is
-           inside the overlay's JSX, so when the component unmounts (done=true)
-           the rule is gone and the page scrolls normally again. */
+        /* Scroll lock while the overlay is mounted; unmount removes the rule. */
         body { overflow: hidden !important; }
         html { overflow: hidden !important; }
 
