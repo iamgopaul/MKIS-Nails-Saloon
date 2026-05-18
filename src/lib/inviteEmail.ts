@@ -23,7 +23,7 @@ export async function sendInviteEmail(opts: { to: string; inviteUrl: string }) {
       Welcome to the team 💅
     </p>
     <p style="font-size:14px;color:#9A7060;margin:0 0 32px;line-height:1.7;">
-      You&apos;ve been invited to join MKIS Nail Saloon. Tap the button below to create your account — once activated, you&apos;ll be able to manage your profile, upload your photo, and view your scheduled appointments.
+      You&apos;ve been invited to join MKIS Nail Salon. Tap the button below to create your account — once activated, you&apos;ll be able to manage your profile, upload your photo, and view your scheduled appointments.
     </p>
 
     <!-- ── Activate button (bullet-proof email-safe table) ─────────────────── -->
@@ -57,15 +57,15 @@ export async function sendInviteEmail(opts: { to: string; inviteUrl: string }) {
 
   const { html, attachments } = await buildEmail({
     headline:  "You're Invited",
-    preheader: "Activate your MKIS Nail Saloon team account.",
+    preheader: "Activate your MKIS Nail Salon team account.",
     bodyHtml,
   });
 
   const transporter = createTransport();
   await transporter.sendMail({
-    from:    `MKIS Nail Saloon <${process.env.SMTP_USER}>`,
+    from:    `MKIS Nail Salon <${process.env.SMTP_USER}>`,
     to:      opts.to,
-    subject: "You're invited to join MKIS Nail Saloon",
+    subject: "You're invited to join MKIS Nail Salon",
     html,
     attachments,
   });

@@ -21,13 +21,13 @@ const STATIC_THRESHOLD = 4;
 function MemberCard({ member }: { member: TeamMember }) {
   return (
     <div
-      className="group flex-shrink-0 w-64 bg-white rounded-3xl p-7 border border-[#EADBD2]
-                 hover:border-[#E07898]/40 hover:shadow-[0_18px_40px_-20px_rgba(26,20,16,0.15)]
+      className="group flex-shrink-0 w-64 bg-[#2A1F18] rounded-3xl p-7 border border-[#3A2E26]
+                 hover:border-[#D89AAE]/40 hover:shadow-[0_18px_40px_-20px_rgba(26,20,16,0.15)]
                  transition-all duration-300 flex flex-col items-center text-center"
     >
       <div className="relative mb-5">
-        <div className="relative w-24 h-24 rounded-full p-[2px] bg-gradient-to-br from-[#E07898] to-[#C9956B]">
-          <div className="rounded-full bg-white w-full h-full overflow-hidden">
+        <div className="relative w-24 h-24 rounded-full p-[2px] bg-[#D89AAE]">
+          <div className="rounded-full bg-[#2A1F18] w-full h-full overflow-hidden">
             {member.photoUrl ? (
               <Image
                 src={member.photoUrl}
@@ -38,7 +38,7 @@ function MemberCard({ member }: { member: TeamMember }) {
                 className="w-full h-full object-cover rounded-full"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center display-md text-3xl text-[#C45E7A]">
+              <div className="w-full h-full flex items-center justify-center display-md text-3xl text-[#D89AAE]">
                 {member.name.charAt(0)}
               </div>
             )}
@@ -46,11 +46,11 @@ function MemberCard({ member }: { member: TeamMember }) {
         </div>
       </div>
 
-      <h3 className="display-md text-lg text-[#1A1410] mb-1">{member.name}</h3>
-      <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#FCE7EE] text-[#C45E7A] text-[11px] font-medium mb-4">
+      <h3 className="display-md text-lg text-[#F0E4D8] mb-1">{member.name}</h3>
+      <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#2E1F24] text-[#D89AAE] text-[11px] font-medium mb-4">
         {member.role}
       </span>
-      <p className="text-[#6B5448] text-xs leading-relaxed font-light">{member.bio}</p>
+      <p className="text-[#B8A89A] text-xs leading-relaxed font-light">{member.bio}</p>
     </div>
   );
 }
@@ -169,10 +169,10 @@ export default function TeamScroller({ members }: { members: TeamMember[] }) {
       if (!btn) return;
       if (i === active) {
         btn.className = btn.className
-          .replace("w-2 bg-[#EADBD2]", "w-6 bg-[#E07898]");
+          .replace("w-2 bg-[#EADBD2]", "w-6 bg-[#D89AAE]");
       } else {
         btn.className = btn.className
-          .replace("w-6 bg-[#E07898]", "w-2 bg-[#EADBD2]");
+          .replace("w-6 bg-[#D89AAE]", "w-2 bg-[#EADBD2]");
       }
     });
   };
@@ -199,8 +199,8 @@ export default function TeamScroller({ members }: { members: TeamMember[] }) {
         </div>
 
         {/* Fade edges */}
-        <div className="pointer-events-none absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-[#F5EDE6] to-transparent z-10" />
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-[#F5EDE6] to-transparent z-10" />
+        <div className="pointer-events-none absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-[#221915] to-transparent z-10" />
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-[#221915] to-transparent z-10" />
       </div>
 
       <div className="flex items-center justify-center gap-6 mt-8">
@@ -208,8 +208,8 @@ export default function TeamScroller({ members }: { members: TeamMember[] }) {
           type="button"
           onClick={prev}
           aria-label="Previous team member"
-          className="w-10 h-10 rounded-full bg-white border border-[#EADBD2] flex items-center justify-center
-                     text-[#6B5448] hover:bg-[#E07898] hover:text-white hover:border-[#E07898] transition-all"
+          className="w-10 h-10 rounded-full bg-[#2A1F18] border border-[#3A2E26] flex items-center justify-center
+                     text-[#B8A89A] hover:bg-[#D89AAE] hover:text-white hover:border-[#D89AAE] transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -226,8 +226,8 @@ export default function TeamScroller({ members }: { members: TeamMember[] }) {
               onClick={() => { if (!drag.current.moved) moveTo(n + i, true); }}
               className={`h-2 rounded-full transition-all duration-300 ${
                 i === 0
-                  ? "w-6 bg-[#E07898]"
-                  : "w-2 bg-[#EADBD2] hover:bg-[#E07898]/60"
+                  ? "w-6 bg-[#D89AAE]"
+                  : "w-2 bg-[#EADBD2] hover:bg-[#D89AAE]/60"
               }`}
             />
           ))}
@@ -237,8 +237,8 @@ export default function TeamScroller({ members }: { members: TeamMember[] }) {
           type="button"
           onClick={next}
           aria-label="Next team member"
-          className="w-10 h-10 rounded-full bg-white border border-[#EADBD2] flex items-center justify-center
-                     text-[#6B5448] hover:bg-[#E07898] hover:text-white hover:border-[#E07898] transition-all"
+          className="w-10 h-10 rounded-full bg-[#2A1F18] border border-[#3A2E26] flex items-center justify-center
+                     text-[#B8A89A] hover:bg-[#D89AAE] hover:text-white hover:border-[#D89AAE] transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

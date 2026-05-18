@@ -1,21 +1,24 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Light theme tokens */
-  --color-bg:        #FBF7F4;
-  --color-bg-soft:   #F5EDE6;
-  --color-card:      #FFFFFF;
-  --color-border:    #EADBD2;
-  --color-ink:       #1A1410;
-  --color-ink-soft:  #6B5448;
-  --color-ink-mute:  #A89484;
-  --color-rose:      #E07898;
-  --color-rose-deep: #C45E7A;
-  --color-rose-soft: #FCE7EE;
-  --color-gold:      #C9956B;
-  --color-gold-soft: #F1E3D3;
+  /* Refined dark theme — warm charcoal, rose pink accents */
+  --color-bg:        #1A1410;  /* warm charcoal page */
+  --color-bg-soft:   #221915;  /* alt section */
+  --color-card:      #2A1F18;  /* card surface */
+  --color-card-2:    #322620;  /* lifted surface */
+  --color-border:    #3A2E26;  /* hairline border */
 
-  /* Legacy dark tokens — kept until remaining sections are converted */
+  --color-ink:       #F0E4D8;  /* primary text */
+  --color-ink-soft:  #B8A89A;  /* secondary text */
+  --color-ink-mute:  #7A6657;  /* tertiary / labels */
+
+  --color-rose:      #D89AAE;  /* muted rose accent */
+  --color-rose-deep: #C45E7A;  /* hover / emphasis */
+  --color-rose-soft: #2E1F24;  /* rose-tinted surface */
+  --color-gold:      #C9956B;  /* secondary metallic */
+  --color-gold-soft: #2E251E;  /* faint gold tint surface */
+
+  /* Legacy tokens — kept temporarily for unconverted islands */
   --color-noir: #0A0A0A;
   --color-noir-card: #1C1614;
   --color-noir-section: #111111;
@@ -27,17 +30,61 @@
   --color-cream: #F5EDE6;
   --color-muted: #9A7060;
 
-  --font-display: var(--font-playfair);
-  --font-body: var(--font-inter);
+  --font-display: var(--font-cormorant);
+  --font-body:    var(--font-montserrat);
 }
 
 :root {
-  --background: #FBF7F4;
-  --foreground: #1A1410;
+  --background: #1A1410;
+  --foreground: #F0E4D8;
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #D89AAE #1A1410;
+}
+
+/* WebKit / Blink (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #1A1410;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #D89AAE 0%, #C45E7A 100%);
+  border: 2px solid #1A1410;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #E5B0C2 0%, #D89AAE 100%);
+}
+::-webkit-scrollbar-corner {
+  background: #1A1410;
+}
+
+/* Subtle scroll-driven reveals. Each .reveal element (or every direct child
+   of a .reveal-stagger) fades + slides up as it enters the viewport. Driven
+   by CSS view-timeline so it tracks scroll position naturally. */
+@supports (animation-timeline: view()) {
+  .reveal,
+  .reveal-stagger > * {
+    animation: reveal-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 28%;
+  }
+  @keyframes reveal-in {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-stagger > * { animation: none !important; transform: none !important; opacity: 1 !important; }
 }
 
 body {
@@ -46,29 +93,49 @@ body {
   font-family: var(--font-body), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  font-weight: 300;
 }
 
-/* Editorial Playfair weights */
+/* Page-wide background image rendered as a fixed-position layer so the
+   browser can composite it on the GPU. Avoids `background-attachment: fixed`
+   on body (which forces a full repaint every scroll frame and made the page
+   feel sticky). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(rgba(26, 20, 16, 0.78), rgba(26, 20, 16, 0.78)),
+    url('/bg.png') center center / cover no-repeat;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Editorial Cormorant Garamond weights */
 .display       { font-family: var(--font-display); font-weight: 300; letter-spacing: -0.015em; }
 .display-md    { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.01em; }
 .display-bold  { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; }
+.display-italic { font-family: var(--font-display); font-style: italic; font-weight: 400; }
+
+::selection { background-color: rgba(216, 154, 174, 0.3); }
 
 @keyframes logo-glow-pulse {
-  0%, 100% { opacity: 0.35; transform: scale(1); }
-  50%       { opacity: 0.7;  transform: scale(1.15); }
+  0%, 100% { opacity: 0.30; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(1.12); }
 }
 
 .logo-glow {
-  animation: logo-glow-pulse 2.4s ease-in-out infinite;
+  animation: logo-glow-pulse 2.6s ease-in-out infinite;
   will-change: opacity, transform;
 }
 
-.touch-pan-y {
-  touch-action: pan-y;
-}
+.touch-pan-y { touch-action: pan-y; }
 
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
 .typing-dot-1 { animation-delay: 0ms; }
 .typing-dot-2 { animation-delay: 150ms; }
@@ -78,6 +145,4 @@ body {
   0%   { opacity: 0; transform: translateX(-12px) scale(0.92); }
   100% { opacity: 1; transform: translateX(0) scale(1); }
 }
-.chat-teaser-in {
-  animation: chat-teaser-in 320ms cubic-bezier(0.16, 1, 0.3, 1);
-}
+.chat-teaser-in { animation: chat-teaser-in 320ms cubic-bezier(0.16, 1, 0.3, 1); }

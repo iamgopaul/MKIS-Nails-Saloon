@@ -198,10 +198,10 @@ function Header({ session, onLogout }: { session: Session; onLogout: () => void 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <div className="relative flex-shrink-0">
-            <Image src="/mkislogo.png" alt="MKIS" width={36} height={36} className="rounded-full object-cover ring-1 ring-[#E07898]/30" />
+            <Image src="/logomkis.png" alt="MKIS" width={36} height={36} className="rounded-full object-cover ring-1 ring-[#E07898]/30" />
           </div>
           <div className="min-w-0">
-            <span className="font-[family-name:var(--font-playfair)] text-base sm:text-lg font-bold whitespace-nowrap">
+            <span className="font-[family-name:var(--font-cormorant)] text-base sm:text-lg font-bold whitespace-nowrap">
               MKIS <span className="bg-gradient-to-r from-[#E07898] to-[#C9956B] bg-clip-text text-transparent">{session.role === "admin" ? "Admin" : "Team"}</span>
             </span>
             {session.email && <p className="text-xs text-[#9A7060] truncate hidden sm:block">{session.email}</p>}
@@ -318,7 +318,7 @@ function HomeTab({ session, myTeam }: { session: Session; myTeam: TeamMember | n
         <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-[#E07898]/10 blur-3xl" />
         <div className="relative">
           <p className="text-[#9A7060] text-sm uppercase tracking-wider mb-2">{todayLong}</p>
-          <h2 className="font-[family-name:var(--font-playfair)] text-2xl sm:text-3xl font-bold text-[#F5EDE6]">
+          <h2 className="font-[family-name:var(--font-cormorant)] text-2xl sm:text-3xl font-bold text-[#F5EDE6]">
             Hey welcome, {firstName}! <span className="text-[#E07898]">👋</span>
           </h2>
           <p className="text-[#9A7060] mt-2">
@@ -340,7 +340,7 @@ function HomeTab({ session, myTeam }: { session: Session; myTeam: TeamMember | n
 
       {/* Today's appointments preview */}
       <div>
-        <h3 className="font-[family-name:var(--font-playfair)] text-xl font-bold mb-4">Today&apos;s Schedule</h3>
+        <h3 className="font-[family-name:var(--font-cormorant)] text-xl font-bold mb-4">Today&apos;s Schedule</h3>
         {todayList.length === 0 ? (
           <div className="bg-[#1C1614] rounded-3xl p-10 border border-[#E07898]/15 text-center">
             <p className="text-[#9A7060]">No appointments today. Enjoy the breather ✨</p>
@@ -387,7 +387,7 @@ function ProfileTab({ session, myTeam, showToast, reload }: {
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
-        <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold">My Profile</h2>
+        <h2 className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl font-bold">My Profile</h2>
         <p className="text-[#9A7060] text-sm mt-1">Each section saves on its own.</p>
       </div>
 
@@ -772,7 +772,7 @@ function BookingsTab() {
 
   return (
     <div className="space-y-6">
-      <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold">Bookings</h2>
+      <h2 className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl font-bold">Bookings</h2>
       <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
         <select value={techFilter} onChange={(e) => setTechFilter(e.target.value)}
           aria-label="Filter by technician"
@@ -969,7 +969,7 @@ function ReviewsTab({ showToast }: { showToast: (m: string, ok?: boolean) => voi
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold">Client Reviews</h2>
+          <h2 className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl font-bold">Client Reviews</h2>
           <p className="text-[#9A7060] text-sm mt-1">Approve reviews to show them on the website.</p>
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -1114,7 +1114,7 @@ function TeamTab({ showToast }: { showToast: (m: string, ok?: boolean) => void }
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold">Team Members</h2>
+        <h2 className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl font-bold">Team Members</h2>
         <button type="button" onClick={() => { setInviting(true); setEditingId(null); }}
           className="px-4 py-2 rounded-full bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white text-sm font-semibold hover:from-[#C45E7A] hover:to-[#B07A52] transition-all">
           ✉ Invite Team Member
@@ -1235,7 +1235,7 @@ function ServicesTab({ showToast }: { showToast: (m: string, ok?: boolean) => vo
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold">Services</h2>
+        <h2 className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl font-bold">Services</h2>
         <button type="button" onClick={() => { setAdding(true); setEditingId(null); setDraft({ active: true, icon: "💅", duration_minutes: 60 }); }}
           className="px-4 py-2 rounded-full bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white text-sm font-semibold hover:from-[#C45E7A] hover:to-[#B07A52] transition-all">
           + Add Service
@@ -1355,7 +1355,7 @@ function GalleryTab({ showToast, session }: { showToast: (m: string, ok?: boolea
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold">Gallery</h2>
+        <h2 className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl font-bold">Gallery</h2>
         <button type="button" onClick={() => { setAdding(true); setEditingId(null); setDraft({ active: true }); }}
           className="px-4 py-2 rounded-full bg-gradient-to-r from-[#E07898] to-[#C9956B] text-white text-sm font-semibold hover:from-[#C45E7A] hover:to-[#B07A52] transition-all">
           + Add Design
@@ -1450,7 +1450,7 @@ function ContentTab({ showToast }: { showToast: (m: string, ok?: boolean) => voi
 
   return (
     <div className="space-y-4 max-w-2xl">
-      <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl font-bold mb-6">Site Content</h2>
+      <h2 className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl font-bold mb-6">Site Content</h2>
       <p className="text-[#9A7060] text-sm mb-6">Edit text blocks on the public site. Changes update immediately.</p>
 
       <div className="bg-[#1C1614] rounded-2xl p-5 border border-[#E07898]/15">

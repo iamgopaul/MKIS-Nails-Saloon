@@ -68,7 +68,7 @@ export default function ImageCropModal({ src, aspect = 1, onCancel, onConfirm }:
     <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-[#1C1614] rounded-3xl border border-[#E07898]/30 shadow-2xl w-full max-w-md overflow-hidden">
         <div className="px-6 pt-6 pb-3 flex items-center justify-between">
-          <h3 className="font-[family-name:var(--font-playfair)] text-lg font-bold text-[#F5EDE6]">
+          <h3 className="font-[family-name:var(--font-cormorant)] text-lg font-bold text-[#F5EDE6]">
             Adjust your photo
           </h3>
           <button type="button" aria-label="Close" onClick={onCancel}

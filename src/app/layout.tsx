@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Cormorant_Garamond, Montserrat } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
   display: "swap",
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
+
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://mkisnails.com"),
@@ -22,12 +26,12 @@ export const metadata: Metadata = {
     template: "%s · MKIS Nails",
   },
   description:
-    "Book your nail appointment at MKIS Nail Saloon. We offer gel manicures, acrylics, nail art, and pedicures with a personal touch.",
+    "Book your nail appointment at MKIS Nail Salon. We offer gel manicures, acrylics, nail art, and pedicures with a personal touch.",
   openGraph: {
     title: "MKIS Nails",
     description: "Premium nail art and care. Book your appointment online.",
     type: "website",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "MKIS Nail Saloon" }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "MKIS Nail Salon" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -43,9 +47,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${playfair.variable}`}
+      className={`${montserrat.variable} ${cormorant.variable}`}
     >
-      <body className="min-h-full flex flex-col antialiased font-[family-name:var(--font-inter)]">
+      <body className="min-h-full flex flex-col antialiased font-[family-name:var(--font-montserrat)]">
         {children}
         <Analytics />
       </body>

@@ -62,13 +62,13 @@ export default function ContactSection({ id }: ContactSectionProps) {
     {
       Icon: PinIcon,
       label: "Address",
-      content: <p className="text-[#6B5448] font-light leading-relaxed">123 Beauty Lane<br />Your City, ST 00000</p>,
+      content: <p className="text-[#B8A89A] font-light leading-relaxed">123 Beauty Lane<br />Your City, ST 00000</p>,
     },
     {
       Icon: PhoneIcon,
       label: "Phone",
       content: (
-        <a href="tel:+17542365112" className="text-[#C45E7A] hover:text-[#E07898] font-medium transition-colors">
+        <a href="tel:+17542365112" className="text-[#D89AAE] hover:text-[#D89AAE] font-medium transition-colors">
           +1 (754) 236-5112
         </a>
       ),
@@ -77,7 +77,7 @@ export default function ContactSection({ id }: ContactSectionProps) {
       Icon: MailIcon,
       label: "Email",
       content: (
-        <a href="mailto:mkisservicesllc@gmail.com" className="text-[#C45E7A] hover:text-[#E07898] font-medium transition-colors break-all">
+        <a href="mailto:mkisservicesllc@gmail.com" className="text-[#D89AAE] hover:text-[#D89AAE] font-medium transition-colors break-all">
           mkisservicesllc@gmail.com
         </a>
       ),
@@ -85,41 +85,42 @@ export default function ContactSection({ id }: ContactSectionProps) {
   ];
 
   return (
-    <section id={id} className="py-24 bg-[#FBF7F4]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+    <section id={id} className="py-24 lg:py-32">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Visit us"
-          title="Find us"
+          eyebrow="Contact"
+          title="Get in"
+          accent="Touch"
           subtitle="Come by the studio or reach out — we'd love to hear from you."
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="reveal-stagger grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Contact info */}
-          <div className="space-y-7">
+          <div className="space-y-5">
             {items.map(({ Icon, label, content }) => (
-              <div key={label} className="flex gap-4 items-start">
-                <div className="w-11 h-11 rounded-2xl bg-white border border-[#EADBD2] text-[#C45E7A] flex items-center justify-center flex-shrink-0">
+              <div key={label} className="flex gap-4 items-start p-6 bg-[#2A1F18] border border-[#3A2E26]/60 rounded-lg hover:border-[#D89AAE]/40 transition-colors">
+                <div className="w-11 h-11 rounded-lg bg-[#2E1F24] text-[#D89AAE] flex items-center justify-center flex-shrink-0">
                   <Icon />
                 </div>
                 <div>
-                  <h4 className="text-[11px] font-medium tracking-[0.22em] uppercase text-[#1A1410] mb-1.5">{label}</h4>
+                  <h4 className="text-[11px] font-[family-name:var(--font-montserrat)] font-medium tracking-[0.22em] uppercase text-[#F0E4D8] mb-1.5">{label}</h4>
                   {content}
                 </div>
               </div>
             ))}
 
             {/* Hours */}
-            <div className="flex gap-4 items-start">
-              <div className="w-11 h-11 rounded-2xl bg-white border border-[#EADBD2] text-[#C45E7A] flex items-center justify-center flex-shrink-0">
+            <div className="flex gap-4 items-start p-6 bg-[#2A1F18] border border-[#3A2E26]/60 rounded-lg">
+              <div className="w-11 h-11 rounded-lg bg-[#2E1F24] text-[#D89AAE] flex items-center justify-center flex-shrink-0">
                 <ClockIcon />
               </div>
               <div className="flex-1">
-                <h4 className="text-[11px] font-medium tracking-[0.22em] uppercase text-[#1A1410] mb-3">Business Hours</h4>
+                <h4 className="text-[11px] font-[family-name:var(--font-montserrat)] font-medium tracking-[0.22em] uppercase text-[#F0E4D8] mb-3">Business Hours</h4>
                 <div className="space-y-2">
                   {hours.map(({ day, time }) => (
                     <div key={day} className="flex justify-between text-sm">
-                      <span className="text-[#6B5448] font-light">{day}</span>
-                      <span className={`font-medium ${time === "Closed" ? "text-red-500" : "text-[#1A1410]"}`}>
+                      <span className="text-[#B8A89A] font-light">{day}</span>
+                      <span className={`font-medium ${time === "Closed" ? "text-red-400" : "text-[#F0E4D8]"}`}>
                         {time}
                       </span>
                     </div>
@@ -130,13 +131,13 @@ export default function ContactSection({ id }: ContactSectionProps) {
           </div>
 
           {/* Map placeholder */}
-          <div className="rounded-3xl overflow-hidden border border-[#EADBD2] min-h-80 bg-white flex items-center justify-center">
-            <div className="text-center p-8 text-[#A89484]">
-              <div className="inline-flex w-14 h-14 mb-4 rounded-full bg-[#FCE7EE] text-[#C45E7A] items-center justify-center">
+          <div className="rounded-lg overflow-hidden border border-[#3A2E26]/60 min-h-80 bg-[#2A1F18] flex items-center justify-center">
+            <div className="text-center p-8 text-[#7A6657]">
+              <div className="inline-flex w-14 h-14 mb-4 rounded-lg bg-[#2E1F24] text-[#D89AAE] items-center justify-center">
                 <MapIcon />
               </div>
-              <p className="text-[#1A1410] font-medium">Map coming soon</p>
-              <p className="text-[#A89484] text-sm mt-2 font-light">
+              <p className="font-[family-name:var(--font-cormorant)] text-2xl text-[#F0E4D8]">Map coming soon</p>
+              <p className="text-[#7A6657] text-sm mt-2 font-light">
                 Add your Google Maps embed URL in ContactSection.tsx
               </p>
             </div>

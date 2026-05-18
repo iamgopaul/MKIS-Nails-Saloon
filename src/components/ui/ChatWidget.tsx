@@ -10,7 +10,7 @@ interface Message {
 
 const WELCOME: Message = {
   role:    "assistant",
-  content: "Hi, I'm Bella 💅 Your assistant for MKIS Nail Saloon. Ask me anything about our services, team, hours, or how to book an appointment.",
+  content: "Hi, I'm Bella 💅 Your assistant for MKIS Nail Salon. Ask me anything about our services, team, hours, or how to book an appointment.",
 };
 
 // Bella plays a small, calm queue of teasers while the chat is closed.
@@ -361,17 +361,17 @@ export default function ChatWidget() {
           role="status"
           aria-live="polite"
           className={`fixed z-50 max-w-[220px] sm:max-w-xs
-                     bg-white border border-[#EADBD2] rounded-2xl
+                     bg-[#2A1F18] border border-[#3A2E26] rounded-2xl
                      ${teaserOnLeft ? "rounded-br-sm" : "rounded-bl-sm"}
                      px-4 py-2.5 shadow-[0_15px_30px_-12px_rgba(26,20,16,0.18)] chat-teaser-in cursor-pointer`}
           onClick={() => setOpen(true)}
         >
-          <p className="text-sm text-[#1A1410] leading-snug">{teaser}</p>
+          <p className="text-sm text-[#F0E4D8] leading-snug">{teaser}</p>
           <button
             type="button"
             aria-label="Dismiss"
             onClick={(e) => { e.stopPropagation(); teaserDismissed.current = true; setTeaser(null); }}
-            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-white border border-[#EADBD2] text-[#A89484] hover:text-[#C45E7A] flex items-center justify-center text-xs"
+            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#2A1F18] border border-[#3A2E26] text-[#7A6657] hover:text-[#D89AAE] flex items-center justify-center text-xs"
           >
             ✕
           </button>
@@ -391,12 +391,12 @@ export default function ChatWidget() {
           ${dragging ? "cursor-grabbing" : "cursor-grab"}
           ${dragging ? "" : "transition-shadow"}
           ${open
-            ? "bg-white border border-[#EADBD2] hover:bg-[#FBF7F4] flex items-center justify-center"
-            : "bg-gradient-to-br from-[#E07898] to-[#C9956B] hover:scale-105 p-[2px]"
+            ? "bg-[#2A1F18] border border-[#3A2E26] hover:bg-[#1A1410] flex items-center justify-center"
+            : "bg-[#D89AAE] hover:scale-105 p-[2px]"
           }`}
       >
         {open ? (
-          <svg className="w-5 h-5 text-[#1A1410]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-[#F0E4D8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
@@ -418,12 +418,12 @@ export default function ChatWidget() {
           role="dialog"
           aria-label="Chat with Bella"
           aria-modal="false"
-          className="fixed sm:w-96 z-50 bg-white rounded-3xl border border-[#EADBD2]
+          className="fixed sm:w-96 z-50 bg-[#2A1F18] rounded-3xl border border-[#3A2E26]
                      shadow-[0_25px_60px_-15px_rgba(26,20,16,0.25)] flex flex-col max-h-[70vh] overflow-hidden"
         >
           {/* Header */}
-          <div className="bg-gradient-to-br from-[#E07898] to-[#C9956B] px-5 py-4 flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white/70 flex-shrink-0 bg-white/10">
+          <div className="bg-[#322620] border-b border-[#3A2E26] px-5 py-4 flex items-center gap-3">
+            <div className="w-11 h-11 rounded-full overflow-hidden ring-1 ring-[#3A2E26] flex-shrink-0">
               <Image
                 src="/bella.jpeg"
                 alt="Bella"
@@ -433,8 +433,8 @@ export default function ChatWidget() {
               />
             </div>
             <div>
-              <p className="font-[family-name:var(--font-playfair)] text-base font-medium text-white leading-tight">Bella</p>
-              <p className="text-xs text-white/80 font-light">MKIS Nail Saloon assistant</p>
+              <p className="font-[family-name:var(--font-cormorant)] text-base font-medium text-[#F0E4D8] leading-tight">Bella</p>
+              <p className="text-xs text-[#B8A89A] font-light">MKIS Nail Salon assistant</p>
             </div>
           </div>
 
@@ -444,15 +444,15 @@ export default function ChatWidget() {
             role="log"
             aria-live="polite"
             aria-relevant="additions"
-            className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-[#FBF7F4]"
+            className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-[#1A1410]"
           >
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
                   className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed
                     ${m.role === "user"
-                      ? "bg-[#E07898] text-white rounded-br-sm"
-                      : "bg-white text-[#1A1410] border border-[#EADBD2] rounded-bl-sm"
+                      ? "bg-[#D89AAE] text-[#1A1410] rounded-br-sm"
+                      : "bg-[#2A1F18] text-[#F0E4D8] border border-[#3A2E26] rounded-bl-sm"
                     }`}
                 >
                   {m.content}
@@ -461,17 +461,17 @@ export default function ChatWidget() {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-white border border-[#EADBD2] rounded-2xl rounded-bl-sm px-4 py-2.5 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#E07898] animate-bounce typing-dot-1" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#E07898] animate-bounce typing-dot-2" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#E07898] animate-bounce typing-dot-3" />
+                <div className="bg-[#2A1F18] border border-[#3A2E26] rounded-2xl rounded-bl-sm px-4 py-2.5 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D89AAE] animate-bounce typing-dot-1" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D89AAE] animate-bounce typing-dot-2" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D89AAE] animate-bounce typing-dot-3" />
                 </div>
               </div>
             )}
           </div>
 
           {/* Input */}
-          <div className="px-3 py-3 bg-white border-t border-[#EADBD2]">
+          <div className="px-3 py-3 bg-[#2A1F18] border-t border-[#3A2E26]">
             <div className="flex items-end gap-2">
               <textarea
                 ref={textareaRef}
@@ -481,16 +481,16 @@ export default function ChatWidget() {
                 placeholder="Type your question…"
                 rows={1}
                 aria-label="Type a message"
-                className="flex-1 px-3 py-2 rounded-xl bg-[#FBF7F4] border border-[#EADBD2] text-[#1A1410] text-sm
-                           placeholder:text-[#A89484] focus:outline-none focus:border-[#E07898] focus:ring-2 focus:ring-[#E07898]/20 resize-none max-h-32"
+                className="flex-1 px-3 py-2 rounded-xl bg-[#1A1410] border border-[#3A2E26] text-[#F0E4D8] text-sm
+                           placeholder:text-[#7A6657] focus:outline-none focus:border-[#D89AAE] focus:ring-2 focus:ring-[#D89AAE]/20 resize-none max-h-32"
               />
               <button
                 type="button"
                 onClick={send}
                 disabled={!input.trim() || loading}
                 aria-label="Send message"
-                className="w-10 h-10 rounded-xl bg-[#E07898] text-white flex items-center justify-center
-                           hover:bg-[#C45E7A] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0"
+                className="w-10 h-10 rounded-xl bg-[#D89AAE] text-[#1A1410] flex items-center justify-center
+                           hover:bg-[#E5B0C2] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

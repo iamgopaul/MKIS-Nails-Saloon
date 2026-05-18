@@ -9,114 +9,61 @@ export default function HeroSection({ id }: HeroSectionProps) {
   return (
     <section
       id={id}
-      className="relative min-h-screen flex items-center overflow-hidden bg-[#FBF7F4]"
+      className="relative min-h-[calc(100vh-6rem)] flex items-start justify-center overflow-hidden pt-6 md:pt-8"
     >
-      {/* Soft decorative blooms */}
-      <div className="absolute -top-32 -right-24 w-[28rem] h-[28rem] rounded-full bg-[#FCE7EE] blur-3xl opacity-70 pointer-events-none" />
-      <div className="absolute -bottom-32 -left-24 w-[32rem] h-[32rem] rounded-full bg-[#F1E3D3] blur-3xl opacity-60 pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        {/* Text column */}
-        <div className="lg:col-span-7">
-          <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#EADBD2] text-[#C45E7A] text-xs font-medium tracking-[0.18em] uppercase mb-8 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#E07898]" />
-            Premium Nail Studio
-          </span>
-
-          <h1 className="display text-[3.25rem] leading-[1.05] md:text-6xl lg:text-[5.25rem] lg:leading-[0.98] text-[#1A1410] mb-7">
-            Where beauty
-            <br />
-            meets <span className="display-md italic text-[#C45E7A]">artistry</span>
-          </h1>
-
-          <p className="text-[#6B5448] text-lg md:text-xl leading-relaxed mb-10 max-w-xl font-light">
-            Every set is a small masterpiece. From understated classics to bold,
-            sculptural nail art — we craft looks designed to be noticed.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <a href="#booking">
-              <Button size="lg">Book an Appointment</Button>
-            </a>
-            <a href="#gallery">
-              <Button size="lg" variant="outline">View Our Work</Button>
-            </a>
-          </div>
-
-          {/* Stats row */}
-          <div className="mt-16 grid grid-cols-3 max-w-md gap-8 pt-8 border-t border-[#EADBD2]">
-            {[
-              { value: "500+", label: "Happy clients" },
-              { value: "50+",  label: "Signature designs" },
-              { value: "5.0",  label: "Average rating" },
-            ].map((stat) => (
-              <div key={stat.label}>
-                <p className="display-md text-3xl text-[#1A1410]">{stat.value}</p>
-                <p className="text-xs text-[#A89484] mt-1 tracking-wide uppercase">{stat.label}</p>
-              </div>
-            ))}
-          </div>
+      <div className="relative max-w-5xl mx-auto px-6 lg:px-8 pb-16 flex flex-col items-center text-center">
+        {/* Floating transparent logo */}
+        <div className="relative mb-5">
+          <div className="logo-glow absolute inset-0 -m-6 rounded-full bg-[#D89AAE]/25 blur-3xl" />
+          <Image
+            src="/logo-transparent.png"
+            alt="MKIS Nails Salon"
+            width={220}
+            height={220}
+            priority
+            className="relative w-32 md:w-40 lg:w-44 h-auto drop-shadow-[0_18px_36px_rgba(0,0,0,0.55)]"
+          />
         </div>
 
-        {/* Editorial logo card */}
-        <div className="hidden lg:flex lg:col-span-5 justify-center items-center">
-          <div className="relative">
-            {/* Soft offset shadow plate */}
-            <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-[2rem] bg-[#FCE7EE]" />
+        {/* Eyebrow */}
+        <span className="inline-flex items-center gap-2.5 px-3.5 py-1 border border-[#3A2E26] text-[#D89AAE] text-[10px] font-[family-name:var(--font-montserrat)] font-medium tracking-[0.28em] uppercase mb-5">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#D89AAE]" />
+          Premium Nail Studio
+        </span>
 
-            <div className="relative w-[22rem] h-[28rem] rounded-[2rem] bg-white border border-[#EADBD2] shadow-[0_30px_60px_-30px_rgba(196,94,122,0.25)] flex flex-col items-center justify-center gap-7 p-10">
-              <div className="relative">
-                <div className="logo-glow absolute inset-0 rounded-2xl bg-[#E07898] blur-2xl opacity-25" />
-                <Image
-                  src="/mkislogo.png"
-                  alt="MKIS Nail Saloon"
-                  width={200}
-                  height={200}
-                  priority
-                  className="relative rounded-2xl ring-1 ring-[#EADBD2] shadow-[0_18px_40px_-12px_rgba(26,20,16,0.35)]"
-                />
-              </div>
+        {/* Headline — preserved per user request */}
+        <h1 className="font-[family-name:var(--font-cormorant)] font-light text-[2.5rem] md:text-6xl lg:text-[4.75rem] leading-[0.98] text-[#F0E4D8] mb-5 text-balance">
+          Where beauty
+          <br />
+          meets <span className="italic text-[#D89AAE]">artistry</span>
+        </h1>
 
-              <div className="w-16 h-px bg-[#EADBD2]" />
+        <p className="text-[#B8A89A] text-sm md:text-base lg:text-lg font-light leading-relaxed max-w-xl mb-8">
+          Every set is a small masterpiece. From understated classics to bold,
+          sculptural nail art — we craft looks designed to be noticed.
+        </p>
 
-              <p className="display-md text-xl text-[#1A1410] text-center leading-snug">
-                MKIS Nails
-              </p>
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          <a href="#booking">
+            <Button size="lg">Book an Appointment</Button>
+          </a>
+          <a href="#gallery">
+            <Button size="lg" variant="outline">View Our Work</Button>
+          </a>
+        </div>
 
-              <div className="flex gap-1.5 flex-wrap justify-center">
-                {["Gel", "Acrylic", "Nail Art", "Pedicure"].map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2.5 py-1 rounded-full bg-[#FBF7F4] text-[#6B5448] text-[11px] font-medium tracking-wide"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Floating notes */}
-            <div className="absolute -top-4 -right-6 bg-white border border-[#EADBD2] rounded-2xl px-4 py-2.5 shadow-[0_12px_24px_-12px_rgba(26,20,16,0.15)] text-xs font-medium text-[#1A1410] flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Book online
-            </div>
-            <div className="absolute -bottom-5 -left-6 bg-[#C45E7A] text-white rounded-2xl px-4 py-2.5 shadow-[0_12px_24px_-12px_rgba(196,94,122,0.5)] text-xs font-medium">
-              New designs weekly
-            </div>
-          </div>
+        {/* Decorative divider */}
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-px bg-[#D89AAE]/50" />
+          <span className="text-[10px] tracking-[0.32em] uppercase text-[#7A6657] font-[family-name:var(--font-montserrat)] font-medium">
+            Now Open
+          </span>
+          <div className="w-14 h-px bg-[#D89AAE]/50" />
         </div>
       </div>
 
-      {/* Scroll hint */}
-      <a
-        href="#gallery"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-[#A89484] text-[11px] tracking-[0.25em] uppercase animate-bounce"
-      >
-        <span>Scroll</span>
-        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-        </svg>
-      </a>
     </section>
   );
 }

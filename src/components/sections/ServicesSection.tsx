@@ -1,6 +1,10 @@
 import SectionHeading from "@/components/ui/SectionHeading";
 import Button from "@/components/ui/Button";
 import { getServices } from "@/lib/db";
+import {
+  Sparkles, Hand, Footprints, Paintbrush, Gem,
+  Brush, FlaskConical, Scissors, Flower2,
+} from "lucide-react";
 
 interface ServicesSectionProps { id: string; }
 
@@ -11,43 +15,57 @@ function durationLabel(min: number): string {
   return m === 0 ? `${h} hr` : `${h} hr ${m} min`;
 }
 
+function pickIcon(name: string) {
+  const n = name.toLowerCase();
+  const cls = "w-5 h-5";
+  if (n.includes("pedicure"))   return <Footprints   className={cls} strokeWidth={1.5} />;
+  if (n.includes("manicure"))   return <Hand         className={cls} strokeWidth={1.5} />;
+  if (n.includes("gel"))        return <Sparkles     className={cls} strokeWidth={1.5} />;
+  if (n.includes("acrylic"))    return <Gem          className={cls} strokeWidth={1.5} />;
+  if (n.includes("dip"))        return <FlaskConical className={cls} strokeWidth={1.5} />;
+  if (n.includes("extension"))  return <Scissors     className={cls} strokeWidth={1.5} />;
+  if (n.includes("art"))        return <Paintbrush   className={cls} strokeWidth={1.5} />;
+  if (n.includes("design"))     return <Brush        className={cls} strokeWidth={1.5} />;
+  return <Flower2 className={cls} strokeWidth={1.5} />;
+}
+
 export default async function ServicesSection({ id }: ServicesSectionProps) {
   const services = await getServices().catch(() => []);
 
   return (
-    <section id={id} className="py-24 bg-[#FBF7F4]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+    <section id={id} className="py-24 lg:py-32">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Menu"
-          title="Our services"
-          subtitle="From everyday elegance to show-stopping nail art, there is something crafted for every occasion."
+          eyebrow="Our Services"
+          title="Services &"
+          accent="Prices"
+          subtitle="From everyday elegance to show-stopping nail art — crafted for every occasion."
         />
 
         {services.length === 0 ? (
-          <p className="text-center text-[#A89484] font-light">Services coming soon.</p>
+          <p className="text-center text-[#B8A89A] font-light">Services coming soon.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="reveal-stagger grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {services.map((service) => (
               <div
                 key={service.id}
-                className="group bg-white rounded-3xl p-8 border border-[#EADBD2]
-                           hover:border-[#E07898]/40 hover:shadow-[0_18px_40px_-20px_rgba(26,20,16,0.15)]
-                           hover:-translate-y-0.5 transition-all duration-300"
+                className="group bg-[#2A1F18] border border-[#3A2E26]/60 rounded-lg p-8
+                           hover:border-[#D89AAE]/40 transition-colors duration-300"
               >
-                <div className="w-12 h-12 rounded-2xl bg-[#FCE7EE]
-                                flex items-center justify-center text-2xl mb-6
-                                group-hover:bg-[#E07898] group-hover:text-white transition-colors">
-                  {service.icon || "✦"}
+                <div className="w-12 h-12 rounded-lg bg-[#2E1F24] border border-[#3A2E26]
+                                flex items-center justify-center text-[#D89AAE] mb-6
+                                group-hover:bg-[#D89AAE] group-hover:text-[#1A1410] transition-colors">
+                  {pickIcon(service.name)}
                 </div>
-                <h3 className="display-md text-xl text-[#1A1410] mb-2">
+                <h3 className="font-[family-name:var(--font-cormorant)] font-light text-2xl text-[#F0E4D8] mb-2">
                   {service.name}
                 </h3>
-                <p className="text-[#6B5448] text-sm leading-relaxed mb-6 font-light">
+                <p className="text-[#B8A89A] text-sm leading-relaxed mb-6 font-light">
                   {service.description}
                 </p>
-                <div className="flex items-end justify-between pt-5 border-t border-[#F5EDE6]">
-                  <span className="display-md text-2xl text-[#1A1410]">{service.price}</span>
-                  <span className="text-[#A89484] text-xs tracking-wide">
+                <div className="flex items-end justify-between pt-5 border-t border-[#3A2E26]/60">
+                  <span className="font-[family-name:var(--font-cormorant)] text-2xl text-[#D89AAE]">{service.price}</span>
+                  <span className="text-[#7A6657] text-[11px] tracking-[0.18em] uppercase">
                     {durationLabel(service.duration_minutes)}
                   </span>
                 </div>
@@ -57,7 +75,7 @@ export default async function ServicesSection({ id }: ServicesSectionProps) {
         )}
 
         <div className="mt-16 text-center">
-          <p className="text-[#6B5448] mb-5 text-base font-light">Ready to treat yourself?</p>
+          <p className="text-[#B8A89A] mb-5 text-base font-light italic">Ready to treat yourself?</p>
           <a href="#booking">
             <Button size="lg">Book Any Service</Button>
           </a>

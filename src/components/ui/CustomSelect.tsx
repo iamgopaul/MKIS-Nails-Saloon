@@ -58,9 +58,9 @@ export default function CustomSelect({
 
   return (
     <div ref={containerRef} className="flex flex-col gap-1.5 relative">
-      <span className="text-[13px] font-medium text-[#1A1410]">
+      <span className="text-[13px] font-medium text-[#F0E4D8]">
         {label}
-        {required && <span className="text-[#C45E7A] ml-0.5">*</span>}
+        {required && <span className="text-[#D89AAE] ml-0.5">*</span>}
       </span>
 
       <button
@@ -70,19 +70,19 @@ export default function CustomSelect({
         aria-expanded={open ? "true" : "false"}
         aria-label={label}
         className={`w-full px-4 py-3 rounded-xl border text-left flex items-center justify-between gap-2
-          bg-white transition focus:outline-none focus:ring-2 focus:ring-[#E07898]/30
+          bg-[#2A1F18] transition focus:outline-none focus:ring-2 focus:ring-[#D89AAE]/30
           ${open
             ? "border-[#E07898] ring-2 ring-[#E07898]/30"
             : error
               ? "border-red-400"
-              : "border-[#EADBD2] hover:border-[#E07898]/60"
+              : "border-[#3A2E26] hover:border-[#D89AAE]/60"
           }`}
       >
-        <span className={isPlaceholder ? "text-[#A89484]" : "text-[#1A1410]"}>
+        <span className={isPlaceholder ? "text-[#7A6657]" : "text-[#F0E4D8]"}>
           {displayLabel}
         </span>
         <svg
-          className={`w-4 h-4 flex-shrink-0 text-[#6B5448] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`w-4 h-4 flex-shrink-0 text-[#B8A89A] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -95,8 +95,8 @@ export default function CustomSelect({
         <ul
           role="listbox"
           aria-label={label}
-          className="absolute z-50 top-full mt-1 w-full rounded-xl border border-[#EADBD2]
-            bg-white shadow-[0_20px_40px_-15px_rgba(26,20,16,0.15)] overflow-hidden
+          className="absolute z-50 top-full mt-1 w-full rounded-xl border border-[#3A2E26]
+            bg-[#2A1F18] shadow-[0_20px_40px_-15px_rgba(26,20,16,0.15)] overflow-hidden
             max-h-64 overflow-y-auto"
         >
           {options.map((opt) => {
@@ -109,8 +109,8 @@ export default function CustomSelect({
                 onClick={() => select(opt.value)}
                 className={`px-4 py-3 cursor-pointer text-sm transition-colors
                   ${isActive
-                    ? "bg-[#FCE7EE] text-[#C45E7A] font-medium"
-                    : "text-[#1A1410] hover:bg-[#FBF7F4]"
+                    ? "bg-[#2E1F24] text-[#D89AAE] font-medium"
+                    : "text-[#F0E4D8] hover:bg-[#1A1410]"
                   }`}
               >
                 {opt.label}
@@ -120,7 +120,7 @@ export default function CustomSelect({
         </ul>
       )}
 
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-xs text-red-400">{error}</p>}
     </div>
   );
 }

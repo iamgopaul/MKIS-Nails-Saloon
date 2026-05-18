@@ -36,7 +36,7 @@ export default async function ManagePage({ params }: Props) {
             <a href="tel:+17542365112" className="text-[#E07898]">+1 (754) 236-5112</a>.
           </p>
           <Link href="/" className="text-[#E07898] no-underline font-semibold hover:underline">
-            ← Back to MKIS Nail Saloon
+            ← Back to MKIS Nail Salon
           </Link>
         </div>
       </main>
@@ -81,4 +81,4 @@ export default async function ManagePage({ params }: Props) {
   );
 }
 
-export const metadata = { title: "Manage Booking — MKIS Nail Saloon" };
+export const metadata = { title: "Manage Booking — MKIS Nail Salon" };

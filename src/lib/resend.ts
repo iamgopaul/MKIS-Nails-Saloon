@@ -37,7 +37,7 @@ export async function sendConfirmationEmail(data: NotificationData): Promise<voi
       Hi <strong style="color:#F5EDE6;">${data.name}</strong>,
     </p>
     <p style="font-size:14px;color:#9A7060;margin:0 0 24px;line-height:1.7;">
-      Thank you for booking with MKIS Nail Saloon. We have received your request and will confirm your appointment shortly.
+      Thank you for booking with MKIS Nail Salon. We have received your request and will confirm your appointment shortly.
     </p>
 
     <div style="background:#111111;border:1px solid rgba(224,120,152,0.15);border-radius:14px;padding:20px 24px;margin-bottom:24px;">
@@ -96,9 +96,9 @@ export async function sendConfirmationEmail(data: NotificationData): Promise<voi
 
   const transporter = createTransport();
   await transporter.sendMail({
-    from:    `MKIS Nail Saloon <${process.env.SMTP_USER}>`,
+    from:    `MKIS Nail Salon <${process.env.SMTP_USER}>`,
     to:      data.email,
-    subject: "Your Booking Request — MKIS Nail Saloon",
+    subject: "Your Booking Request — MKIS Nail Salon",
     html,
     attachments,
   });
@@ -128,9 +128,9 @@ export async function sendCancellationEmail(data: NotificationData): Promise<voi
   });
 
   await createTransport().sendMail({
-    from:    `MKIS Nail Saloon <${process.env.SMTP_USER}>`,
+    from:    `MKIS Nail Salon <${process.env.SMTP_USER}>`,
     to:      data.email,
-    subject: "Your Booking Was Cancelled — MKIS Nail Saloon",
+    subject: "Your Booking Was Cancelled — MKIS Nail Salon",
     html,
     attachments,
   });
@@ -175,9 +175,9 @@ export async function sendReminderEmail(data: NotificationData): Promise<void> {
   });
 
   await createTransport().sendMail({
-    from:    `MKIS Nail Saloon <${process.env.SMTP_USER}>`,
+    from:    `MKIS Nail Salon <${process.env.SMTP_USER}>`,
     to:      data.email,
-    subject: "Reminder: Your Appointment Tomorrow — MKIS Nail Saloon",
+    subject: "Reminder: Your Appointment Tomorrow — MKIS Nail Salon",
     html,
     attachments,
   });

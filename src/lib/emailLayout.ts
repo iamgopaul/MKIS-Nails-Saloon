@@ -21,7 +21,7 @@ interface LayoutOptions {
 }
 
 /**
- * Dark, branded HTML email matching the MKIS Nail Saloon site theme.
+ * Dark, branded HTML email matching the MKIS Nail Salon site theme.
  * Returns the html + the inline logo attachment.
  */
 export async function buildEmail({ headline, preheader, bodyHtml }: LayoutOptions) {
@@ -47,10 +47,10 @@ export async function buildEmail({ headline, preheader, bodyHtml }: LayoutOption
       <!-- Gradient header with dark logo well -->
       <div style="background:linear-gradient(135deg,#E07898,#C9956B);padding:36px 40px 30px;text-align:center;">
         <div style="display:inline-block;background:#0A0A0A;padding:5px;border-radius:50%;border:2px solid rgba(255,255,255,0.4);">
-          <img src="cid:mkis-logo" alt="MKIS Nail Saloon" width="68" height="68" style="display:block;border-radius:50%;background:#0A0A0A;" />
+          <img src="cid:mkis-logo" alt="MKIS Nail Salon" width="68" height="68" style="display:block;border-radius:50%;background:#0A0A0A;" />
         </div>
         <p style="margin:14px 0 0;color:#ffffff;font-size:11px;letter-spacing:5px;text-transform:uppercase;font-weight:700;">
-          MKIS Nail Saloon
+          MKIS Nail Salon
         </p>
         <h1 style="margin:8px 0 0;color:#ffffff;font-size:26px;font-weight:700;letter-spacing:-0.3px;font-family:Georgia,'Playfair Display',serif;">
           ${headline}
@@ -74,7 +74,7 @@ export async function buildEmail({ headline, preheader, bodyHtml }: LayoutOption
       <!-- Footer -->
       <div style="background:#0A0A0A;padding:28px 40px 24px;text-align:center;border-top:1px solid rgba(224,120,152,0.12);">
         <p style="margin:0 0 6px;font-family:Georgia,'Playfair Display',serif;font-size:15px;color:#F5EDE6;font-weight:700;letter-spacing:1.5px;">
-          MKIS Nail Saloon
+          MKIS Nail Salon
         </p>
         <p style="margin:0 0 14px;font-size:11px;color:#9A7060;letter-spacing:1px;">
           PREMIUM NAIL ART &amp; CARE
@@ -86,13 +86,13 @@ export async function buildEmail({ headline, preheader, bodyHtml }: LayoutOption
         </p>
         <p style="margin:0 0 16px;font-size:11px;color:#9A7060;">Florida, USA</p>
         <p style="margin:0;font-size:10px;color:#9A7060;opacity:0.55;">
-          &copy; ${year} MKIS Nail Saloon. All rights reserved.
+          &copy; ${year} MKIS Nail Salon. All rights reserved.
         </p>
       </div>
     </div>
 
     <p style="text-align:center;font-size:10px;color:#9A7060;margin:20px 0 0;opacity:0.7;">
-      You received this email because you have an account or made a booking with MKIS Nail Saloon.
+      You received this email because you have an account or made a booking with MKIS Nail Salon.
     </p>
   </div>
 </body>

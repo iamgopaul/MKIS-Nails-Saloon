@@ -3,6 +3,7 @@ interface SectionHeadingProps {
   subtitle?: string;
   centered?: boolean;
   eyebrow?: string;
+  accent?: string; // optional last word to italicize in rose
 }
 
 export default function SectionHeading({
@@ -10,19 +11,26 @@ export default function SectionHeading({
   subtitle,
   centered = true,
   eyebrow,
+  accent,
 }: SectionHeadingProps) {
   return (
-    <div className={`mb-14 ${centered ? "text-center" : ""}`}>
+    <div className={`mb-16 reveal ${centered ? "text-center" : ""}`}>
       {eyebrow && (
-        <p className="text-[11px] font-medium tracking-[0.25em] uppercase text-[#C45E7A] mb-4">
+        <p className="text-[11px] font-[family-name:var(--font-montserrat)] font-medium tracking-[0.25em] uppercase text-[#D89AAE] mb-4">
           {eyebrow}
         </p>
       )}
-      <h2 className="display text-4xl md:text-5xl lg:text-[3.5rem] leading-[1.05] text-[#1A1410] mb-4">
+      <h2 className="font-[family-name:var(--font-cormorant)] font-light text-4xl md:text-5xl lg:text-[3.5rem] leading-[1.05] text-[#F0E4D8] mb-6">
         {title}
+        {accent && (
+          <>
+            {" "}
+            <span className="italic text-[#D89AAE]">{accent}</span>
+          </>
+        )}
       </h2>
       {subtitle && (
-        <p className="text-[#6B5448] text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-light">
+        <p className="text-[#B8A89A] text-base md:text-lg max-w-xl mx-auto leading-relaxed font-light">
           {subtitle}
         </p>
       )}

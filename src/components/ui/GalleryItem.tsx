@@ -17,9 +17,9 @@ export default function GalleryItem({ name, category, imageUrl }: GalleryItemPro
       type="button"
       onClick={() => setOpen((v) => !v)}
       aria-label={`${name}${category ? `, ${category}` : ""}`}
-      className="group relative aspect-square rounded-2xl overflow-hidden bg-white border border-[#EADBD2]
-                 shadow-sm hover:shadow-[0_15px_35px_-15px_rgba(26,20,16,0.2)] hover:border-[#E07898]/50
-                 transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#E07898]/40"
+      className="group relative aspect-square rounded-lg overflow-hidden bg-[#2A1F18] border border-[#3A2E26]/60
+                 hover:border-[#D89AAE]/40 transition-colors duration-300 cursor-pointer
+                 focus:outline-none focus:ring-2 focus:ring-[#D89AAE]/40"
     >
       <Image
         src={imageUrl}
@@ -34,9 +34,9 @@ export default function GalleryItem({ name, category, imageUrl }: GalleryItemPro
                     transition-opacity duration-300 flex flex-col justify-end p-4 text-left
                     ${open ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
       >
-        <p className="text-white font-medium text-sm leading-tight">{name}</p>
+        <p className="font-[family-name:var(--font-cormorant)] text-white text-base leading-tight">{name}</p>
         {category && (
-          <span className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full bg-white/95 text-[#C45E7A] text-[11px] font-medium w-fit">
+          <span className="inline-block mt-1.5 text-[#D89AAE] text-[10px] font-[family-name:var(--font-montserrat)] tracking-[0.18em] uppercase w-fit">
             {category}
           </span>
         )}
