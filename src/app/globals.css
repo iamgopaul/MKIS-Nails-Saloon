@@ -42,6 +42,10 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 6rem;
+  /* Solid dark color set on the root so the very first frame the browser
+     paints — before any stylesheet loads images — is already on-brand. Kills
+     the white/black flash of refresh. */
+  background-color: #1A1410;
   /* Firefox */
   scrollbar-width: thin;
   scrollbar-color: #D89AAE #1A1410;
