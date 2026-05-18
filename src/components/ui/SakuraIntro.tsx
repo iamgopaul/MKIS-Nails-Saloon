@@ -17,17 +17,17 @@ const FADE_MS = 1200;
 
 export default function SakuraIntro() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [mounted, setMounted] = useState(false);
   const [fadingOut, setFadingOut] = useState(false);
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    setMounted(true);
-  }, []);
+    // Users who prefer reduced motion get the intro skipped, but the overlay
+    // has already painted server-side — dismiss it immediately.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDone(true);
+      return;
+    }
 
-  useEffect(() => {
-    if (!mounted) return;
     const video = videoRef.current;
     if (!video) return;
 
@@ -42,14 +42,14 @@ export default function SakuraIntro() {
     );
     return () => window.clearTimeout(safety);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted]);
+  }, []);
 
   function beginFade() {
     setFadingOut(true);
     window.setTimeout(() => setDone(true), FADE_MS);
   }
 
-  if (!mounted || done) return null;
+  if (done) return null;
 
   return (
     <div
@@ -89,6 +89,12 @@ export default function SakuraIntro() {
       </div>
 
       <style>{`
+        /* Lock body scroll while the intro is mounted. The <style> tag is
+           inside the overlay's JSX, so when the component unmounts (done=true)
+           the rule is gone and the page scrolls normally again. */
+        body { overflow: hidden !important; }
+        html { overflow: hidden !important; }
+
         @keyframes sakura-logo-in {
           0%   { opacity: 0; transform: scale(0.88) translateY(8px); }
           100% { opacity: 1; transform: scale(1)    translateY(0); }
