@@ -103,7 +103,7 @@ export default function BookingSection({ id }: BookingSectionProps) {
   ];
 
   return (
-    <section id={id} className="py-24 lg:py-32">
+    <section id={id} className="relative py-24 lg:py-32">
       {status === "success" ? (
         <div className="max-w-2xl mx-auto px-6 lg:px-8 text-center">
           <div className="bg-[#2A1F18] rounded-lg p-12 border border-[#3A2E26]/60">

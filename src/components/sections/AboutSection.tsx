@@ -33,7 +33,7 @@ export default async function AboutSection({ id }: AboutSectionProps) {
 
   if (team.length === 0) {
     return (
-      <section id={id} className="py-24 lg:py-32">
+      <section id={id} className="relative py-24 lg:py-32">
         <div className="max-w-3xl mx-auto px-6 lg:px-8 text-center">
           <SectionHeading
             eyebrow="About Us"
@@ -54,7 +54,7 @@ export default async function AboutSection({ id }: AboutSectionProps) {
   }));
 
   return (
-    <section id={id} className="py-24 lg:py-32">
+    <section id={id} className="relative py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeading
           eyebrow="About Us"

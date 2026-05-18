@@ -9,8 +9,9 @@ export default async function GallerySection({ id }: GallerySectionProps) {
   const items = await getGallery().catch(() => []);
 
   return (
-    <section id={id} className="py-24 lg:py-32">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+    <section id={id} className="relative py-24 lg:py-32">
+      
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeading
           eyebrow="Our Work"
           title="Our Gallery"

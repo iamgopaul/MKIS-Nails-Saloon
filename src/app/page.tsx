@@ -11,11 +11,13 @@ import ChatWidget from "@/components/ui/ChatWidget";
 import SectionDivider from "@/components/ui/SectionDivider";
 import SectionTitleSync from "@/components/ui/SectionTitleSync";
 import ParticleField from "@/components/ui/ParticleField";
+import SakuraIntro from "@/components/ui/SakuraIntro";
 
 export default function Home() {
   return (
     <>
       <ParticleField />
+      <SakuraIntro />
       <Navbar />
       <main>
         <HeroSection id="home" />

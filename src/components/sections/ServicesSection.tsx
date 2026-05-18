@@ -33,8 +33,9 @@ export default async function ServicesSection({ id }: ServicesSectionProps) {
   const services = await getServices().catch(() => []);
 
   return (
-    <section id={id} className="py-24 lg:py-32">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+    <section id={id} className="relative py-24 lg:py-32">
+      
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeading
           eyebrow="Our Services"
           title="Services & Prices"
