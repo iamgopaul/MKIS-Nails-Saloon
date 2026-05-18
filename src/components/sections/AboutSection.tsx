@@ -36,9 +36,8 @@ export default async function AboutSection({ id }: AboutSectionProps) {
       <section id={id} className="py-24 lg:py-32">
         <div className="max-w-3xl mx-auto px-6 lg:px-8 text-center">
           <SectionHeading
-            eyebrow="The Team"
-            title={content["about_title"] ?? "Meet our"}
-            accent="team"
+            eyebrow="About Us"
+            title="Meet Our Team"
             subtitle={content["about_subtitle"] ?? "Our talented artists are coming soon."}
           />
         </div>
@@ -58,9 +57,8 @@ export default async function AboutSection({ id }: AboutSectionProps) {
     <section id={id} className="py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeading
-          eyebrow="The Team"
-          title={content["about_title"] ?? "Meet our"}
-          accent="team"
+          eyebrow="About Us"
+          title="Meet Our Team"
           subtitle={content["about_subtitle"] ?? "Talented artists who are passionate about making you feel beautiful."}
         />
 

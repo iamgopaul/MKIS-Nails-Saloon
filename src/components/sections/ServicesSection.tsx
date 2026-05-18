@@ -37,9 +37,8 @@ export default async function ServicesSection({ id }: ServicesSectionProps) {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeading
           eyebrow="Our Services"
-          title="Services &"
-          accent="Prices"
-          subtitle="From everyday elegance to show-stopping nail art — crafted for every occasion."
+          title="Services & Prices"
+          subtitle="From everyday elegance to show-stopping nail art, crafted for every occasion."
         />
 
         {services.length === 0 ? (

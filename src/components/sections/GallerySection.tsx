@@ -13,8 +13,7 @@ export default async function GallerySection({ id }: GallerySectionProps) {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeading
           eyebrow="Our Work"
-          title="Check out our"
-          accent="Nails"
+          title="Our Gallery"
           subtitle="Each design is crafted with love and attention to detail."
         />
 
@@ -26,7 +25,7 @@ export default async function GallerySection({ id }: GallerySectionProps) {
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <p className="text-[#B8A89A] text-sm font-light">Photos coming soon — check back after your first visit.</p>
+            <p className="text-[#B8A89A] text-sm font-light">Photos coming soon. Check back after your first visit.</p>
           </div>
         ) : (
           <div className="reveal-stagger grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">

@@ -27,9 +27,9 @@ export default function Footer() {
             <Image
               src="/logo-transparent.png"
               alt="MKIS Nails Salon"
-              width={160}
-              height={80}
-              className="h-16 w-auto mb-5"
+              width={260}
+              height={130}
+              className="h-28 w-auto mb-5"
             />
             <p className="text-sm text-[#B8A89A] font-light leading-relaxed max-w-sm mb-6">
               Where every nail tells a story. Premium nail art and care crafted just for you.

@@ -5,8 +5,8 @@ interface ContactSectionProps {
 }
 
 const hours = [
-  { day: "Monday – Friday", time: "9:00 AM – 7:00 PM" },
-  { day: "Saturday",        time: "9:00 AM – 6:00 PM" },
+  { day: "Monday to Friday", time: "9:00 AM to 7:00 PM" },
+  { day: "Saturday",         time: "9:00 AM to 6:00 PM" },
   { day: "Sunday",          time: "Closed" },
 ];
 
@@ -80,9 +80,8 @@ export default function ContactSection({ id }: ContactSectionProps) {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeading
           eyebrow="Contact"
-          title="Get in"
-          accent="Touch"
-          subtitle="Come by the studio or reach out — we'd love to hear from you."
+          title="Get In Touch"
+          subtitle="Come by the studio or reach out. We'd love to hear from you."
         />
 
         <div className="reveal-stagger grid grid-cols-1 lg:grid-cols-2 gap-8">

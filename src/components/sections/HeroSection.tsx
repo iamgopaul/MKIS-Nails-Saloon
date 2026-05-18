@@ -19,10 +19,10 @@ export default function HeroSection({ id }: HeroSectionProps) {
           <Image
             src="/logo-transparent.png"
             alt="MKIS Nails Salon"
-            width={220}
-            height={220}
+            width={360}
+            height={360}
             priority
-            className="relative w-32 md:w-40 lg:w-44 h-auto drop-shadow-[0_18px_36px_rgba(0,0,0,0.55)]"
+            className="relative w-52 md:w-64 lg:w-80 h-auto drop-shadow-[0_18px_36px_rgba(0,0,0,0.55)]"
           />
         </div>
 
@@ -34,14 +34,14 @@ export default function HeroSection({ id }: HeroSectionProps) {
 
         {/* Headline — preserved per user request */}
         <h1 className="font-[family-name:var(--font-cormorant)] font-light text-[2.5rem] md:text-6xl lg:text-[4.75rem] leading-[0.98] text-[#F0E4D8] mb-5 text-balance">
-          Where beauty
+          Where Beauty
           <br />
-          meets <span className="italic text-[#D89AAE]">artistry</span>
+          Meets <span className="italic text-[#D89AAE]">Artistry</span>
         </h1>
 
         <p className="text-[#B8A89A] text-sm md:text-base lg:text-lg font-light leading-relaxed max-w-xl mb-8">
           Every set is a small masterpiece. From understated classics to bold,
-          sculptural nail art — we craft looks designed to be noticed.
+          sculptural nail art. We craft looks designed to be noticed.
         </p>
 
         {/* CTAs */}

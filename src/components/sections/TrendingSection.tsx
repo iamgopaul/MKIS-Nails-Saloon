@@ -54,9 +54,8 @@ export default function TrendingSection({ id }: { id: string }) {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeading
           eyebrow="This Week"
-          title="What clients are"
-          accent="loving"
-          subtitle="Based on real bookings — updated automatically."
+          title="What Clients Are Loving"
+          subtitle="Based on real bookings. Updated automatically."
         />
 
         {lastUpdated && (

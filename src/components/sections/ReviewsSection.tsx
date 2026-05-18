@@ -57,8 +57,7 @@ export default function ReviewsSection({ id }: ReviewsSectionProps) {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeading
           eyebrow="Testimonials"
-          title="Words from our"
-          accent="clients"
+          title="Words From Our Clients"
           subtitle="What clients are saying about MKIS Nails."
         />
 
@@ -83,7 +82,7 @@ export default function ReviewsSection({ id }: ReviewsSectionProps) {
                 </div>
                 <p className="text-[#F0E4D8] text-[15px] leading-relaxed mb-5 font-light">&ldquo;{r.review}&rdquo;</p>
                 <div className="flex items-center justify-between pt-4 border-t border-[#3A2E26]/60">
-                  <p className="font-[family-name:var(--font-cormorant)] italic text-base text-[#D89AAE]">— {r.client_name}</p>
+                  <p className="font-[family-name:var(--font-cormorant)] italic text-base text-[#D89AAE]">{r.client_name}</p>
                   <p className="text-[11px] text-[#7A6657] tracking-wide">{new Date(r.approved_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</p>
                 </div>
               </article>
@@ -97,7 +96,7 @@ export default function ReviewsSection({ id }: ReviewsSectionProps) {
               Leave a <span className="italic text-[#D89AAE]">review</span>
             </h3>
             <p className="text-[#B8A89A] text-sm text-center mb-8 font-light">
-              Share your experience — reviews are visible after admin approval.
+              Share your experience. Reviews are visible after admin approval.
             </p>
 
             {status === "success" ? (

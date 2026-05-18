@@ -98,7 +98,7 @@ export default function BookingSection({ id }: BookingSectionProps) {
   }));
 
   const techOptions = [
-    { value: "", label: "No preference — we'll assign someone" },
+    { value: "", label: "No preference. We'll assign someone" },
     ...team.map((t) => ({ value: t.id, label: `${t.name} · ${t.role}` })),
   ];
 
@@ -146,9 +146,8 @@ export default function BookingSection({ id }: BookingSectionProps) {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <SectionHeading
             eyebrow="Reservations"
-            title="Book an"
-            accent="appointment"
-            subtitle="Pick your service, technician, and time — we'll confirm your slot."
+            title="Book An Appointment"
+            subtitle="Pick your service, technician, and time. We'll confirm your slot."
           />
 
           <div className="reveal-stagger grid grid-cols-1 lg:grid-cols-5 gap-8">
@@ -160,7 +159,7 @@ export default function BookingSection({ id }: BookingSectionProps) {
                 {[
                   "Premium products and techniques",
                   "Personalized nail art just for you",
-                  "Real-time availability — no double bookings",
+                  "Real-time availability with no double bookings",
                   "Instant confirmation via email",
                   "Easy rescheduling by phone",
                 ].map((text) => (
@@ -251,8 +250,8 @@ export default function BookingSection({ id }: BookingSectionProps) {
                     <div className="bg-[#1A1410] rounded-lg border border-[#3A2E26]/60 p-6 text-center">
                       <p className="text-[#B8A89A] text-sm font-light">
                         {form.technicianId
-                          ? "This technician is fully booked on this date — try another date or a different technician."
-                          : "No availability on this date — try another."}
+                          ? "This technician is fully booked on this date. Try another date or a different technician."
+                          : "No availability on this date. Try another."}
                       </p>
                     </div>
                   ) : (
