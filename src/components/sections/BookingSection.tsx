@@ -150,11 +150,10 @@ export default function BookingSection({ id }: BookingSectionProps) {
             <div className="bg-[#1A1410] rounded-lg p-6 text-left mb-8 border border-[#3A2E26]/60">
               <div className="space-y-3 text-sm">
                 {[
-                  { label: "Service",    value: selectedService?.name ?? "" },
-                  { label: "Date",       value: form.date },
-                  { label: "Time",       value: timeLabel(form.startTime) },
-                  { label: "Technician", value: selectedTech?.name ?? "Any Available" },
-                  { label: "Phone",      value: form.phone },
+                  { label: "Service", value: selectedService?.name ?? "" },
+                  { label: "Date",    value: form.date },
+                  { label: "Time",    value: timeLabel(form.startTime) },
+                  { label: "Phone",   value: form.phone },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex justify-between">
                     <span className="text-[#7A6657]">{label}</span>
@@ -175,7 +174,7 @@ export default function BookingSection({ id }: BookingSectionProps) {
           <SectionHeading
             eyebrow="Reservations"
             title="Book An Appointment"
-            subtitle="Pick your service, technician, and time. We'll confirm your slot."
+            subtitle="Pick your service and time. We'll confirm your slot shortly."
           />
 
           <div className="reveal-stagger grid grid-cols-1 lg:grid-cols-5 gap-8">
@@ -238,6 +237,9 @@ export default function BookingSection({ id }: BookingSectionProps) {
                   />
                 </div>
 
+                {/* Preferred Technician — hidden while Kristin is the only
+                    tech. Re-enable when more team members are added. */}
+                {/*
                 <div className="sm:col-span-2">
                   <CustomSelect
                     label="Preferred Technician"
@@ -246,6 +248,7 @@ export default function BookingSection({ id }: BookingSectionProps) {
                     options={techOptions}
                   />
                 </div>
+                */}
 
                 <div className="sm:col-span-2">
                   <CalendarPicker
@@ -277,9 +280,7 @@ export default function BookingSection({ id }: BookingSectionProps) {
                   ) : slots.length === 0 ? (
                     <div className="bg-[#1A1410] rounded-lg border border-[#3A2E26]/60 p-6 text-center">
                       <p className="text-[#B8A89A] text-sm font-light">
-                        {form.technicianId
-                          ? "This technician is fully booked on this date. Try another date or a different technician."
-                          : "No availability on this date. Try another."}
+                        No availability on this date. Try another.
                       </p>
                     </div>
                   ) : (

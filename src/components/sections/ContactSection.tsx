@@ -133,8 +133,14 @@ export default function ContactSection({ id }: ContactSectionProps) {
               src="https://www.google.com/maps?q=7000+NW+17th+St+Building+2+Plantation+FL+33313&z=16&output=embed"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              className="w-full h-full min-h-80 grayscale-[0.4] contrast-95 transition-all duration-300 group-hover:grayscale-0"
-              style={{ border: 0 }}
+              className="w-full h-full min-h-80 transition-[filter] duration-300 group-hover:[filter:invert(0.88)_hue-rotate(180deg)_brightness(1.05)_contrast(0.9)_saturate(0.7)]"
+              // Inverts + hue-rotates the iframe so Google's white map tiles
+              // become a warm dark surface that blends with the page palette.
+              // On hover it lightens slightly so the label text is easier to read.
+              style={{
+                border: 0,
+                filter: "invert(0.92) hue-rotate(180deg) brightness(0.9) contrast(0.85) saturate(0.6)",
+              }}
               allowFullScreen
             />
             <span className="pointer-events-none absolute bottom-3 right-3 px-3 py-1.5 rounded-full bg-[#1A1410]/80 backdrop-blur-sm text-[10px] tracking-[0.2em] uppercase text-[#F0E4D8] border border-[#3A2E26] opacity-0 group-hover:opacity-100 transition-opacity">
