@@ -57,15 +57,26 @@ const svgOverlay = Buffer.from(`<svg width="${W}" height="${H}" xmlns="http://ww
   </text>
 </svg>`);
 
-await sharp(bgBuffer)
-  .composite([
-    { input: logoBuffer, top: LOGO_Y, left: LOGO_X },
-    { input: svgOverlay, top: 0, left: 0 },
-  ])
-  .png()
+// Export as JPEG instead of PNG. WhatsApp / iMessage / Facebook silently skip
+// OG images over ~300KB and fall back to the favicon — JPEG compresses this
+// kind of photo-based composite from ~1.2MB (PNG) down to under 200KB.
+const composed = sharp(bgBuffer).composite([
+  { input: logoBuffer, top: LOGO_Y, left: LOGO_X },
+  { input: svgOverlay, top: 0, left: 0 },
+]);
+
+await composed.clone().jpeg({ quality: 85, mozjpeg: true, chromaSubsampling: "4:2:0" })
+  .toFile(join(root, "public/og.jpg"));
+
+// Keep a PNG too for tools that strictly need PNG, but optimized.
+await composed.clone().png({ quality: 80, compressionLevel: 9, palette: true })
   .toFile(join(root, "public/og.png"));
 
-console.log("✓ public/og.png generated");
+const { stat } = await import("fs/promises");
+const jpgKb = ((await stat(join(root, "public/og.jpg"))).size / 1024).toFixed(0);
+const pngKb = ((await stat(join(root, "public/og.png"))).size / 1024).toFixed(0);
+console.log(`✓ public/og.jpg generated (${jpgKb} KB)`);
+console.log(`✓ public/og.png generated (${pngKb} KB)`);
 
 // ── Brand icons ──────────────────────────────────────────────────────────────
 // Builds a square brand icon — warm-dark backdrop, centered tulip rose-mark
