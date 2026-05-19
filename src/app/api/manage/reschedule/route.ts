@@ -9,7 +9,7 @@ import {
   isWorkingDay,
   todayInSalonTZ,
 } from "@/lib/booking";
-import { sendConfirmationEmail } from "@/lib/resend";
+import { sendConfirmationEmail } from "@/lib/email";
 import { sendTelegramAlert } from "@/lib/telegram";
 import { manageUrl } from "@/lib/manageToken";
 

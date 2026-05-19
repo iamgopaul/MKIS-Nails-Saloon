@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { bookingSchema } from "@/lib/validators";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendConfirmationEmail } from "@/lib/resend";
+import { sendConfirmationEmail } from "@/lib/email";
 import { sendTelegramNotification } from "@/lib/telegram";
 import { endTimeFor, slotsForBooking, timeToMinutes, isWorkingDay, todayInSalonTZ } from "@/lib/booking";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";

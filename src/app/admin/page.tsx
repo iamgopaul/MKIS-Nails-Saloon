@@ -75,17 +75,39 @@ function ImageUpload({ currentUrl, onUrl, label = "Photo / Image", aspect = 1 }:
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [previewName, setPreviewName] = useState<string>("photo.jpg");
 
-  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setError("");
+
+    // iPhone photos arrive as HEIC/HEIF, which most browsers cannot render
+    // in <img> or canvas — so we convert to JPEG client-side before the crop
+    // preview opens. JPEG/PNG/WebP/GIF go straight through.
+    let workingFile = file;
+    const isHeic = /heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+    if (isHeic) {
+      setUploading(true);
+      try {
+        const heic2any = (await import("heic2any")).default;
+        const converted = (await heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 })) as Blob;
+        workingFile = new File([converted], file.name.replace(/\.(heic|heif)$/i, ".jpg"), { type: "image/jpeg" });
+      } catch {
+        setError("Couldn't read that HEIC image. Try saving it as JPEG and uploading again.");
+        setUploading(false);
+        if (fileRef.current) fileRef.current.value = "";
+        return;
+      } finally {
+        setUploading(false);
+      }
+    }
+
     // Open crop modal — actual upload happens after the user confirms
     const reader = new FileReader();
     reader.onload = () => {
       setPreviewSrc(reader.result as string);
-      setPreviewName(file.name);
+      setPreviewName(workingFile.name);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(workingFile);
     // Reset the input so the same file can be re-selected
     if (fileRef.current) fileRef.current.value = "";
   }
@@ -124,10 +146,17 @@ function ImageUpload({ currentUrl, onUrl, label = "Photo / Image", aspect = 1 }:
               Remove
             </button>
           )}
-          <p className="text-xs text-[#B8A89A]/60 mt-1.5">JPEG, PNG, WebP, or GIF</p>
+          <p className="text-xs text-[#B8A89A]/60 mt-1.5">JPEG, PNG, WebP, GIF, or HEIC (iPhone photos)</p>
         </div>
       </div>
-      <input ref={fileRef} type="file" accept="image/*" aria-label="Upload image file" className="hidden" onChange={handleFile} />
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif"
+        aria-label="Upload image file"
+        className="hidden"
+        onChange={handleFile}
+      />
       {error && <p className="text-red-400 text-xs">{error}</p>}
 
       {previewSrc && (

@@ -11,9 +11,17 @@ export async function POST(req: NextRequest) {
     const file = form.get("file") as File | null;
     if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
 
-    const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    // Client converts HEIC → JPEG before upload, but accept HEIC/HEIF too as
+    // a backup for any client path that uploads the raw iPhone file.
+    const allowed = [
+      "image/jpeg", "image/png", "image/webp", "image/gif",
+      "image/heic", "image/heif",
+    ];
     if (!allowed.includes(file.type)) {
-      return NextResponse.json({ error: "Only JPEG, PNG, WebP, and GIF are allowed" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Only JPEG, PNG, WebP, GIF, and HEIC are allowed" },
+        { status: 400 }
+      );
     }
 
     // Each user uploads under their own folder for storage policy isolation

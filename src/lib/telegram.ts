@@ -1,4 +1,4 @@
-import type { NotificationData } from "@/lib/resend";
+import type { NotificationData } from "@/lib/email";
 
 export async function sendTelegramNotification(data: NotificationData): Promise<void> {
   if (!process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) {
@@ -8,7 +8,7 @@ export async function sendTelegramNotification(data: NotificationData): Promise<
   const url = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
 
   const message = [
-    "🌸 *New Booking — MKIS Nail Salon* 🌸",
+    "🌸 *New Booking — MKIS Nails* 🌸",
     "",
     `👤 *Name:* ${data.name}`,
     `📞 *Phone:* ${data.phone}`,

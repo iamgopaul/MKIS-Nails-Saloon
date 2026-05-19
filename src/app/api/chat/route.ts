@@ -9,7 +9,7 @@ import {
   endTimeFor,
   todayInSalonTZ,
 } from "@/lib/booking";
-import { sendConfirmationEmail } from "@/lib/resend";
+import { sendConfirmationEmail } from "@/lib/email";
 import { sendTelegramNotification } from "@/lib/telegram";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
 import { isAllowedOrigin } from "@/lib/origin";

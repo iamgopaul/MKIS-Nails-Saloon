@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Admin · MKIS Nail Salon",
+  title: "Admin · MKIS Nails",
   robots: { index: false, follow: false },
 };
 

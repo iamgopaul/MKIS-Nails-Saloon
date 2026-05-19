@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireUser, AuthError } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isAllowedOrigin } from "@/lib/origin";
-import { sendCancellationEmail } from "@/lib/resend";
+import { sendCancellationEmail } from "@/lib/email";
 import { sendTelegramAlert } from "@/lib/telegram";
 import { logAdminEvent } from "@/lib/adminLog";
 

@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { findBookingByToken } from "@/lib/manageBooking";
 import { isAllowedOrigin } from "@/lib/origin";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
-import { sendCancellationEmail } from "@/lib/resend";
+import { sendCancellationEmail } from "@/lib/email";
 import { sendTelegramAlert } from "@/lib/telegram";
 
 export async function POST(req: NextRequest) {

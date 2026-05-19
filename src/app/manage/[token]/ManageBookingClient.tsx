@@ -110,7 +110,7 @@ export default function ManageBookingClient({ token, booking }: { token: string;
     <main className="min-h-screen bg-[#1A1410] text-[#F0E4D8] py-12 px-6">
       <div className="max-w-xl mx-auto">
         <Link href="/" className="text-[#B8A89A] text-sm no-underline hover:text-[#D89AAE] transition-colors">
-          ← MKIS Nail Salon
+          ← MKIS Nails
         </Link>
         <h1 className="text-3xl font-bold mt-4 mb-2 font-[family-name:var(--font-cormorant)]">Manage Booking</h1>
         <p className="text-[#B8A89A] mb-7">
@@ -210,7 +210,7 @@ export default function ManageBookingClient({ token, booking }: { token: string;
                 : "Your new appointment time is saved. A confirmation email is on its way."}
             </p>
             <Link href="/" className="text-[#D89AAE] no-underline font-semibold hover:underline">
-              Back to MKIS Nail Salon →
+              Back to MKIS Nails →
             </Link>
           </div>
         )}

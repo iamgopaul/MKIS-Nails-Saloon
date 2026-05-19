@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendReminderEmail } from "@/lib/resend";
+import { sendReminderEmail } from "@/lib/email";
 import { manageUrl } from "@/lib/manageToken";
 
 export const runtime     = "nodejs";
