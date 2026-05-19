@@ -1,5 +1,6 @@
 import SectionHeading from "@/components/ui/SectionHeading";
 import Button from "@/components/ui/Button";
+import BookServiceButton from "@/components/ui/BookServiceButton";
 import { getServices } from "@/lib/db";
 import {
   Sparkles, Hand, Footprints, Paintbrush, Gem,
@@ -63,12 +64,13 @@ export default async function ServicesSection({ id }: ServicesSectionProps) {
                 <p className="text-[#B8A89A] text-sm leading-relaxed mb-6 font-light">
                   {service.description}
                 </p>
-                <div className="flex items-end justify-between pt-5 border-t border-[#3A2E26]/60">
+                <div className="flex items-end justify-between pt-5 border-t border-[#3A2E26]/60 mb-5">
                   <span className="font-[family-name:var(--font-cormorant)] text-2xl text-[#D89AAE]">{service.price}</span>
                   <span className="text-[#7A6657] text-[11px] tracking-[0.18em] uppercase">
                     {durationLabel(service.duration_minutes)}
                   </span>
                 </div>
+                <BookServiceButton serviceId={service.id} />
               </div>
             ))}
           </div>

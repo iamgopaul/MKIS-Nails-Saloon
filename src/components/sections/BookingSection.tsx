@@ -46,7 +46,20 @@ export default function BookingSection({ id }: BookingSectionProps) {
   const [loadingSlots, setLoadingSlots] = useState(false);
 
   useEffect(() => {
-    fetch("/api/services").then((r) => r.json()).then(setServices).catch(() => {});
+    fetch("/api/services")
+      .then((r) => r.json())
+      .then((svc) => {
+        setServices(svc);
+        // Pre-select a service if a card's "Book Now" button stashed an id.
+        try {
+          const preselect = sessionStorage.getItem("mkis:preselect-service");
+          if (preselect && Array.isArray(svc) && svc.some((s: Service) => s.id === preselect)) {
+            setForm((p) => ({ ...p, serviceId: preselect }));
+          }
+          sessionStorage.removeItem("mkis:preselect-service");
+        } catch { /* ignore */ }
+      })
+      .catch(() => {});
     fetch("/api/team").then((r) => r.json()).then(setTeam).catch(() => {});
   }, []);
 
