@@ -82,14 +82,13 @@ const ICON_SIZES = [
 ];
 
 function brandIconSvg(size) {
-  // The tulip glyph lives in a 24x24 viewBox, but its actual visual bounds
-  // are roughly x:6→18, y:4→18 — visual center at (12, 11). We scale so the
-  // glyph height fills ~56% of the icon, then translate so its visual center
-  // lands exactly on the icon center.
-  const halo = size * 0.45;
-  const GLYPH_H = 14;     // visual height in viewBox units
-  const GLYPH_CX = 12;    // visual center x in viewBox units
-  const GLYPH_CY = 11;    // visual center y in viewBox units
+  // Rose-plated icon with a cream tulip — high contrast in both light and
+  // dark browser tab bars. The tulip glyph lives in a 24x24 viewBox with
+  // visual center at (12, 11); we scale to ~56% of the icon then translate
+  // so its visual center lands on the icon's center.
+  const GLYPH_H = 14;
+  const GLYPH_CX = 12;
+  const GLYPH_CY = 11;
   const targetH = size * 0.56;
   const S = targetH / GLYPH_H;
   const tx = size / 2 - GLYPH_CX * S;
@@ -97,15 +96,14 @@ function brandIconSvg(size) {
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
     <defs>
-      <radialGradient id="bg" cx="50%" cy="50%" r="70%">
-        <stop offset="0%"   stop-color="#2E2018"/>
-        <stop offset="65%"  stop-color="#1A1410"/>
-        <stop offset="100%" stop-color="#0A0706"/>
-      </radialGradient>
+      <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%"   stop-color="#E5B0C2"/>
+        <stop offset="60%"  stop-color="#D89AAE"/>
+        <stop offset="100%" stop-color="#C45E7A"/>
+      </linearGradient>
     </defs>
-    <rect width="${size}" height="${size}" rx="${size * 0.18}" fill="url(#bg)"/>
-    <circle cx="${size / 2}" cy="${size / 2}" r="${halo}" fill="#D89AAE" opacity="0.22"/>
-    <g transform="translate(${tx}, ${ty}) scale(${S})" fill="#D89AAE">
+    <rect width="${size}" height="${size}" rx="${size * 0.20}" fill="url(#bg)"/>
+    <g transform="translate(${tx}, ${ty}) scale(${S})" fill="#FFF8F0">
       <path d="M12 4c1.4 1.6 1.4 4.6 1.4 7.4 0 1.6-.6 2.6-1.4 2.6s-1.4-1-1.4-2.6c0-2.8 0-5.8 1.4-7.4z"/>
       <path d="M6.8 8.2c1.7.6 3.2 2.7 4 5 .4 1.2.1 2.1-.5 2.3-.6.2-1.5-.3-2.1-1.4-1.2-2.1-2.1-4.4-1.4-5.9z"/>
       <path d="M17.2 8.2c-1.7.6-3.2 2.7-4 5-.4 1.2-.1 2.1.5 2.3.6.2 1.5-.3 2.1-1.4 1.2-2.1 2.1-4.4 1.4-5.9z"/>
@@ -120,7 +118,15 @@ for (const { size, file } of ICON_SIZES) {
     .toFile(join(root, file));
 }
 
-console.log("✓ brand icons generated:", ICON_SIZES.map((i) => `${i.size}px`).join(", "));
+// Legacy favicon.ico at the repo root /public for older browsers that don't
+// pick up the App Router icon convention. A single 32×32 PNG renamed .ico is
+// what most browsers accept; we use the same generated icon source.
+await sharp(Buffer.from(brandIconSvg(32)))
+  .resize(32, 32)
+  .png()
+  .toFile(join(root, "public/favicon.ico"));
+
+console.log("✓ brand icons generated:", ICON_SIZES.map((i) => `${i.size}px`).join(", "), "+ favicon.ico");
 
 // ── Google Business profile logo (720×720) ───────────────────────────────────
 // Square, no transparency, full brand wordmark over the warm dark plate.

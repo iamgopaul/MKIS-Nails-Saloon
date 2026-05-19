@@ -9,7 +9,7 @@ export default function HeroSection({ id }: HeroSectionProps) {
   return (
     <section
       id={id}
-      className="relative min-h-[calc(100vh-6rem)] flex items-start justify-center overflow-hidden pt-6 md:pt-8"
+      className="relative min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-6rem)] flex items-start justify-center overflow-hidden pt-4 md:pt-8"
     >
 
       <div className="relative max-w-5xl mx-auto px-6 lg:px-8 pb-16 flex flex-col items-center text-center">

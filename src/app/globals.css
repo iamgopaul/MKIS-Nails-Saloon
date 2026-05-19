@@ -41,7 +41,8 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 6rem;
+  /* Sized to the responsive navbar height (16 → 24 in Tailwind units). */
+  scroll-padding-top: 4rem;
   /* Solid dark color set on the root so the very first frame the browser
      paints — before any stylesheet loads images — is already on-brand. Kills
      the white/black flash of refresh. */
@@ -49,6 +50,10 @@ html {
   /* Firefox */
   scrollbar-width: thin;
   scrollbar-color: #D89AAE #1A1410;
+}
+
+@media (min-width: 768px) {
+  html { scroll-padding-top: 6rem; }
 }
 
 /* WebKit / Blink (Chrome, Safari, Edge) */

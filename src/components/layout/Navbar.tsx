@@ -32,8 +32,8 @@ export default function Navbar() {
           : "bg-transparent border-b border-transparent"
       }`}
     >
-      <nav className="max-w-7xl mx-auto px-6 lg:px-8 h-24 flex items-center justify-between">
-        {/* Logo */}
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 md:h-24 flex items-center justify-between">
+        {/* Logo — smaller on mobile so the navbar isn't a giant strip */}
         <a href="#home" className="flex items-center group">
           <Image
             src="/logo-transparent.png"
@@ -41,7 +41,7 @@ export default function Navbar() {
             width={240}
             height={96}
             priority
-            className="h-20 w-auto transition-transform group-hover:scale-[1.02]"
+            className="h-12 md:h-20 w-auto transition-transform group-hover:scale-[1.02]"
           />
         </a>
 

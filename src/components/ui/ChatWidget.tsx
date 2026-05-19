@@ -10,7 +10,7 @@ interface Message {
 
 const WELCOME: Message = {
   role:    "assistant",
-  content: "Hi, I'm Bella 💅 Your assistant for MKIS Nail Salon. Ask me anything about our services, team, hours, or how to book an appointment.",
+  content: "Hi, I'm Bella 💅 Your assistant for MKIS Nails Salon. Ask me anything about our services, team, hours, or how to book an appointment.",
 };
 
 // Bella plays a small, calm queue of teasers while the chat is closed.
@@ -23,17 +23,11 @@ const MEOW_LINES        = [
   "Meow! Don't forget to book your nails.",
   "*stretches paws* Meow 🐾",
 ];
-const MEOW_CHANCE       = 0.4;       // ~40 % of sessions get a meow
+const MEOW_CHANCE       = 0.4;
 const TEASER_VISIBLE_MS = 7000;
 const TEASER_GAP_MS     = 22_000;
 const FIRST_TEASER_MS   = 5_000;
 const MAX_TEASERS       = 5;
-
-// Initial position is computed on mount (defaults to bottom-right).
-const DEFAULT_POS = { left: 0, bottom: 20 };
-const POS_STORAGE_KEY = "mkis-bella-pos";
-const LAUNCHER_SIZE   = 56;
-const BUBBLE_GAP      = 12;
 
 export default function ChatWidget() {
   const [open, setOpen]         = useState(false);
@@ -41,168 +35,10 @@ export default function ChatWidget() {
   const [input, setInput]       = useState("");
   const [loading, setLoading]   = useState(false);
   const [teaser, setTeaser]     = useState<string | null>(null);
-  const [pos, setPos]           = useState(DEFAULT_POS);
-  const [dragging, setDragging] = useState(false);
   const teaserDismissed         = useRef(false);
   const scrollRef               = useRef<HTMLDivElement>(null);
   const launcherRef             = useRef<HTMLButtonElement>(null);
-  const bubbleRef               = useRef<HTMLDivElement>(null);
-  const panelRef                = useRef<HTMLDivElement>(null);
   const textareaRef             = useRef<HTMLTextAreaElement>(null);
-  const dragRef                 = useRef({
-    active:        false,
-    startX:        0,
-    startY:        0,
-    startLeft:     0,
-    startBottom:   0,
-    moved:         false,
-    pointerId:     -1,
-  });
-
-  // Position launcher (only re-runs on pos change)
-  useEffect(() => {
-    if (launcherRef.current) {
-      launcherRef.current.style.left   = `${pos.left}px`;
-      launcherRef.current.style.bottom = `${pos.bottom}px`;
-    }
-  }, [pos]);
-
-  // Position chat panel (only when chat opens or pos changes)
-  useEffect(() => {
-    if (!open || !panelRef.current || typeof window === "undefined") return;
-    const onLeftHalf = pos.left + LAUNCHER_SIZE / 2 < window.innerWidth / 2;
-    panelRef.current.style.bottom = `${pos.bottom + LAUNCHER_SIZE + 12}px`;
-    const isMobile = window.innerWidth < 640;
-    if (isMobile) {
-      panelRef.current.style.left  = "12px";
-      panelRef.current.style.right = "12px";
-    } else if (onLeftHalf) {
-      panelRef.current.style.left  = `${pos.left}px`;
-      panelRef.current.style.right = "auto";
-    } else {
-      panelRef.current.style.right = `${window.innerWidth - pos.left - LAUNCHER_SIZE}px`;
-      panelRef.current.style.left  = "auto";
-    }
-  }, [pos, open]);
-
-  // Position teaser bubble (only re-runs when teaser appears/disappears or pos changes)
-  useEffect(() => {
-    if (!bubbleRef.current || !teaser || typeof window === "undefined") return;
-    const onLeftHalf = pos.left + LAUNCHER_SIZE / 2 < window.innerWidth / 2;
-    bubbleRef.current.style.bottom = `${pos.bottom + 8}px`;
-    if (onLeftHalf) {
-      bubbleRef.current.style.left  = `${pos.left + LAUNCHER_SIZE + BUBBLE_GAP}px`;
-      bubbleRef.current.style.right = "auto";
-    } else {
-      bubbleRef.current.style.right = `${window.innerWidth - pos.left + BUBBLE_GAP}px`;
-      bubbleRef.current.style.left  = "auto";
-    }
-  }, [pos, teaser]);
-
-  // Restore launcher position from localStorage (defaults to bottom-right)
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(POS_STORAGE_KEY);
-      if (raw) {
-        const saved = JSON.parse(raw);
-        if (typeof saved.left === "number" && typeof saved.bottom === "number") {
-          setPos(clampPos(saved));
-          return;
-        }
-      }
-    } catch { /* ignore */ }
-    // No saved position — pin to bottom-right of the viewport
-    setPos(clampPos({
-      left:   window.innerWidth - LAUNCHER_SIZE - 20,
-      bottom: 20,
-    }));
-  }, []);
-
-  // Re-clamp on resize so the launcher never lands off-screen
-  useEffect(() => {
-    function onResize() { setPos((p) => clampPos(p)); }
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
-  // Decide which side to render the teaser bubble on, based on launcher x-position
-  const teaserOnLeft = typeof window !== "undefined" && pos.left > window.innerWidth / 2;
-
-  function clampPos(p: { left: number; bottom: number }) {
-    if (typeof window === "undefined") return p;
-    const margin = 8;
-    return {
-      left:   Math.max(margin, Math.min(p.left,   window.innerWidth  - LAUNCHER_SIZE - margin)),
-      bottom: Math.max(margin, Math.min(p.bottom, window.innerHeight - LAUNCHER_SIZE - margin)),
-    };
-  }
-
-  // Drag uses document-level pointer listeners — much more reliable across browsers
-  // than React's onPointerMove (which can drop events when the pointer leaves the
-  // launcher's bounding box).
-  function onPointerDown(e: React.PointerEvent<HTMLButtonElement>) {
-    if (e.button !== 0 && e.pointerType === "mouse") return; // only left mouse button
-    dragRef.current = {
-      active:      true,
-      startX:      e.clientX,
-      startY:      e.clientY,
-      startLeft:   pos.left,
-      startBottom: pos.bottom,
-      moved:       false,
-      pointerId:   e.pointerId,
-    };
-    e.preventDefault();    // suppress focus / drag-image
-  }
-
-  // Attach document listeners while a drag is potentially in flight.
-  // We use useEffect so cleanup is automatic on unmount.
-  useEffect(() => {
-    function handleMove(e: PointerEvent) {
-      if (!dragRef.current.active) return;
-      if (e.pointerId !== dragRef.current.pointerId) return;
-      const dx = e.clientX - dragRef.current.startX;
-      const dy = e.clientY - dragRef.current.startY;
-      if (!dragRef.current.moved && Math.hypot(dx, dy) < 5) return;
-      dragRef.current.moved = true;
-      if (!dragging) setDragging(true);
-      setPos(clampPos({
-        left:   dragRef.current.startLeft   + dx,
-        bottom: dragRef.current.startBottom - dy,
-      }));
-    }
-    function handleUp(e: PointerEvent) {
-      if (!dragRef.current.active) return;
-      if (e.pointerId !== dragRef.current.pointerId) return;
-      const wasDrag = dragRef.current.moved;
-      dragRef.current.active = false;
-      dragRef.current.moved  = false;
-      setDragging(false);
-      if (wasDrag) {
-        try {
-          // Read the latest pos from the launcher's actual style values
-          const left   = parseInt(launcherRef.current?.style.left   || `${pos.left}`,   10);
-          const bottom = parseInt(launcherRef.current?.style.bottom || `${pos.bottom}`, 10);
-          localStorage.setItem(POS_STORAGE_KEY, JSON.stringify({ left, bottom }));
-        } catch { /* ignore */ }
-      } else {
-        setOpen((v) => !v);
-      }
-    }
-    function handleCancel() {
-      dragRef.current.active = false;
-      dragRef.current.moved  = false;
-      setDragging(false);
-    }
-    document.addEventListener("pointermove",   handleMove);
-    document.addEventListener("pointerup",     handleUp);
-    document.addEventListener("pointercancel", handleCancel);
-    return () => {
-      document.removeEventListener("pointermove",   handleMove);
-      document.removeEventListener("pointerup",     handleUp);
-      document.removeEventListener("pointercancel", handleCancel);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dragging]);
 
   // Auto-scroll to bottom on new message
   useEffect(() => {
@@ -227,42 +63,32 @@ export default function ChatWidget() {
   }, [open]);
 
   // Show a small queue of teasers (status + live notifications) while the chat is closed.
-  // Plays through once per session — capped at MAX_TEASERS to avoid spam.
   useEffect(() => {
-    // Hide any visible bubble while chat is open, but don't permanently silence
     if (open) { setTeaser(null); return; }
-    // If user explicitly dismissed via the ✕, stay silent
     if (teaserDismissed.current) return;
 
     let cancelled = false;
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     async function start() {
-      const queue: string[] = [];
+      const queue: string[] = [FALLBACK_WELCOME];
 
-      // 1) Always start with a friendly welcome
-      queue.push(FALLBACK_WELCOME);
-
-      // 2) Status-aware open / closed message
       try {
         const res  = await fetch("/api/status");
         const data = await res.json();
         queue.push(data.status === "open"
           ? "We're open now! Book an appointment or drop by."
           : "We're currently closed. You can always book an appointment for our opening hours.");
-      } catch { /* skip if status unavailable */ }
+      } catch { /* skip */ }
 
-      // 3) Live notifications (today's bookings, new gallery design, etc.)
       try {
         const res  = await fetch("/api/notifications");
         const data: { message: string }[] = await res.json();
         (data ?? []).slice(0, 2).forEach((n) => { if (n?.message) queue.push(n.message); });
-      } catch { /* ignore */ }
+      } catch { /* skip */ }
 
-      // 4) Friendly closer
       queue.push(CLOSING_TEASER);
 
-      // 5) Occasionally splice in a random meow at a random spot in the middle
       if (Math.random() < MEOW_CHANCE && queue.length >= 2) {
         const meow    = MEOW_LINES[Math.floor(Math.random() * MEOW_LINES.length)];
         const insertAt = 1 + Math.floor(Math.random() * (queue.length - 1));
@@ -295,12 +121,12 @@ export default function ChatWidget() {
     };
   }, [open]);
 
-  // When the booking form completes, pop a sequence of thank-you bubbles
+  // Booking complete → celebratory teaser sequence
   useEffect(() => {
     function onBooked(e: Event) {
       const detail = (e as CustomEvent<{ firstName?: string }>).detail ?? {};
       const name   = detail.firstName || "there";
-      teaserDismissed.current = false;     // re-allow teasers for this celebratory sequence
+      teaserDismissed.current = false;
 
       const sequence: string[] = [
         `Thank you for choosing us, ${name}! 💖`,
@@ -354,19 +180,21 @@ export default function ChatWidget() {
 
   return (
     <>
-      {/* Teaser speech bubble — only when closed; positioned next to Bella imperatively */}
+      {/* Teaser speech bubble — only when closed, anchored above the launcher */}
       {!open && teaser && (
         <div
-          ref={bubbleRef}
           role="status"
           aria-live="polite"
-          className={`fixed z-50 max-w-[220px] sm:max-w-xs
-                     bg-[#2A1F18] border border-[#3A2E26] rounded-2xl
-                     ${teaserOnLeft ? "rounded-br-sm" : "rounded-bl-sm"}
-                     px-4 py-2.5 shadow-[0_15px_30px_-12px_rgba(26,20,16,0.18)] chat-teaser-in cursor-pointer`}
+          style={{
+            bottom: "calc(env(safe-area-inset-bottom, 0px) + 5.5rem)",
+            left:   "calc(env(safe-area-inset-left, 0px) + 1.5rem)",
+          }}
+          className="fixed z-50 max-w-[calc(100vw-3rem)] sm:max-w-[260px]
+                     bg-[#2A1F18] border border-[#3A2E26] rounded-2xl rounded-bl-sm
+                     px-4 py-2.5 shadow-[0_15px_30px_-12px_rgba(0,0,0,0.4)] chat-teaser-in cursor-pointer"
           onClick={() => setOpen(true)}
         >
-          <p className="text-sm text-[#F0E4D8] leading-snug">{teaser}</p>
+          <p className="text-sm text-[#F0E4D8] leading-snug font-light">{teaser}</p>
           <button
             type="button"
             aria-label="Dismiss"
@@ -378,22 +206,25 @@ export default function ChatWidget() {
         </div>
       )}
 
-      {/* Floating launcher (draggable) */}
+      {/* Floating launcher — fixed bottom-left (respects iOS safe area) */}
       <button
         ref={launcherRef}
         type="button"
-        onPointerDown={onPointerDown}
-        aria-label={open ? "Close chat with Bella" : "Open chat with Bella (drag to move)"}
+        onClick={() => setOpen((v) => !v)}
+        aria-label={open ? "Close chat with Bella" : "Open chat with Bella"}
         aria-controls="bella-chat-panel"
         aria-haspopup="dialog"
-        title="Chat with Bella · drag to move"
-        className={`fixed z-50 w-14 h-14 rounded-full shadow-[0_15px_30px_-8px_rgba(224,120,152,0.5)] overflow-hidden touch-none select-none
-          ${dragging ? "cursor-grabbing" : "cursor-grab"}
-          ${dragging ? "" : "transition-shadow"}
-          ${open
-            ? "bg-[#2A1F18] border border-[#3A2E26] hover:bg-[#1A1410] flex items-center justify-center"
-            : "bg-[#D89AAE] hover:scale-105 p-[2px]"
-          }`}
+        style={{
+          bottom: "calc(env(safe-area-inset-bottom, 0px) + 1.5rem)",
+          left:   "calc(env(safe-area-inset-left,   0px) + 1.5rem)",
+        }}
+        className={`fixed z-50 w-14 h-14 rounded-full overflow-hidden
+                    shadow-[0_12px_30px_-6px_rgba(216,154,174,0.5)]
+                    hover:scale-105 active:scale-95 transition-transform
+                    ${open
+                      ? "bg-[#2A1F18] border border-[#3A2E26] flex items-center justify-center"
+                      : "ring-2 ring-[#D89AAE]/40 ring-offset-2 ring-offset-[#1A1410]"
+                    }`}
       >
         {open ? (
           <svg className="w-5 h-5 text-[#F0E4D8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -410,20 +241,26 @@ export default function ChatWidget() {
         )}
       </button>
 
-      {/* Chat panel — anchored to Bella's position imperatively */}
+      {/* Chat panel — opens up + right from the launcher */}
       {open && (
         <div
-          ref={panelRef}
           id="bella-chat-panel"
           role="dialog"
           aria-label="Chat with Bella"
           aria-modal="false"
-          className="fixed sm:w-96 z-50 bg-[#2A1F18] rounded-3xl border border-[#3A2E26]
-                     shadow-[0_25px_60px_-15px_rgba(26,20,16,0.25)] flex flex-col max-h-[70vh] overflow-hidden"
+          style={{
+            bottom: "calc(env(safe-area-inset-bottom, 0px) + 5.5rem)",
+            left:   "calc(env(safe-area-inset-left,   0px) + 1.5rem)",
+            right:  "calc(env(safe-area-inset-right,  0px) + 1.5rem)",
+          }}
+          className="fixed sm:right-auto sm:w-96 z-50
+                     bg-[#2A1F18] rounded-3xl border border-[#3A2E26]
+                     shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)]
+                     flex flex-col max-h-[min(70vh,32rem)] overflow-hidden"
         >
           {/* Header */}
           <div className="bg-[#322620] border-b border-[#3A2E26] px-5 py-4 flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full overflow-hidden ring-1 ring-[#3A2E26] flex-shrink-0">
+            <div className="w-11 h-11 rounded-full overflow-hidden ring-1 ring-[#D89AAE]/40 flex-shrink-0">
               <Image
                 src="/bella.jpeg"
                 alt="Bella"
@@ -432,9 +269,9 @@ export default function ChatWidget() {
                 className="w-full h-full object-cover scale-[1.15] object-[50%_42%]"
               />
             </div>
-            <div>
-              <p className="font-[family-name:var(--font-cormorant)] text-base font-medium text-[#F0E4D8] leading-tight">Bella</p>
-              <p className="text-xs text-[#B8A89A] font-light">MKIS Nail Salon assistant</p>
+            <div className="flex-1 min-w-0">
+              <p className="font-[family-name:var(--font-cormorant)] text-lg text-[#F0E4D8] leading-tight">Bella</p>
+              <p className="text-[11px] text-[#B8A89A] font-[family-name:var(--font-montserrat)] tracking-[0.15em] uppercase">MKIS Nails Assistant</p>
             </div>
           </div>
 
@@ -449,7 +286,7 @@ export default function ChatWidget() {
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed
+                  className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed font-light
                     ${m.role === "user"
                       ? "bg-[#D89AAE] text-[#1A1410] rounded-br-sm"
                       : "bg-[#2A1F18] text-[#F0E4D8] border border-[#3A2E26] rounded-bl-sm"
@@ -490,7 +327,7 @@ export default function ChatWidget() {
                 disabled={!input.trim() || loading}
                 aria-label="Send message"
                 className="w-10 h-10 rounded-xl bg-[#D89AAE] text-[#1A1410] flex items-center justify-center
-                           hover:bg-[#E5B0C2] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0"
+                           hover:bg-[#E5B0C2] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
