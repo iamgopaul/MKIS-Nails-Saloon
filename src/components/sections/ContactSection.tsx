@@ -5,9 +5,9 @@ interface ContactSectionProps {
 }
 
 const hours = [
-  { day: "Monday to Friday", time: "9:00 AM to 7:00 PM" },
-  { day: "Saturday",         time: "9:00 AM to 6:00 PM" },
-  { day: "Sunday",          time: "Closed" },
+  { day: "Monday to Friday", time: "Closed" },
+  { day: "Saturday",         time: "10:00 AM to 6:00 PM" },
+  { day: "Sunday",           time: "10:00 AM to 6:00 PM" },
 ];
 
 function PinIcon() {

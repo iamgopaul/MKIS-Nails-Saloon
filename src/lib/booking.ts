@@ -1,6 +1,6 @@
 /**
  * Time-slot helpers for the booking system.
- * 30-minute granularity, Mon–Sat (Sun closed).
+ * 30-minute granularity. Open Saturday + Sunday only, 10 AM to 6 PM.
  */
 
 export const SLOT_MINUTES = 30;
@@ -19,13 +19,13 @@ export function todayInSalonTZ(): string {
 
 // Per-day open/close times in minutes from midnight
 const HOURS: Record<number, { open: number; close: number } | null> = {
-  0: null,                                 // Sunday closed
-  1: { open: 9 * 60, close: 19 * 60 },     // Mon
-  2: { open: 9 * 60, close: 19 * 60 },     // Tue
-  3: { open: 9 * 60, close: 19 * 60 },     // Wed
-  4: { open: 9 * 60, close: 19 * 60 },     // Thu
-  5: { open: 9 * 60, close: 19 * 60 },     // Fri
-  6: { open: 9 * 60, close: 18 * 60 },     // Sat
+  0: { open: 10 * 60, close: 18 * 60 },    // Sun  10 AM – 6 PM
+  1: null,                                 // Mon  closed
+  2: null,                                 // Tue  closed
+  3: null,                                 // Wed  closed
+  4: null,                                 // Thu  closed
+  5: null,                                 // Fri  closed
+  6: { open: 10 * 60, close: 18 * 60 },    // Sat  10 AM – 6 PM
 };
 
 export function isWorkingDay(dateStr: string): boolean {

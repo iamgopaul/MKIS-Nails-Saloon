@@ -13,48 +13,6 @@ const links = [
   { label: "Contact",  href: "#contact" },
 ];
 
-function BusinessStatusBadge() {
-  const [status, setStatus]   = useState<"open" | "closed" | null>(null);
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    async function fetch_() {
-      try {
-        const res  = await fetch("/api/status");
-        const data = await res.json();
-        setStatus(data.status === "closed" ? "closed" : "open");
-        setMessage(data.message ?? "");
-      } catch { /* silently fail */ }
-    }
-    fetch_();
-    const id = setInterval(fetch_, 60_000);
-    return () => clearInterval(id);
-  }, []);
-
-  if (status === null) return null;
-
-  const isOpen = status === "open";
-
-  return (
-    <div
-      title={message || (isOpen ? "We are open" : "We are currently closed")}
-      className={`flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-[family-name:var(--font-montserrat)] tracking-[0.18em] uppercase
-        ${isOpen
-          ? "text-emerald-300/90 border border-emerald-500/30"
-          : "text-red-300/90 border border-red-500/30"
-        }`}
-    >
-      <span className="relative flex h-1.5 w-1.5">
-        {isOpen && (
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-        )}
-        <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${isOpen ? "bg-emerald-400" : "bg-red-400"}`} />
-      </span>
-      {isOpen ? "Open" : "Closed"}
-    </div>
-  );
-}
-
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -101,7 +59,6 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-          <BusinessStatusBadge />
           <a
             href="#booking"
             className="ml-2 px-6 py-2.5 bg-[#D89AAE] text-[#1A1410] text-[11px] font-[family-name:var(--font-montserrat)] font-medium tracking-[0.2em] uppercase hover:bg-[#E5B0C2] transition-colors"
@@ -112,7 +69,6 @@ export default function Navbar() {
 
         {/* Mobile: status + hamburger */}
         <div className="md:hidden flex items-center gap-3">
-          <BusinessStatusBadge />
           <button
             type="button"
             className="p-2 text-[#F0E4D8] hover:text-[#D89AAE] transition"
