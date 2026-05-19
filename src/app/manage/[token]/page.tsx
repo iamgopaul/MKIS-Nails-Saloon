@@ -28,14 +28,14 @@ export default async function ManagePage({ params }: Props) {
 
   if (!booking) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-6 bg-[#0A0A0A] text-[#F5EDE6]">
+      <main className="min-h-screen flex items-center justify-center p-6 bg-[#1A1410] text-[#F0E4D8]">
         <div className="max-w-md text-center">
           <h1 className="text-2xl font-bold mb-3">Link expired or invalid</h1>
-          <p className="text-[#9A7060] mb-6 leading-relaxed">
+          <p className="text-[#B8A89A] mb-6 leading-relaxed">
             This management link is no longer valid. If you need to change a booking, please call us at{" "}
-            <a href="tel:+17542365112" className="text-[#E07898]">+1 (754) 236-5112</a>.
+            <a href="tel:+17542365112" className="text-[#D89AAE]">+1 (754) 236-5112</a>.
           </p>
-          <Link href="/" className="text-[#E07898] no-underline font-semibold hover:underline">
+          <Link href="/" className="text-[#D89AAE] no-underline font-semibold hover:underline">
             ← Back to MKIS Nail Salon
           </Link>
         </div>
@@ -45,13 +45,13 @@ export default async function ManagePage({ params }: Props) {
 
   if (booking.status === "Cancelled") {
     return (
-      <main className="min-h-screen flex items-center justify-center p-6 bg-[#0A0A0A] text-[#F5EDE6]">
+      <main className="min-h-screen flex items-center justify-center p-6 bg-[#1A1410] text-[#F0E4D8]">
         <div className="max-w-md text-center">
           <h1 className="text-2xl font-bold mb-3">This booking is cancelled</h1>
-          <p className="text-[#9A7060] mb-6 leading-relaxed">
+          <p className="text-[#B8A89A] mb-6 leading-relaxed">
             Your appointment for <strong>{booking.service_name}</strong> on {fmtDate(booking.preferred_date)} has been cancelled.
           </p>
-          <Link href="/#booking" className="text-[#E07898] no-underline font-semibold hover:underline">
+          <Link href="/#booking" className="text-[#D89AAE] no-underline font-semibold hover:underline">
             Book a new appointment →
           </Link>
         </div>

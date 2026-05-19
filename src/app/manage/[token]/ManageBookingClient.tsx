@@ -32,10 +32,10 @@ function formatDate(d: string) {
   });
 }
 
-const CARD_CLS    = "bg-[#111111] border border-[#E07898]/15 rounded-2xl";
-const BTN_PRIMARY = "flex-1 min-w-[160px] px-6 py-3.5 rounded-full bg-[#E07898] text-[#0A0A0A] font-bold text-xs uppercase tracking-wider hover:bg-[#C45E7A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors";
-const BTN_DANGER  = "flex-1 min-w-[160px] px-6 py-3.5 rounded-full bg-transparent text-[#ff8b9d] font-bold text-xs uppercase tracking-wider border border-[#ff8b9d]/40 hover:bg-[#ff8b9d]/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors";
-const BTN_GHOST   = "flex-1 min-w-[120px] px-6 py-3.5 rounded-full bg-transparent text-[#F5EDE6] font-semibold text-xs uppercase tracking-wider border border-[#E07898]/25 hover:border-[#E07898]/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors";
+const CARD_CLS    = "bg-[#1A1410] border border-[#D89AAE]/15 rounded-2xl";
+const BTN_PRIMARY = "flex-1 min-w-[160px] px-6 py-3.5 rounded-full bg-[#D89AAE] text-[#1A1410] font-bold text-xs uppercase tracking-wider hover:bg-[#C45E7A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors";
+const BTN_DANGER  = "flex-1 min-w-[160px] px-6 py-3.5 rounded-full bg-transparent text-[#D89AAE] font-bold text-xs uppercase tracking-wider border border-[#D89AAE]/40 hover:bg-[#D89AAE]/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors";
+const BTN_GHOST   = "flex-1 min-w-[120px] px-6 py-3.5 rounded-full bg-transparent text-[#F0E4D8] font-semibold text-xs uppercase tracking-wider border border-[#D89AAE]/25 hover:border-[#D89AAE]/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors";
 
 export default function ManageBookingClient({ token, booking }: { token: string; booking: Booking }) {
   const [mode, setMode]               = useState<"summary" | "reschedule" | "done">("summary");
@@ -107,13 +107,13 @@ export default function ManageBookingClient({ token, booking }: { token: string;
   }
 
   return (
-    <main className="min-h-screen bg-[#0A0A0A] text-[#F5EDE6] py-12 px-6">
+    <main className="min-h-screen bg-[#1A1410] text-[#F0E4D8] py-12 px-6">
       <div className="max-w-xl mx-auto">
-        <Link href="/" className="text-[#9A7060] text-sm no-underline hover:text-[#E07898] transition-colors">
+        <Link href="/" className="text-[#B8A89A] text-sm no-underline hover:text-[#D89AAE] transition-colors">
           ← MKIS Nail Salon
         </Link>
         <h1 className="text-3xl font-bold mt-4 mb-2 font-[family-name:var(--font-cormorant)]">Manage Booking</h1>
-        <p className="text-[#9A7060] mb-7">
+        <p className="text-[#B8A89A] mb-7">
           Hi {booking.clientName.split(" ")[0]}, here are your appointment details.
         </p>
 
@@ -141,11 +141,11 @@ export default function ManageBookingClient({ token, booking }: { token: string;
 
         {mode === "reschedule" && (
           <div className={`${CARD_CLS} p-6`}>
-            <h2 className="text-sm uppercase tracking-widest text-[#E07898] font-bold mb-4">
+            <h2 className="text-sm uppercase tracking-widest text-[#D89AAE] font-bold mb-4">
               Pick a new time
             </h2>
 
-            <label htmlFor="reschedule-date" className="block text-xs text-[#9A7060] mb-1.5">
+            <label htmlFor="reschedule-date" className="block text-xs text-[#B8A89A] mb-1.5">
               New date
             </label>
             <input
@@ -154,16 +154,16 @@ export default function ManageBookingClient({ token, booking }: { token: string;
               min={todayStr}
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-3.5 py-3 rounded-xl bg-[#0A0A0A] border border-[#E07898]/20 text-[#F5EDE6] text-base mb-4 [color-scheme:dark] focus:outline-none focus:border-[#E07898]/60"
+              className="w-full px-3.5 py-3 rounded-xl bg-[#1A1410] border border-[#D89AAE]/20 text-[#F0E4D8] text-base mb-4 [color-scheme:dark] focus:outline-none focus:border-[#D89AAE]/60"
             />
 
             {date && (
               <>
-                <span className="block text-xs text-[#9A7060] mb-1.5">Available times</span>
+                <span className="block text-xs text-[#B8A89A] mb-1.5">Available times</span>
                 {loadingSlots ? (
-                  <p className="text-[#9A7060] text-sm">Loading…</p>
+                  <p className="text-[#B8A89A] text-sm">Loading…</p>
                 ) : slots.length === 0 ? (
-                  <p className="text-[#9A7060] text-sm">No openings on this date. Try another.</p>
+                  <p className="text-[#B8A89A] text-sm">No openings on this date. Try another.</p>
                 ) : (
                   <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-2 mb-4">
                     {slots.map((s) => {
@@ -175,8 +175,8 @@ export default function ManageBookingClient({ token, booking }: { token: string;
                           onClick={() => setPickedTime(s)}
                           className={`px-2 py-2.5 rounded-lg font-semibold text-sm transition-colors ${
                             selected
-                              ? "bg-[#E07898] text-[#0A0A0A] border-none"
-                              : "bg-transparent text-[#F5EDE6] border border-[#E07898]/25 hover:border-[#E07898]/60"
+                              ? "bg-[#D89AAE] text-[#1A1410] border-none"
+                              : "bg-transparent text-[#F0E4D8] border border-[#D89AAE]/25 hover:border-[#D89AAE]/60"
                           }`}
                         >
                           {fmtTime(s)}
@@ -204,19 +204,19 @@ export default function ManageBookingClient({ token, booking }: { token: string;
             <h2 className="text-xl font-bold mb-2">
               {doneKind === "cancelled" ? "Booking cancelled" : "Booking updated"}
             </h2>
-            <p className="text-[#9A7060] mb-4 leading-relaxed">
+            <p className="text-[#B8A89A] mb-4 leading-relaxed">
               {doneKind === "cancelled"
                 ? "We've cancelled your appointment. A confirmation email is on its way."
                 : "Your new appointment time is saved. A confirmation email is on its way."}
             </p>
-            <Link href="/" className="text-[#E07898] no-underline font-semibold hover:underline">
+            <Link href="/" className="text-[#D89AAE] no-underline font-semibold hover:underline">
               Back to MKIS Nail Salon →
             </Link>
           </div>
         )}
 
         {error && (
-          <p className="mt-4 text-[#ff8b9d] text-sm">
+          <p className="mt-4 text-[#D89AAE] text-sm">
             {error}
           </p>
         )}
@@ -227,8 +227,8 @@ export default function ManageBookingClient({ token, booking }: { token: string;
 
 function Row({ label, value, last }: { label: string; value: string; last?: boolean }) {
   return (
-    <div className={`flex justify-between gap-4 py-2.5 text-sm ${last ? "" : "border-b border-[#E07898]/10"}`}>
-      <span className="text-[#9A7060]">{label}</span>
+    <div className={`flex justify-between gap-4 py-2.5 text-sm ${last ? "" : "border-b border-[#D89AAE]/10"}`}>
+      <span className="text-[#B8A89A]">{label}</span>
       <span className="font-semibold">{value}</span>
     </div>
   );

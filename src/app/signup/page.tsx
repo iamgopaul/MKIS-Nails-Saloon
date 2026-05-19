@@ -9,7 +9,7 @@ const ADMIN_URL = process.env.NEXT_PUBLIC_ADMIN_URL ?? "https://admin.mkisnails.
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#050505] flex items-center justify-center text-[#9A7060]">Loading…</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#1A1410] flex items-center justify-center text-[#B8A89A]">Loading…</div>}>
       <SignupForm />
     </Suspense>
   );
