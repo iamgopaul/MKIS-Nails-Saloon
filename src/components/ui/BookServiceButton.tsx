@@ -18,8 +18,9 @@ export default function BookServiceButton({ serviceId, label = "Book Now" }: {
       size="sm"
       onClick={() => {
         try { sessionStorage.setItem(STORAGE_KEY, serviceId); } catch { /* ignore */ }
-        // Defer so sessionStorage write commits before the booking section's
-        // effect reads it on hash-change navigation.
+        // Tell BookingSection to switch its selected service immediately, even
+        // if it's already mounted from a previous "Book Now" click.
+        window.dispatchEvent(new CustomEvent("mkis:preselect-service", { detail: { serviceId } }));
         requestAnimationFrame(() => {
           window.location.hash = "#booking";
         });

@@ -53,7 +53,7 @@ export default function ContactSection({ id }: ContactSectionProps) {
     {
       Icon: PinIcon,
       label: "Address",
-      content: <p className="text-[#B8A89A] font-light leading-relaxed">7000 NW 17th St, Building 2, Apt 211<br />Plantation, FL 33313</p>,
+      content: <p className="text-[#B8A89A] font-light leading-relaxed">7000 NW 17th St, Building 2<br />Plantation, FL 33313</p>,
     },
     {
       Icon: PhoneIcon,
@@ -130,7 +130,7 @@ export default function ContactSection({ id }: ContactSectionProps) {
           >
             <iframe
               title="MKIS Nails Salon location"
-              src="https://www.google.com/maps?q=7000+NW+17th+St+Building+2+Apt+211+Plantation+FL+33313&z=16&output=embed"
+              src="https://www.google.com/maps?q=7000+NW+17th+St+Building+2+Plantation+FL+33313&z=16&output=embed"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="w-full h-full min-h-80 grayscale-[0.4] contrast-95 transition-all duration-300 group-hover:grayscale-0"

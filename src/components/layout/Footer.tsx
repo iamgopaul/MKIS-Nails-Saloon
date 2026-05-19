@@ -72,7 +72,7 @@ export default function Footer() {
             </h4>
             <div className="space-y-3 text-sm text-[#B8A89A] font-light leading-relaxed">
               <p>
-                7000 NW 17th St, Building 2, Apt 211<br />
+                7000 NW 17th St, Building 2<br />
                 Plantation, FL 33313
               </p>
               <p>

@@ -50,17 +50,32 @@ export default function BookingSection({ id }: BookingSectionProps) {
       .then((r) => r.json())
       .then((svc) => {
         setServices(svc);
-        // Pre-select a service if a card's "Book Now" button stashed an id.
+        // On first load: honor a stash from sessionStorage (covers the case
+        // where the user clicked "Book Now" before BookingSection mounted).
         try {
           const preselect = sessionStorage.getItem("mkis:preselect-service");
           if (preselect && Array.isArray(svc) && svc.some((s: Service) => s.id === preselect)) {
-            setForm((p) => ({ ...p, serviceId: preselect }));
+            setForm((p) => ({ ...p, serviceId: preselect, startTime: "" }));
           }
           sessionStorage.removeItem("mkis:preselect-service");
         } catch { /* ignore */ }
       })
       .catch(() => {});
     fetch("/api/team").then((r) => r.json()).then(setTeam).catch(() => {});
+  }, []);
+
+  // Live updates: when a "Book Now" button is clicked AFTER this section has
+  // already mounted, overwrite the current selection instead of leaving the
+  // form stuck on the previous service.
+  useEffect(() => {
+    function onPreselect(e: Event) {
+      const detail = (e as CustomEvent<{ serviceId?: string }>).detail;
+      const id = detail?.serviceId;
+      if (!id) return;
+      setForm((p) => ({ ...p, serviceId: id, startTime: "" }));
+    }
+    window.addEventListener("mkis:preselect-service", onPreselect);
+    return () => window.removeEventListener("mkis:preselect-service", onPreselect);
   }, []);
 
   const fetchSlots = useCallback(async () => {
